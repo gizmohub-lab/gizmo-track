@@ -1,0 +1,7 @@
+{
+  "name": "Gizmo Portal — Invoicing & Operations",
+  "description": "Professional invoice generation and operations workspace for Gizmo Design with dynamic GST calculations, UPI payment integration, client auto-fill, and print-ready PDF export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Client design project records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "clientName": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title", "clientName"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Tax invoices and payment records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "invoiceNo": { "type": "string" },
+        "grandTotal": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "grandTotal"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Projects collection"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/Invoice" },
+      "description": "Invoices collection"
+    }
+  }
+}

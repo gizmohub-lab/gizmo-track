@@ -107,6 +107,27 @@ import {
 } from './utils/projectUtils';
 import { ResetPortalModal } from './components/portal/projects/ResetPortalModal';
 
+function getAppBasePath(): string {
+  if (typeof window === 'undefined') return '';
+  const pathname = window.location.pathname;
+  const knownSegments = ['/admin', '/services', '/work', '/about', '/my-projects'];
+  for (const seg of knownSegments) {
+    const idx = pathname.toLowerCase().indexOf(seg);
+    if (idx > 0) {
+      return pathname.substring(0, idx).replace(/\/$/, '');
+    }
+  }
+  const clean = pathname.replace(/\/$/, '');
+  const parts = clean.split('/').filter(Boolean);
+  if (
+    parts.length === 1 &&
+    !['admin', 'services', 'work', 'about', 'my-projects'].includes(parts[0].toLowerCase())
+  ) {
+    return `/${parts[0]}`;
+  }
+  return '';
+}
+
 function pathToRoute(path: string): AppRoute {
   const cleanPath = path.toLowerCase().replace(/\/$/, '') || '/';
   if (cleanPath.includes('/admin/login')) return 'admin-login';
@@ -123,46 +144,63 @@ function pathToRoute(path: string): AppRoute {
   }
   if (cleanPath.includes('/admin/invoices') || cleanPath.includes('/admin/invoice')) return 'admin-invoices';
   if (cleanPath.includes('/admin/settings')) return 'admin-settings';
-  if (cleanPath.endsWith('/admin') || cleanPath.endsWith('/admin/dashboard')) return 'admin-dashboard';
-  if (cleanPath.endsWith('/services')) return 'services';
-  if (cleanPath.endsWith('/work')) return 'work';
-  if (cleanPath.endsWith('/about')) return 'about';
-  if (cleanPath.endsWith('/my-projects') || cleanPath.endsWith('/projects-client')) return 'my-projects';
+  if (cleanPath.includes('/admin')) return 'admin-dashboard';
+  if (cleanPath.includes('/services')) return 'services';
+  if (cleanPath.includes('/work')) return 'work';
+  if (cleanPath.includes('/about')) return 'about';
+  if (cleanPath.includes('/my-projects') || cleanPath.includes('/projects-client')) return 'my-projects';
   return 'home';
 }
 
 function routeToPath(route: AppRoute): string {
+  const basePath = getAppBasePath();
+  let subPath = '/';
   switch (route) {
     case 'home':
-      return '/';
+      subPath = '/';
+      break;
     case 'admin-login':
-      return '/admin/login';
+      subPath = '/admin/login';
+      break;
     case 'services':
-      return '/services';
+      subPath = '/services';
+      break;
     case 'work':
-      return '/work';
+      subPath = '/work';
+      break;
     case 'about':
-      return '/about';
+      subPath = '/about';
+      break;
     case 'my-projects':
-      return '/my-projects';
+      subPath = '/my-projects';
+      break;
     case 'admin':
     case 'admin-dashboard':
-      return '/admin/dashboard';
+      subPath = '/admin/dashboard';
+      break;
     case 'admin-projects':
-      return '/admin/projects';
+      subPath = '/admin/projects';
+      break;
     case 'admin-clients':
-      return '/admin/clients';
+      subPath = '/admin/clients';
+      break;
     case 'admin-local-works':
-      return '/admin/local-works';
+      subPath = '/admin/local-works';
+      break;
     case 'admin-invoices':
-      return '/admin/invoices';
+      subPath = '/admin/invoices';
+      break;
     case 'admin-invoices-create':
-      return '/admin/invoices/create';
+      subPath = '/admin/invoices/create';
+      break;
     case 'admin-settings':
-      return '/admin/settings';
+      subPath = '/admin/settings';
+      break;
     default:
-      return '/';
+      subPath = '/';
+      break;
   }
+  return basePath ? `${basePath}${subPath}` : subPath;
 }
 
 export default function App() {

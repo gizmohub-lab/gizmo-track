@@ -9,6 +9,58 @@
   }
 }
 
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Micro-interaction Helper Classes */
+.btn-micro {
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+.btn-micro:hover {
+  transform: translateY(-1px);
+}
+.btn-micro:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.icon-btn-micro {
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms ease, background-color 150ms ease;
+}
+.icon-btn-micro:hover {
+  transform: scale(1.1);
+}
+.icon-btn-micro:active {
+  transform: scale(0.95);
+}
+
+.sidebar-item-micro {
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, color 150ms ease;
+}
+.sidebar-item-micro:hover .sidebar-icon {
+  transform: scale(1.08) translateX(2px);
+}
+
+.sidebar-icon {
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms ease;
+}
+
+/* Skeleton Pulse */
+@keyframes skeleton-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.skeleton-pulse {
+  animation: skeleton-glow 1.5s ease-in-out infinite;
+}
+
 @media print {
   /* Hide all app chrome during print */
   .no-print {
@@ -43,4 +95,5 @@
     margin: 12mm;
   }
 }
+
 

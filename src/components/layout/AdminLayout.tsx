@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   LayoutDashboard,
   FolderKanban,
@@ -260,7 +261,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     id={`sidebar-link-${item.id}`}
                     onClick={() => onNavigate(item.id)}
                     title={isCollapsed ? item.label : undefined}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                    className={`group w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.98] ${
                       isActive
                         ? 'bg-zinc-100 text-zinc-950 font-bold border-l-2 border-[#FF5738]'
                         : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950'
@@ -268,8 +269,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Icon
-                        className={`w-4 h-4 shrink-0 ${
-                          isActive ? 'text-[#FF5738]' : 'text-zinc-400'
+                        className={`w-4 h-4 shrink-0 transition-transform duration-150 group-hover:scale-105 group-hover:translate-x-0.5 ${
+                          isActive ? 'text-[#FF5738]' : 'text-zinc-400 group-hover:text-zinc-800'
                         }`}
                       />
                       {!isCollapsed && <span className="truncate">{item.label}</span>}
@@ -303,15 +304,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               else onNavigate('admin-settings');
             }}
             title={isCollapsed ? 'Settings' : undefined}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition ${
+            className={`group w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.98] ${
               currentRoute === 'admin-settings'
                 ? 'bg-zinc-100 text-zinc-950 font-bold border-l-2 border-[#FF5738]'
                 : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950'
             } ${isCollapsed ? 'justify-center px-0' : ''}`}
           >
             <Settings
-              className={`w-4 h-4 shrink-0 ${
-                currentRoute === 'admin-settings' ? 'text-[#FF5738]' : 'text-zinc-400'
+              className={`w-4 h-4 shrink-0 transition-transform duration-300 group-hover:rotate-45 ${
+                currentRoute === 'admin-settings' ? 'text-[#FF5738]' : 'text-zinc-400 group-hover:text-zinc-800'
               }`}
             />
             {!isCollapsed && <span>Settings</span>}
@@ -322,12 +323,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             id="sidebar-notifications-link"
             onClick={() => setNotificationsOpen(!notificationsOpen)}
             title={isCollapsed ? 'Notifications' : undefined}
-            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 transition ${
+            className={`group w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 transition-all duration-150 active:scale-[0.98] ${
               isCollapsed ? 'justify-center px-0' : ''
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Bell className="w-4 h-4 shrink-0 text-zinc-400" />
+              <Bell
+                className={`w-4 h-4 shrink-0 transition-transform duration-150 group-hover:scale-105 ${
+                  unreadCount > 0 ? 'text-[#FF5738] animate-pulse' : 'text-zinc-400 group-hover:text-zinc-800'
+                }`}
+              />
               {!isCollapsed && <span>Notifications</span>}
             </div>
             {!isCollapsed && unreadCount > 0 && (
@@ -344,11 +349,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               if (onOpenResetModal) onOpenResetModal();
             }}
             title={isCollapsed ? 'Reset Data' : undefined}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition ${
+            className={`group w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition-all duration-150 active:scale-[0.98] ${
               isCollapsed ? 'justify-center px-0' : ''
             }`}
           >
-            <RotateCcw className="w-4 h-4 shrink-0 text-rose-500" />
+            <RotateCcw className="w-4 h-4 shrink-0 text-rose-500 transition-transform duration-300 group-hover:rotate-180" />
             {!isCollapsed && <span>Reset</span>}
           </button>
 
@@ -435,85 +440,93 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <button
                 id="btn-notification-center"
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className={`p-2 rounded-lg border transition relative ${
+                className={`p-2 rounded-lg border transition-all duration-150 relative active:scale-[0.98] ${
                   notificationsOpen
                     ? 'bg-zinc-100 border-zinc-300 text-zinc-950'
                     : 'bg-white border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50'
                 }`}
                 title="Notifications"
               >
-                <Bell className="w-4 h-4" />
+                <Bell className={`w-4 h-4 transition-transform duration-150 hover:scale-110 ${
+                  unreadCount > 0 ? 'text-[#FF5738] animate-pulse' : ''
+                }`} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF5738] text-white text-[9px] font-mono font-bold flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF5738] text-white text-[9px] font-mono font-bold flex items-center justify-center shadow-xs">
                     {unreadCount}
                   </span>
                 )}
               </button>
 
               {/* Notification Popover */}
-              {notificationsOpen && (
-                <div
-                  id="notifications-popover-menu"
-                  className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-zinc-200 rounded-xl shadow-xl z-50 overflow-hidden"
-                >
-                  <div className="p-3 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-zinc-950">Notifications</span>
+              <AnimatePresence>
+                {notificationsOpen && (
+                  <motion.div
+                    id="notifications-popover-menu"
+                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
+                    className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-zinc-200 rounded-xl shadow-xl z-50 overflow-hidden"
+                  >
+                    <div className="p-3 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-zinc-950">Notifications</span>
+                        {unreadCount > 0 && (
+                          <span className="px-1.5 py-0.2 rounded-full bg-[#FF5738] text-white text-[10px] font-mono font-bold">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </div>
                       {unreadCount > 0 && (
-                        <span className="px-1.5 py-0.2 rounded-full bg-[#FF5738] text-white text-[10px] font-mono font-bold">
-                          {unreadCount}
-                        </span>
+                        <button
+                          onClick={handleMarkAllAsRead}
+                          className="text-[11px] font-bold text-[#FF5738] hover:underline flex items-center gap-1 active:scale-[0.98] transition-transform"
+                        >
+                          <CheckCheck className="w-3.5 h-3.5" />
+                          <span>Mark all read</span>
+                        </button>
                       )}
                     </div>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={handleMarkAllAsRead}
-                        className="text-[11px] font-bold text-[#FF5738] hover:underline flex items-center gap-1"
-                      >
-                        <CheckCheck className="w-3.5 h-3.5" />
-                        <span>Mark all read</span>
-                      </button>
-                    )}
-                  </div>
 
-                  <div className="max-h-72 overflow-y-auto divide-y divide-zinc-100 text-xs">
-                    {activeNotifications.length > 0 ? (
-                      activeNotifications.map((notif) => (
-                        <div
-                          key={notif.id}
-                          onClick={() => handleNotificationClick(notif)}
-                          className={`p-3 transition-colors cursor-pointer hover:bg-zinc-50 flex items-start gap-2.5 ${
-                            !notif.read && !notif.isRead ? 'bg-amber-50/30' : 'bg-white'
-                          }`}
-                        >
-                          <Bell className="w-4 h-4 text-zinc-400 mt-0.5 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span
-                                className={`truncate ${
-                                  !notif.read && !notif.isRead ? 'font-bold text-zinc-950' : 'text-zinc-700'
-                                }`}
-                              >
-                                {notif.title}
-                              </span>
-                              <span className="text-[10px] text-zinc-400 ml-2 shrink-0">
-                                {notif.timestamp || 'Just now'}
-                              </span>
+                    <div className="max-h-72 overflow-y-auto divide-y divide-zinc-100 text-xs">
+                      {activeNotifications.length > 0 ? (
+                        activeNotifications.map((notif) => (
+                          <div
+                            key={notif.id}
+                            onClick={() => handleNotificationClick(notif)}
+                            className={`p-3 transition-colors cursor-pointer hover:bg-zinc-50 flex items-start gap-2.5 ${
+                              !notif.read && !notif.isRead ? 'bg-amber-50/30' : 'bg-white'
+                            }`}
+                          >
+                            <Bell className="w-4 h-4 text-zinc-400 mt-0.5 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className={`truncate ${
+                                    !notif.read && !notif.isRead ? 'font-bold text-zinc-950' : 'text-zinc-700'
+                                  }`}
+                                >
+                                  {notif.title}
+                                </span>
+                                <span className="text-[10px] text-zinc-400 ml-2 shrink-0">
+                                  {notif.timestamp || 'Just now'}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-zinc-500 mt-0.5 line-clamp-2">
+                                {notif.description || notif.message}
+                              </p>
                             </div>
-                            <p className="text-[11px] text-zinc-500 mt-0.5 line-clamp-2">
-                              {notif.description || notif.message}
-                            </p>
                           </div>
+                        ))
+                      ) : (
+                        <div className="p-6 text-center text-xs text-zinc-400">
+                          No notifications right now.
                         </div>
-                      ))
-                    ) : (
-                      <div className="p-6 text-center text-xs text-zinc-400">
-                        No notifications right now.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <PWAInstallButton />
@@ -522,7 +535,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             <button
               id="topbar-public-site-btn"
               onClick={() => onNavigate('home')}
-              className="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-xs font-semibold transition flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 active:scale-[0.98] text-zinc-800 text-xs font-semibold transition flex items-center gap-1.5"
             >
               <span>Public Site</span>
               <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
@@ -532,7 +545,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
         {/* Dynamic Center Work Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {children}
+          <motion.div
+            key={currentRoute}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
 

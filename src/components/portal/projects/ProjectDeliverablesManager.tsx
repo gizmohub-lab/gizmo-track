@@ -1142,21 +1142,21 @@ export const ProjectDeliverablesManager: React.FC<ProjectDeliverablesManagerProp
                     <button
                       type="button"
                       onClick={() => handleToggleCompletion(del.id)}
-                      className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center transition shrink-0 cursor-pointer shadow-2xs ${
+                      className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-150 active:scale-90 shrink-0 cursor-pointer shadow-2xs ${
                         del.isCompleted
-                          ? 'bg-emerald-600 text-white shadow-emerald-600/30 hover:bg-emerald-700'
+                          ? 'bg-emerald-600 text-white shadow-emerald-600/30 hover:bg-emerald-700 scale-100'
                           : 'border-2 border-slate-300 text-transparent hover:border-violet-500 hover:bg-violet-50 hover:text-violet-400'
                       }`}
                       title={del.isCompleted ? 'Click to Mark Incomplete (Reopen)' : 'Click to Mark Completed'}
                     >
-                      <Check className={`w-3.5 h-3.5 stroke-[3] ${del.isCompleted ? 'text-white' : ''}`} />
+                      <Check className={`w-3.5 h-3.5 stroke-[3] transition-transform duration-150 ${del.isCompleted ? 'text-white scale-100' : 'scale-75'}`} />
                     </button>
 
                     {/* Content */}
                     <div className="space-y-1.5 min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span
-                          className={`font-black text-xs sm:text-sm tracking-tight ${
+                          className={`font-black text-xs sm:text-sm tracking-tight transition-all duration-200 ${
                             del.isCompleted ? 'line-through text-slate-400' : 'text-slate-900'
                           }`}
                         >

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
 import {
   FolderKanban,
   Clock,
@@ -14,6 +15,7 @@ import { LocalWork, Invoice, DeadlineItem, ActiveTab, Project } from '../../type
 import { formatINR, formatDate } from '../../utils/formatters';
 import { getWorkFinancials } from '../../utils/localWorkUtils';
 import { UpcomingDeadlinesCard } from './UpcomingDeadlinesCard';
+import { AnimatedCountUp } from '../common/MotionComponents';
 
 interface ProductionDashboardProps {
   localWorks: LocalWork[];
@@ -59,6 +61,12 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
     });
 
     projects.forEach((p) => {
+      const pTot = Number(p.totalAmount ?? p.budget ?? 0);
+      const pGot = Number(p.amountGot ?? 0);
+      const pToGet = Math.max(0, pTot - pGot);
+      biz += pTot;
+      got += pGot;
+      toGet += pToGet;
       if (p.status !== 'Completed') active++;
     });
 
@@ -127,91 +135,126 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
         </div>
       </div>
 
-      {/* 5. MINIMAL STAT CARDS */}
+      {/* 5. MINIMAL STAT CARDS WITH STAGGERED FADE + COUNT-UP */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         {/* Total Projects */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.02 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
             <FolderKanban className="w-3.5 h-3.5 text-zinc-400" />
             <span className="truncate">Total Projects</span>
           </div>
           <div className="text-2xl font-extrabold font-mono text-zinc-950">
-            {totalProjectsCount}
+            <AnimatedCountUp value={totalProjectsCount} />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">Projects &amp; Works</p>
-        </div>
+        </motion.div>
 
         {/* Active */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.05 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
             <Clock className="w-3.5 h-3.5 text-blue-500" />
             <span className="truncate">Active</span>
           </div>
           <div className="text-2xl font-extrabold font-mono text-zinc-950">
-            {activeCount}
+            <AnimatedCountUp value={activeCount} />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">In progress</p>
-        </div>
+        </motion.div>
 
         {/* Due Soon */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.08 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
-            <Clock className="w-3.5 h-3.5 text-[#FF5738]" />
+            <Clock className={`w-3.5 h-3.5 text-[#FF5738] ${dueSoonCount > 0 ? 'animate-pulse' : ''}`} />
             <span className="truncate">Due Soon</span>
           </div>
           <div className="text-2xl font-extrabold font-mono text-zinc-950">
-            {dueSoonCount}
+            <AnimatedCountUp value={dueSoonCount} />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">Next 48 hours</p>
-        </div>
+        </motion.div>
 
         {/* Overdue */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.11 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
-            <TriangleAlert className="w-3.5 h-3.5 text-rose-500" />
+            <TriangleAlert className={`w-3.5 h-3.5 text-rose-500 ${overdueCount > 0 ? 'animate-pulse' : ''}`} />
             <span className="truncate">Overdue</span>
           </div>
           <div className="text-2xl font-extrabold font-mono text-rose-600">
-            {overdueCount}
+            <AnimatedCountUp value={overdueCount} />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">Past deadline</p>
-        </div>
+        </motion.div>
 
         {/* Total Value */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.14 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
             <IndianRupee className="w-3.5 h-3.5 text-zinc-400" />
             <span className="truncate">Total Value</span>
           </div>
           <div className="text-xl font-extrabold font-mono text-zinc-950 truncate">
-            {formatINR(totalValue)}
+            <AnimatedCountUp value={totalValue} isCurrency />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">Billed value</p>
-        </div>
+        </motion.div>
 
         {/* To Get */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.17 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
             <CreditCard className="w-3.5 h-3.5 text-amber-500" />
             <span className="truncate">To Get</span>
           </div>
           <div className="text-xl font-extrabold font-mono text-rose-600 truncate">
-            {formatINR(totalToGet)}
+            <AnimatedCountUp value={totalToGet} isCurrency />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">Pending balance</p>
-        </div>
+        </motion.div>
 
         {/* Got */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, delay: 0.2 }}
+          className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
+        >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             <span className="truncate">Got</span>
           </div>
           <div className="text-xl font-extrabold font-mono text-emerald-700 truncate">
-            {formatINR(totalGot)}
+            <AnimatedCountUp value={totalGot} isCurrency />
           </div>
           <p className="text-[10px] text-zinc-400 mt-1">Collected</p>
-        </div>
+        </motion.div>
       </div>
 
       {/* 6. UPCOMING DEADLINES CARD */}

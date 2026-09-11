@@ -27,6 +27,11 @@ import { ProjectTypesSettingsModal } from './components/portal/projects/ProjectT
 import { NotificationPermissionBanner } from './components/notifications/NotificationPermissionBanner';
 import { NotificationSettingsSection } from './components/notifications/NotificationSettingsSection';
 import {
+  sumReceivedPayments,
+  calculateAmountToGet,
+  calculatePaymentStatus,
+} from './utils/paymentUtils';
+import {
   GizmoNotification,
   NotificationSettings,
   loadNotifications,
@@ -597,6 +602,10 @@ export default function App() {
     setClients((prev) => prev.filter((c) => c.id !== clientId));
   };
 
+  const handleUpdateClient = (updatedClient: Client) => {
+    setClients((prev) => prev.map((c) => (c.id === updatedClient.id ? updatedClient : c)));
+  };
+
   // Local Works CRUD Handlers
   const handleAddLocalWork = (newWork: LocalWork) => {
     setLocalWorks((prev) => [newWork, ...prev]);
@@ -811,6 +820,8 @@ export default function App() {
   };
 
   const handleMarkAsPaid = (invoiceId: string) => {
+    const targetInvoice = invoices.find((i) => i.id === invoiceId);
+
     setInvoices((prev) =>
       prev.map((inv) => {
         if (inv.id === invoiceId) {
@@ -838,6 +849,41 @@ export default function App() {
         return inv;
       })
     );
+
+    if (targetInvoice?.projectId) {
+      setProjects((prev) =>
+        prev.map((p) => {
+          if (p.id === targetInvoice.projectId) {
+            const tot = Number(p.totalAmount ?? p.budget ?? 0);
+            return {
+              ...p,
+              amountGot: tot,
+              amountToGet: 0,
+              paymentStatus: 'Paid',
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return p;
+        })
+      );
+    }
+
+    if (targetInvoice?.localWorkId) {
+      setLocalWorks((prev) =>
+        prev.map((lw) => {
+          if (lw.id === targetInvoice.localWorkId) {
+            const tot = Number(lw.totalAmount ?? lw.amount ?? 0);
+            return {
+              ...lw,
+              amountGot: tot,
+              amountToGet: 0,
+              paymentStatus: 'Paid',
+            };
+          }
+          return lw;
+        })
+      );
+    }
   };
 
   const handleRecordPayment = (
@@ -845,6 +891,8 @@ export default function App() {
     amount: number,
     record: PaymentRecord
   ) => {
+    const targetInvoice = invoices.find((i) => i.id === invoiceId);
+
     setInvoices((prev) =>
       prev.map((inv) => {
         if (inv.id === invoiceId) {
@@ -885,6 +933,73 @@ export default function App() {
         return inv;
       })
     );
+
+    if (targetInvoice?.projectId) {
+      setProjects((prev) =>
+        prev.map((proj) => {
+          if (proj.id === targetInvoice.projectId) {
+            const newPayments = [
+              ...(proj.payments || []),
+              {
+                id: record.id || `pay-${Date.now()}`,
+                date: record.date || new Date().toISOString().split('T')[0],
+                amount: amount,
+                method: record.method || 'Bank Transfer',
+                status: 'Received',
+                reference: record.reference,
+                note: record.note || 'Payment recorded via Invoice',
+                recordedAt: getFormattedTimestamp(),
+              },
+            ];
+            const numTotal = Number(proj.totalAmount ?? proj.budget ?? 0);
+            const newGot = sumReceivedPayments(newPayments);
+            const newToGet = calculateAmountToGet(numTotal, newGot);
+            const newPayStatus = calculatePaymentStatus(numTotal, newGot);
+            return {
+              ...proj,
+              amountGot: newGot,
+              amountToGet: newToGet,
+              paymentStatus: newPayStatus,
+              payments: newPayments,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return proj;
+        })
+      );
+    }
+
+    if (targetInvoice?.localWorkId) {
+      setLocalWorks((prev) =>
+        prev.map((lw) => {
+          if (lw.id === targetInvoice.localWorkId) {
+            const lwTotal = Number(lw.totalAmount ?? lw.amount ?? 0);
+            const newGot = (Number(lw.amountGot) || 0) + amount;
+            const newToGet = Math.max(0, lwTotal - newGot);
+            const newPayStatus = calculatePaymentStatus(lwTotal, newGot);
+            const newRecords = [
+              ...(lw.paymentRecords || []),
+              {
+                id: record.id || `pr-${Date.now()}`,
+                amount: amount,
+                date: record.date || new Date().toISOString().split('T')[0],
+                method: record.method || 'UPI',
+                reference: record.reference,
+                note: record.note || 'Payment recorded via Invoice',
+              },
+            ];
+            return {
+              ...lw,
+              amountGot: newGot,
+              amountToGet: newToGet,
+              paymentStatus: newPayStatus,
+              paymentRecords: newRecords,
+            };
+          }
+          return lw;
+        })
+      );
+    }
   };
 
   const handleDownloadPdf = async (invoice: Invoice) => {
@@ -1244,6 +1359,7 @@ export default function App() {
               localWorks={localWorks}
               invoices={invoices}
               deadlines={deadlines}
+              projects={projects}
               onCreateWork={() => navigate('admin-local-works')}
               onNavigateTab={(tab) => {
                 if (tab === 'dashboard') navigate('admin-dashboard');
@@ -1316,6 +1432,7 @@ export default function App() {
               }}
               onRecordInvoicePayment={(inv) => setPaymentInvoice(inv)}
               onAddClient={(newClient) => setClients((prev) => [newClient, ...prev])}
+              onEditClient={handleUpdateClient}
               onDeleteClient={handleDeleteClient}
               initialActiveProjectId={activeProjectIdForWorkspace}
               onClearInitialActiveProject={() => setActiveProjectIdForWorkspace(null)}

@@ -109,26 +109,25 @@ import { ResetPortalModal } from './components/portal/projects/ResetPortalModal'
 
 function pathToRoute(path: string): AppRoute {
   const cleanPath = path.toLowerCase().replace(/\/$/, '') || '/';
-  if (cleanPath === '/' || cleanPath === '/home') return 'home';
-  if (cleanPath === '/services') return 'services';
-  if (cleanPath === '/work') return 'work';
-  if (cleanPath === '/about') return 'about';
-  if (cleanPath === '/my-projects' || cleanPath === '/projects-client') return 'my-projects';
-  if (cleanPath === '/admin/login') return 'admin-login';
-  if (cleanPath === '/admin' || cleanPath === '/admin/dashboard') return 'admin-dashboard';
-  if (cleanPath === '/admin/projects' || cleanPath.startsWith('/admin/projects/') || cleanPath.startsWith('/admin/orders/')) return 'admin-projects';
-  if (cleanPath === '/admin/clients' || cleanPath === '/admin/people') return 'admin-clients';
-  if (cleanPath === '/admin/local-works' || cleanPath === '/admin/works') return 'admin-local-works';
+  if (cleanPath.includes('/admin/login')) return 'admin-login';
+  if (cleanPath.includes('/admin/projects') || cleanPath.includes('/admin/orders')) return 'admin-projects';
+  if (cleanPath.includes('/admin/clients') || cleanPath.includes('/admin/people')) return 'admin-clients';
+  if (cleanPath.includes('/admin/local-works') || cleanPath.includes('/admin/works')) return 'admin-local-works';
   if (
-    cleanPath === '/admin/invoices/create' ||
-    cleanPath === '/admin/invoices/new' ||
-    cleanPath === '/admin/invoice/create' ||
-    cleanPath === '/admin/invoice/new'
+    cleanPath.includes('/admin/invoices/create') ||
+    cleanPath.includes('/admin/invoices/new') ||
+    cleanPath.includes('/admin/invoice/create') ||
+    cleanPath.includes('/admin/invoice/new')
   ) {
     return 'admin-invoices-create';
   }
-  if (cleanPath === '/admin/invoices' || cleanPath === '/admin/invoice') return 'admin-invoices';
-  if (cleanPath === '/admin/settings') return 'admin-settings';
+  if (cleanPath.includes('/admin/invoices') || cleanPath.includes('/admin/invoice')) return 'admin-invoices';
+  if (cleanPath.includes('/admin/settings')) return 'admin-settings';
+  if (cleanPath.endsWith('/admin') || cleanPath.endsWith('/admin/dashboard')) return 'admin-dashboard';
+  if (cleanPath.endsWith('/services')) return 'services';
+  if (cleanPath.endsWith('/work')) return 'work';
+  if (cleanPath.endsWith('/about')) return 'about';
+  if (cleanPath.endsWith('/my-projects') || cleanPath.endsWith('/projects-client')) return 'my-projects';
   return 'home';
 }
 

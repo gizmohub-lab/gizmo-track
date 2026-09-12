@@ -19,12 +19,15 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { AppRoute } from '../../types';
+import { GizmoLogoBadge } from '../common/GizmoLogoBadge';
 
 interface NavbarProps {
   currentRoute: AppRoute;
   onNavigate: (route: AppRoute) => void;
   activeProjectsCount?: number;
   onOpenStartProject?: () => void;
+  unreadNotificationsCount?: number;
+  onOpenNotifications?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -32,6 +35,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   activeProjectsCount = 3,
   onOpenStartProject,
+  unreadNotificationsCount = 0,
+  onOpenNotifications,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
@@ -119,9 +124,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavigate('home')}
             className="group flex items-center gap-2.5 text-left transition-all duration-200"
           >
-            <div className="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center font-black text-lg tracking-tighter group-hover:bg-[#FF5738] transition-colors shadow-xs">
-              G
-            </div>
+            <GizmoLogoBadge
+              unreadCount={unreadNotificationsCount}
+              onBadgeClick={() => {
+                if (onOpenNotifications) {
+                  onOpenNotifications();
+                } else {
+                  handleNavigate('admin-dashboard');
+                }
+              }}
+              size="md"
+            >
+              <div className="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center font-black text-lg tracking-tighter group-hover:bg-[#FF5738] transition-colors shadow-xs">
+                G
+              </div>
+            </GizmoLogoBadge>
             <div>
               <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-950 group-hover:text-[#FF5738] transition-colors">
                 GIZMO DESIGN <sup className="text-[10px] font-mono">®</sup>
@@ -368,9 +385,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Header */}
               <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-black text-sm">
-                    G
-                  </div>
+                  <GizmoLogoBadge
+                    unreadCount={unreadNotificationsCount}
+                    onBadgeClick={() => {
+                      setMobileMenuOpen(false);
+                      if (onOpenNotifications) {
+                        onOpenNotifications();
+                      } else {
+                        handleNavigate('admin-dashboard');
+                      }
+                    }}
+                    size="sm"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-black text-sm">
+                      G
+                    </div>
+                  </GizmoLogoBadge>
                   <span className="font-black text-base text-zinc-950">GIZMO DESIGN</span>
                 </div>
                 <button

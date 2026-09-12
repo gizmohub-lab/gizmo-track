@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { AppRoute, AdminNotification } from '../../types';
 import { PWAInstallButton } from '../common/PWAInstallButton';
+import { GizmoLogoBadge } from '../common/GizmoLogoBadge';
 
 interface AdminLayoutProps {
   currentRoute: AppRoute;
@@ -281,12 +282,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           {/* Brand Header */}
           <div className="h-16 px-4 border-b border-zinc-200 flex items-center justify-between">
             <div
+              id="admin-sidebar-brand-btn"
               onClick={() => onNavigate('admin-dashboard')}
-              className="cursor-pointer flex items-center gap-2.5 overflow-hidden"
+              className="cursor-pointer flex items-center gap-2.5 overflow-visible group"
             >
-              <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center font-black text-sm shrink-0">
-                G
-              </div>
+              <GizmoLogoBadge
+                unreadCount={unreadCount}
+                onBadgeClick={() => setNotificationsOpen(true)}
+                size="md"
+              >
+                <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs group-hover:bg-zinc-800 transition-colors">
+                  G
+                </div>
+              </GizmoLogoBadge>
               {!isCollapsed && (
                 <span className="font-bold text-base tracking-tight text-zinc-950 whitespace-nowrap">
                   GIZMO
@@ -657,7 +665,28 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           <div className="w-64 fixed inset-y-0 left-0 bg-white shadow-xl p-4 flex flex-col justify-between z-50">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
-                <span className="font-bold text-base text-zinc-950">GIZMO</span>
+                <div
+                  id="admin-mobile-drawer-brand-btn"
+                  onClick={() => {
+                    onNavigate('admin-dashboard');
+                    setMobileDrawerOpen(false);
+                  }}
+                  className="cursor-pointer flex items-center gap-2.5 overflow-visible group"
+                >
+                  <GizmoLogoBadge
+                    unreadCount={unreadCount}
+                    onBadgeClick={() => {
+                      setMobileDrawerOpen(false);
+                      setNotificationsOpen(true);
+                    }}
+                    size="sm"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
+                      G
+                    </div>
+                  </GizmoLogoBadge>
+                  <span className="font-bold text-base text-zinc-950">GIZMO</span>
+                </div>
                 <button
                   onClick={() => setMobileDrawerOpen(false)}
                   className="p-1 text-zinc-400 hover:text-black"

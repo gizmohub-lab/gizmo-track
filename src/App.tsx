@@ -1922,6 +1922,8 @@ export default function App() {
             onNavigate={navigate}
             activeProjectsCount={projects.filter((p) => p.status !== 'Completed').length || 3}
             onOpenStartProject={() => setShowStartProjectModal(true)}
+            unreadNotificationsCount={gizmoNotifications.filter((n) => !n.read && !n.isRead).length}
+            onOpenNotifications={() => navigate('admin-dashboard')}
           />
 
           <main className="flex-1 pt-16 sm:pt-20">

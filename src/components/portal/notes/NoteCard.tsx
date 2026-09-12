@@ -162,7 +162,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
       </div>
 
       {/* NOTE TITLE */}
-      <h3 className="font-display font-bold text-sm sm:text-base text-zinc-950 group-hover:text-[#FF5738] transition-colors line-clamp-1 mb-1">
+      <h3 className="font-display font-bold text-sm sm:text-base text-zinc-950 group-hover:text-[#EE1D45] transition-colors line-clamp-1 mb-1">
         {note.title || 'Untitled Note'}
       </h3>
 
@@ -208,7 +208,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
         <div className="mt-2 pt-2 border-t border-zinc-100 flex items-center gap-2 text-[11px] font-medium text-zinc-700 flex-wrap">
           {note.projectTitle && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-100 text-zinc-800 border border-zinc-200">
-              <FolderKanban className="w-3 h-3 text-[#FF5738]" />
+              <FolderKanban className="w-3 h-3 text-[#EE1D45]" />
               <span className="truncate max-w-[150px]">{note.projectTitle}</span>
             </span>
           )}

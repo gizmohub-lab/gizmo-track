@@ -100,7 +100,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
-          <div className="w-10 h-10 rounded-xl bg-[#FF5738]/10 text-[#FF5738] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center shrink-0">
             <Settings className="w-5 h-5" />
           </div>
           <div>
@@ -122,7 +122,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
       {/* 1. Smart Defaults Configuration Card */}
       <div className="bg-white p-6 rounded-2xl border border-zinc-200 space-y-4 shadow-2xs">
         <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
-          <Sliders className="w-4 h-4 text-[#FF5738]" />
+          <Sliders className="w-4 h-4 text-[#EE1D45]" />
           <div>
             <h2 className="text-sm font-bold text-zinc-950">New Work Smart Defaults</h2>
             <p className="text-[11px] text-zinc-500">
@@ -138,7 +138,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
             <select
               value={defaultWorkType}
               onChange={(e) => setDefaultWorkType(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] bg-white text-zinc-900 font-medium"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] bg-white text-zinc-900 font-medium"
             >
               <option value="Poster">Poster (Static Graphic)</option>
               <option value="Motion">Motion (Animation)</option>
@@ -159,7 +159,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
             <select
               value={defaultCategory}
               onChange={(e) => setDefaultCategory(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] bg-white text-zinc-900 font-medium"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] bg-white text-zinc-900 font-medium"
             >
               {categories
                 .filter((c) => c.isActive)
@@ -177,7 +177,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
             <select
               value={defaultDesigner}
               onChange={(e) => setDefaultDesigner(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] bg-white text-zinc-900 font-medium"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] bg-white text-zinc-900 font-medium"
             >
               <option value="">None (Unassigned by default)</option>
               {designers
@@ -195,7 +195,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
           <button
             type="button"
             onClick={handleSaveDefaults}
-            className="px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl shadow-xs transition"
+            className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl shadow-xs transition"
           >
             Save Smart Defaults
           </button>
@@ -206,7 +206,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
       <div className="bg-white p-6 rounded-2xl border border-zinc-200 space-y-4 shadow-2xs">
         <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
           <div className="flex items-center gap-2.5">
-            <Sparkles className="w-4 h-4 text-[#FF5738]" />
+            <Sparkles className="w-4 h-4 text-[#EE1D45]" />
             <div>
               <h2 className="text-sm font-bold text-zinc-950">Work Types Architecture</h2>
               <p className="text-[11px] text-zinc-500">
@@ -219,7 +219,7 @@ export const LocalWorksSettingsView: React.FC<LocalWorksSettingsViewProps> = ({
             onClick={() => setShowAddType(!showAddType)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-zinc-700 border border-zinc-200 hover:bg-zinc-50 rounded-xl"
           >
-            <Plus className="w-3.5 h-3.5 text-[#FF5738]" />
+            <Plus className="w-3.5 h-3.5 text-[#EE1D45]" />
             <span>Add Work Type</span>
           </button>
         </div>

@@ -58,17 +58,17 @@ export const NotificationPermissionBanner: React.FC<NotificationPermissionBanner
       id="notification-permission-banner"
       className="group p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 text-white shadow-xl relative overflow-hidden my-4 animate-in fade-in slide-in-from-top-2 duration-200"
     >
-      <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#FF5738]/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#EE1D45]/10 rounded-full blur-2xl pointer-events-none" />
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
         <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#FF5738] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0 transition-transform duration-200 group-hover:scale-110">
+          <div className="w-10 h-10 rounded-xl bg-[#EE1D45] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0 transition-transform duration-200 group-hover:scale-110">
             <Bell className="w-5 h-5 text-white animate-bell-swing" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-black text-white tracking-tight">Enable Gizmo Notifications</h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#FF5738]/20 text-[#FF5738] border border-[#FF5738]/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#EE1D45]/20 text-[#EE1D45] border border-[#EE1D45]/30">
                 RECOMMENDED
               </span>
             </div>
@@ -90,7 +90,7 @@ export const NotificationPermissionBanner: React.FC<NotificationPermissionBanner
             id="btn-notif-banner-enable"
             onClick={handleEnableNotifications}
             disabled={isEnabling || permissionState === 'denied'}
-            className="px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] disabled:opacity-50 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+            className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] disabled:opacity-50 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5 whitespace-nowrap"
           >
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>{isEnabling ? 'Enabling...' : 'Enable Notifications'}</span>

@@ -189,7 +189,7 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
         {/* MODAL HEADER */}
         <div className="p-5 border-b border-zinc-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1] flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20 flex items-center justify-center font-bold">
               <Bell className="w-5 h-5" />
             </div>
             <div>
@@ -214,7 +214,7 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
                 onClick={handleStartCreate}
                 className="px-3 py-1.5 bg-black hover:bg-zinc-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
               >
-                <Plus className="w-4 h-4 text-[#FF5738]" />
+                <Plus className="w-4 h-4 text-[#EE1D45]" />
                 <span>+ Add Deadline</span>
               </button>
             )}
@@ -237,7 +237,7 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-sm text-black flex items-center gap-2">
                 <span>{editingDeadline ? 'Edit Deadline' : 'Create New Studio Deadline'}</span>
-                <span className="text-[10px] font-mono uppercase bg-[#FFF1EE] text-[#FF5738] px-2 py-0.5 rounded border border-[#FFB2A1]">
+                <span className="text-[10px] font-mono uppercase bg-[#EE1D45]/10 text-[#EE1D45] px-2 py-0.5 rounded border border-[#EE1D45]/20">
                   Admin Module
                 </span>
               </h3>
@@ -371,7 +371,7 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-bold bg-[#FF5738] hover:bg-[#e0482c] text-white rounded-lg transition shadow-xs flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-bold bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-lg transition shadow-xs flex items-center gap-1.5"
               >
                 <Check className="w-4 h-4" />
                 <span>{editingDeadline ? 'Save Changes' : 'Create Deadline'}</span>
@@ -418,8 +418,8 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
               onClick={() => setFilterTab('urgent')}
               className={`px-2.5 py-1 rounded-lg font-bold transition whitespace-nowrap flex items-center gap-1 ${
                 filterTab === 'urgent'
-                  ? 'bg-[#FF5738] text-white'
-                  : 'text-[#FF5738] hover:bg-[#FFF1EE]'
+                  ? 'bg-[#EE1D45] text-white'
+                  : 'text-[#EE1D45] hover:bg-[#EE1D45]/10'
               }`}
             >
               Urgent ({urgentCount})
@@ -473,7 +473,7 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
                       : isOverdue
                       ? 'bg-rose-50/40 border border-rose-100'
                       : isCritical
-                      ? 'bg-[#FFF1EE]/40 border border-[#FFB2A1]/50'
+                      ? 'bg-[#EE1D45]/5 border border-[#EE1D45]/20'
                       : 'hover:bg-zinc-50 border border-transparent'
                   }`}
                 >
@@ -540,7 +540,7 @@ export const DeadlinesManagerModal: React.FC<DeadlinesManagerModalProps> = ({
                           : isOverdue
                           ? 'bg-rose-100 text-rose-800 border-rose-300'
                           : isCritical
-                          ? 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1]'
+                          ? 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30'
                           : 'bg-zinc-100 text-zinc-800 border-zinc-200'
                       }`}
                     >

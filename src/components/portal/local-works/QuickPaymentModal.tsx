@@ -188,20 +188,20 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
             <div
               className={`p-3 rounded-xl border text-center ${
                 previewToGet > 0
-                  ? 'bg-[#FFF1EE] border-[#FFB2A1] ring-1 ring-[#FF5738]/20'
+                  ? 'bg-[#FFF0F3] border-[#FFB8C5] ring-1 ring-[#EE1D45]/20'
                   : 'bg-zinc-50 border-zinc-200'
               }`}
             >
               <div
                 className={`text-[10px] font-mono font-bold uppercase tracking-wider ${
-                  previewToGet > 0 ? 'text-[#FF5738]' : 'text-zinc-500'
+                  previewToGet > 0 ? 'text-[#EE1D45]' : 'text-zinc-500'
                 }`}
               >
                 Amount To Get
               </div>
               <div
                 className={`text-lg font-black mt-0.5 ${
-                  previewToGet > 0 ? 'text-[#FF5738]' : 'text-zinc-950'
+                  previewToGet > 0 ? 'text-[#EE1D45]' : 'text-zinc-950'
                 }`}
               >
                 {formatINR(previewToGet)}
@@ -224,7 +224,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
               <button
                 type="button"
                 onClick={handleQuickPayFull}
-                className="text-xs font-bold text-[#FF5738] hover:text-[#ff4220] hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-[#EE1D45] hover:text-[#D8143C] hover:underline flex items-center gap-1"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Mark Full Remaining ({formatINR(currentRemaining)})</span>
@@ -276,7 +276,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                     onChange={(e) =>
                       setPaymentToAdd(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))
                     }
-                    className="w-full pl-8 pr-3 py-2 bg-white border border-zinc-300 rounded-xl text-sm font-bold text-zinc-900 outline-none focus:border-[#FF5738] focus:ring-1 focus:ring-[#FF5738]"
+                    className="w-full pl-8 pr-3 py-2 bg-white border border-zinc-300 rounded-xl text-sm font-bold text-zinc-900 outline-none focus:border-[#EE1D45] focus:ring-1 focus:ring-[#EE1D45]"
                     autoFocus
                   />
                 </div>
@@ -298,7 +298,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                     <button
                       type="button"
                       onClick={handleQuickPayFull}
-                      className="px-2 py-0.5 rounded-md bg-[#FF5738]/10 hover:bg-[#FF5738]/20 text-[#FF5738] text-[11px] font-bold border border-[#FF5738]/30 transition"
+                      className="px-2 py-0.5 rounded-md bg-[#EE1D45]/10 hover:bg-[#EE1D45]/20 text-[#EE1D45] text-[11px] font-bold border border-[#EE1D45]/30 transition"
                     >
                       Full ₹{currentRemaining}
                     </button>
@@ -315,7 +315,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                   >
                     <option value="UPI">UPI (GPay / PhonePe / QR)</option>
                     <option value="Cash">Cash</option>
@@ -334,7 +334,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                     type="date"
                     value={paymentDate}
                     onChange={(e) => setPaymentDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                   />
                 </div>
               </div>
@@ -349,7 +349,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                   placeholder="e.g. Paid via UPI / Advance 50% / Cash at studio"
                   value={paymentNote}
                   onChange={(e) => setPaymentNote(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl text-xs text-zinc-800 outline-none focus:border-[#FF5738]"
+                  className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl text-xs text-zinc-800 outline-none focus:border-[#EE1D45]"
                 />
               </div>
 
@@ -365,7 +365,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                 <button
                   type="submit"
                   disabled={!paymentToAdd || Number(paymentToAdd) <= 0}
-                  className="px-5 py-2 bg-[#FF5738] hover:bg-[#ff4220] disabled:bg-zinc-200 disabled:text-zinc-400 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                  className="px-5 py-2 bg-[#EE1D45] hover:bg-[#D8143C] disabled:bg-zinc-200 disabled:text-zinc-400 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Save Payment</span>
@@ -389,7 +389,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                       step="1"
                       value={customTotal}
                       onChange={(e) => setCustomTotal(Math.max(0, Number(e.target.value) || 0))}
-                      className="w-full pl-7 pr-3 py-1.5 bg-white border border-zinc-300 rounded-xl text-xs font-bold text-zinc-900 outline-none focus:border-[#FF5738]"
+                      className="w-full pl-7 pr-3 py-1.5 bg-white border border-zinc-300 rounded-xl text-xs font-bold text-zinc-900 outline-none focus:border-[#EE1D45]"
                     />
                   </div>
                   <span className="text-[10px] text-zinc-400">Total charged</span>
@@ -408,7 +408,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                       step="1"
                       value={customGot}
                       onChange={(e) => setCustomGot(Math.max(0, Number(e.target.value) || 0))}
-                      className="w-full pl-7 pr-3 py-1.5 bg-white border border-zinc-300 rounded-xl text-xs font-bold text-zinc-900 outline-none focus:border-[#FF5738]"
+                      className="w-full pl-7 pr-3 py-1.5 bg-white border border-zinc-300 rounded-xl text-xs font-bold text-zinc-900 outline-none focus:border-[#EE1D45]"
                     />
                   </div>
                   <span className="text-[10px] text-zinc-400">Received already</span>
@@ -423,7 +423,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                   </span>
                   <span
                     className={`font-mono text-sm font-black ${
-                      previewToGet > 0 ? 'text-[#FF5738]' : 'text-zinc-900'
+                      previewToGet > 0 ? 'text-[#EE1D45]' : 'text-zinc-900'
                     }`}
                   >
                     {formatINR(previewToGet)}
@@ -446,7 +446,7 @@ export const QuickPaymentModal: React.FC<QuickPaymentModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                  className="px-5 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Update Totals</span>

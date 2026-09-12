@@ -77,7 +77,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
             <div
               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
                 urgentCount > 0 || overdueCount > 0
-                  ? 'bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1]'
+                  ? 'bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20'
                   : 'bg-zinc-100 text-black border border-zinc-200'
               }`}
             >
@@ -85,7 +85,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
             </div>
             {(urgentCount > 0 || overdueCount > 0) && (
               <span
-                className="absolute -top-1 -right-1 w-3 h-3 bg-[#FF5738] rounded-full ring-2 ring-white animate-pulse"
+                className="absolute -top-1 -right-1 w-3 h-3 bg-[#EE1D45] rounded-full ring-2 ring-white animate-pulse"
                 title="Critical deadline approaching"
               />
             )}
@@ -107,8 +107,8 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                 </span>
               )}
               {urgentCount > 0 && (
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1] flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF5738] animate-pulse" />
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#EE1D45] animate-pulse" />
                   {urgentCount} Urgent
                 </span>
               )}
@@ -126,7 +126,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
             onClick={onOpenAddDeadlineModal}
             className="px-3 py-1.5 bg-black hover:bg-zinc-800 active:scale-98 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <Plus className="w-3.5 h-3.5 text-[#FF5738]" />
+            <Plus className="w-3.5 h-3.5 text-[#EE1D45]" />
             <span>New Deadline</span>
           </button>
 
@@ -160,7 +160,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
             onClick={onOpenAddDeadlineModal}
             className="mt-4 px-3.5 py-1.5 text-xs font-bold bg-white hover:bg-zinc-100 text-black border border-black rounded-lg transition flex items-center gap-1.5"
           >
-            <Plus className="w-3.5 h-3.5 text-[#FF5738]" />
+            <Plus className="w-3.5 h-3.5 text-[#EE1D45]" />
             <span>Create a Deadline</span>
           </button>
         </div>
@@ -176,7 +176,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                 key={item.id}
                 onClick={() => handleItemClick(item)}
                 className={`p-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-zinc-50/80 cursor-pointer transition-colors group ${
-                  isOverdue ? 'bg-rose-50/20' : isCritical ? 'bg-[#FFF1EE]/30' : ''
+                  isOverdue ? 'bg-rose-50/20' : isCritical ? 'bg-[#EE1D45]/5' : ''
                 }`}
               >
                 {/* Left: Alarm Icon + Title + Due Date */}
@@ -187,7 +187,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                         <AlertTriangle className="w-4 h-4" />
                       </div>
                     ) : isCritical ? (
-                      <div className="w-8 h-8 rounded-lg bg-[#FFF1EE] text-[#FF5738] flex items-center justify-center border border-[#FFB2A1]">
+                      <div className="w-8 h-8 rounded-lg bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center border border-[#EE1D45]/20">
                         <Clock className="w-4 h-4 animate-pulse" />
                       </div>
                     ) : (
@@ -200,7 +200,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                   {/* Details */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-display font-bold text-sm sm:text-base text-zinc-950 group-hover:text-[#FF5738] transition-colors truncate">
+                      <span className="font-display font-bold text-sm sm:text-base text-zinc-950 group-hover:text-[#EE1D45] transition-colors truncate">
                         {item.title}
                       </span>
 
@@ -237,7 +237,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                   <div
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono tracking-tight flex items-center gap-1.5 transition ${evaluation.badgeClass}`}
                   >
-                    {isCritical && <span className="w-1.5 h-1.5 rounded-full bg-[#FF5738] animate-pulse" />}
+                    {isCritical && <span className="w-1.5 h-1.5 rounded-full bg-[#EE1D45] animate-pulse" />}
                     <span>• {evaluation.countdownText}</span>
                   </div>
 
@@ -275,7 +275,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
           <button
             type="button"
             onClick={onOpenViewAllModal}
-            className="font-bold text-black hover:text-[#FF5738] flex items-center gap-1 transition"
+            className="font-bold text-black hover:text-[#EE1D45] flex items-center gap-1 transition"
           >
             <span>View all deadlines →</span>
           </button>

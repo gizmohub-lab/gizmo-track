@@ -394,7 +394,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
         {/* Header Bar */}
         <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0 bg-zinc-50/50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#FF5738]/10 text-[#FF5738] flex items-center justify-center font-black text-sm">
+            <div className="w-8 h-8 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center font-black text-sm">
               G
             </div>
             <div>
@@ -424,7 +424,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
         {!submitted && (
           <div className="w-full bg-zinc-100 h-1 shrink-0">
             <div
-              className="bg-[#FF5738] h-1 transition-all duration-300"
+              className="bg-[#EE1D45] h-1 transition-all duration-300"
               style={{ width: `${(step / 8) * 100}%` }}
             />
           </div>
@@ -462,7 +462,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           onClick={() => toggleService(srv.name)}
                           className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between gap-3 ${
                             isSelected
-                              ? 'border-[#FF5738] bg-orange-50/40 shadow-xs ring-1 ring-[#FF5738]'
+                              ? 'border-[#EE1D45] bg-[#EE1D45]/5 shadow-xs ring-1 ring-[#EE1D45]'
                               : 'border-zinc-200 hover:border-zinc-300 bg-white'
                           }`}
                         >
@@ -472,7 +472,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                             </span>
                             <div
                               className={`w-5 h-5 rounded-full border flex items-center justify-center transition ${
-                                isSelected ? 'bg-[#FF5738] border-[#FF5738] text-white' : 'border-zinc-300'
+                                isSelected ? 'bg-[#EE1D45] border-[#EE1D45] text-white' : 'border-zinc-300'
                               }`}
                             >
                               {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -497,7 +497,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         placeholder="e.g. 3D Exhibition Stall Design, AR Filter, Debossed Signage, Audio Branding..."
                         value={otherServiceText}
                         onChange={(e) => setOtherServiceText(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                       />
                     </div>
                   )}
@@ -527,7 +527,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         placeholder="e.g. Malabar Gold Rebrand 2026 / Apex Tower Launch"
                         value={projectTitle}
                         onChange={(e) => setProjectTitle(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                       />
                     </div>
 
@@ -541,7 +541,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         placeholder="Describe the project scope, background, aesthetic vision, and what problem this creative work solves..."
                         value={projectDescription}
                         onChange={(e) => setProjectDescription(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition resize-none font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition resize-none font-medium"
                       />
                     </div>
 
@@ -553,7 +553,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         <select
                           value={industry}
                           onChange={(e) => setIndustry(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium bg-white"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium bg-white"
                         >
                           {INDUSTRY_OPTIONS.map((ind) => (
                             <option key={ind} value={ind}>
@@ -573,7 +573,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                             placeholder="e.g. Aerospace / Marine"
                             value={otherIndustry}
                             onChange={(e) => setOtherIndustry(e.target.value)}
-                            className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                            className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                           />
                         </div>
                       )}
@@ -592,14 +592,14 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                               onClick={() => toggleGoal(goal)}
                               className={`p-3 rounded-xl border text-xs font-bold cursor-pointer flex items-center justify-between transition ${
                                 isChecked
-                                  ? 'border-[#FF5738] bg-orange-50/40 text-[#FF5738]'
+                                  ? 'border-[#EE1D45] bg-[#EE1D45]/5 text-[#EE1D45]'
                                   : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
                               }`}
                             >
                               <span>{goal}</span>
                               <div
-                                className={`w-4 h-4 rounded border flex items-center justify-center ${
-                                  isChecked ? 'bg-[#FF5738] border-[#FF5738] text-white' : 'border-zinc-300'
+                                className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                                  isChecked ? 'bg-[#EE1D45] border-[#EE1D45] text-white' : 'border-zinc-300'
                                 }`}
                               >
                                 {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
@@ -620,7 +620,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           placeholder="e.g. High-net-worth buyers, Gen-Z tech professionals..."
                           value={targetAudience}
                           onChange={(e) => setTargetAudience(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                         />
                       </div>
 
@@ -633,7 +633,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           placeholder="e.g. behance.net/gallery/... or competitor.com"
                           value={referenceLinks}
                           onChange={(e) => setReferenceLinks(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                         />
                       </div>
                     </div>
@@ -659,7 +659,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       placeholder="Describe your custom requirement in detail... (e.g. Matt laminated 300 GSM business cards with gold foil stamping, responsive Figma UI kit for iOS and Android, or 4K 60fps social media reels with custom sound design)"
                       value={customRequirements}
                       onChange={(e) => setCustomRequirements(e.target.value)}
-                      className="w-full p-4 text-xs rounded-2xl border border-zinc-200 outline-none focus:border-[#FF5738] transition resize-none font-medium leading-relaxed"
+                      className="w-full p-4 text-xs rounded-2xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition resize-none font-medium leading-relaxed"
                     />
                   </div>
                 </div>
@@ -686,7 +686,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           onClick={() => setTimelineOption(opt.id)}
                           className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between gap-2 ${
                             isSelected
-                              ? 'border-[#FF5738] bg-orange-50/40 ring-1 ring-[#FF5738]'
+                              ? 'border-[#EE1D45] bg-[#EE1D45]/5 ring-1 ring-[#EE1D45]'
                               : 'border-zinc-200 hover:border-zinc-300 bg-white'
                           }`}
                         >
@@ -694,7 +694,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                             <span className="text-xs font-black text-zinc-950">{opt.title}</span>
                             <div
                               className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                isSelected ? 'bg-[#FF5738] border-[#FF5738] text-white' : 'border-zinc-300'
+                                isSelected ? 'bg-[#EE1D45] border-[#EE1D45] text-white' : 'border-zinc-300'
                               }`}
                             >
                               {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -715,7 +715,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         type="date"
                         value={customDate}
                         onChange={(e) => setCustomDate(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                       />
                     </div>
                   )}
@@ -730,7 +730,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         placeholder="e.g. Phased rollout over 3 months..."
                         value={otherTimelineText}
                         onChange={(e) => setOtherTimelineText(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                       />
                     </div>
                   )}
@@ -758,14 +758,14 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           onClick={() => setBudgetOption(bud)}
                           className={`p-4 rounded-2xl border cursor-pointer transition flex items-center justify-between ${
                             isSelected
-                              ? 'border-[#FF5738] bg-orange-50/40 ring-1 ring-[#FF5738]'
+                              ? 'border-[#EE1D45] bg-[#EE1D45]/5 ring-1 ring-[#EE1D45]'
                               : 'border-zinc-200 hover:border-zinc-300 bg-white'
                           }`}
                         >
                           <span className="text-xs font-extrabold text-zinc-950">{bud}</span>
                           <div
                             className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                              isSelected ? 'bg-[#FF5738] border-[#FF5738] text-white' : 'border-zinc-300'
+                              isSelected ? 'bg-[#EE1D45] border-[#EE1D45] text-white' : 'border-zinc-300'
                             }`}
                           >
                             {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -785,7 +785,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         placeholder="e.g. ₹1,50,000"
                         value={otherBudgetText}
                         onChange={(e) => setOtherBudgetText(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                       />
                     </div>
                   )}
@@ -838,16 +838,16 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       }
                     }}
                     className={`border-2 border-dashed rounded-3xl p-8 text-center transition flex flex-col items-center justify-center gap-3 ${
-                      isDragging ? 'border-[#FF5738] bg-orange-50/50' : 'border-zinc-200 hover:border-zinc-300 bg-zinc-50/50'
+                      isDragging ? 'border-[#EE1D45] bg-[#EE1D45]/5' : 'border-zinc-200 hover:border-zinc-300 bg-zinc-50/50'
                     }`}
                   >
                     <div className="w-12 h-12 rounded-2xl bg-white shadow-xs border border-zinc-200 flex items-center justify-center text-zinc-700">
-                      <Upload className="w-5 h-5 text-[#FF5738]" />
+                      <Upload className="w-5 h-5 text-[#EE1D45]" />
                     </div>
                     <div>
                       <p className="text-xs font-extrabold text-zinc-900">
                         Drag & drop files here, or{' '}
-                        <label className="text-[#FF5738] cursor-pointer hover:underline">
+                        <label className="text-[#EE1D45] cursor-pointer hover:underline">
                           browse
                           <input type="file" multiple onChange={handleFileUpload} className="hidden" />
                         </label>
@@ -868,7 +868,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                             className="p-3 rounded-xl border border-zinc-200 bg-white flex items-center justify-between text-xs"
                           >
                             <div className="flex items-center gap-2.5 truncate">
-                              <FileText className="w-4 h-4 text-[#FF5738] shrink-0" />
+                              <FileText className="w-4 h-4 text-[#EE1D45] shrink-0" />
                               <span className="font-bold text-zinc-900 truncate">{file.name}</span>
                               <span className="text-[10px] text-zinc-400 shrink-0">({file.size})</span>
                             </div>
@@ -910,7 +910,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           placeholder="e.g. Muhammed Rafeeq"
                           value={clientName}
                           onChange={(e) => setClientName(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                         />
                       </div>
 
@@ -924,7 +924,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           placeholder="+91 98458 79017"
                           value={whatsappPhone}
                           onChange={(e) => setWhatsappPhone(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                         />
                         <span className="text-[10px] text-zinc-400 mt-1 block">
                           Must belong to the client (Not Gizmo's official WhatsApp).
@@ -943,7 +943,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           placeholder="client@company.com"
                           value={emailAddress}
                           onChange={(e) => setEmailAddress(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                         />
                       </div>
 
@@ -956,7 +956,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                           placeholder="e.g. Apex Builders / Darul Hasaniyyah"
                           value={companyName}
                           onChange={(e) => setCompanyName(e.target.value)}
-                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                          className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                         />
                       </div>
                     </div>
@@ -970,7 +970,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         placeholder="e.g. @brandhandle or https://brand.com"
                         value={websiteHandle}
                         onChange={(e) => setWebsiteHandle(e.target.value)}
-                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#FF5738] transition font-medium"
+                        className="w-full px-4 py-3 text-xs rounded-xl border border-zinc-200 outline-none focus:border-[#EE1D45] transition font-medium"
                       />
                     </div>
                   </div>
@@ -993,7 +993,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                     {/* Services */}
                     <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 flex items-start justify-between">
                       <div>
-                        <span className="text-[10px] font-black uppercase tracking-wider text-[#FF5738] block mb-1">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#EE1D45] block mb-1">
                           1. Services Selected
                         </span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
@@ -1009,7 +1009,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       </div>
                       <button
                         onClick={() => setStep(1)}
-                        className="text-xs font-extrabold text-[#FF5738] hover:underline shrink-0"
+                        className="text-xs font-extrabold text-[#EE1D45] hover:underline shrink-0"
                       >
                         Edit
                       </button>
@@ -1018,7 +1018,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                     {/* Project Information */}
                     <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 flex items-start justify-between">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-[#FF5738] block">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#EE1D45] block">
                           2. Project Information
                         </span>
                         <h4 className="text-sm font-black text-zinc-950">{projectTitle}</h4>
@@ -1029,7 +1029,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       </div>
                       <button
                         onClick={() => setStep(2)}
-                        className="text-xs font-extrabold text-[#FF5738] hover:underline shrink-0"
+                        className="text-xs font-extrabold text-[#EE1D45] hover:underline shrink-0"
                       >
                         Edit
                       </button>
@@ -1039,7 +1039,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 flex items-start justify-between">
                         <div>
-                          <span className="text-[10px] font-black uppercase tracking-wider text-[#FF5738] block mb-1">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-[#EE1D45] block mb-1">
                             4. Timeline
                           </span>
                           <p className="text-xs font-extrabold text-zinc-900 uppercase">
@@ -1048,7 +1048,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                         </div>
                         <button
                           onClick={() => setStep(4)}
-                          className="text-xs font-extrabold text-[#FF5738] hover:underline"
+                          className="text-xs font-extrabold text-[#EE1D45] hover:underline"
                         >
                           Edit
                         </button>
@@ -1056,14 +1056,14 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
 
                       <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 flex items-start justify-between">
                         <div>
-                          <span className="text-[10px] font-black uppercase tracking-wider text-[#FF5738] block mb-1">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-[#EE1D45] block mb-1">
                             5. Budget Range
                           </span>
                           <p className="text-xs font-extrabold text-zinc-900">{budgetOption}</p>
                         </div>
                         <button
                           onClick={() => setStep(5)}
-                          className="text-xs font-extrabold text-[#FF5738] hover:underline"
+                          className="text-xs font-extrabold text-[#EE1D45] hover:underline"
                         >
                           Edit
                         </button>
@@ -1073,7 +1073,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                     {/* Assets */}
                     <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 flex items-start justify-between">
                       <div>
-                        <span className="text-[10px] font-black uppercase tracking-wider text-[#FF5738] block mb-1">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#EE1D45] block mb-1">
                           6. Uploaded Assets
                         </span>
                         <p className="text-xs font-bold text-zinc-800">
@@ -1082,7 +1082,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       </div>
                       <button
                         onClick={() => setStep(6)}
-                        className="text-xs font-extrabold text-[#FF5738] hover:underline"
+                        className="text-xs font-extrabold text-[#EE1D45] hover:underline"
                       >
                         Edit
                       </button>
@@ -1091,7 +1091,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                     {/* Client Contact */}
                     <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 flex items-start justify-between">
                       <div className="space-y-0.5">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-[#FF5738] block">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#EE1D45] block">
                           7. Client Contact
                         </span>
                         <h4 className="text-xs font-extrabold text-zinc-900">
@@ -1103,7 +1103,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       </div>
                       <button
                         onClick={() => setStep(7)}
-                        className="text-xs font-extrabold text-[#FF5738] hover:underline shrink-0"
+                        className="text-xs font-extrabold text-[#EE1D45] hover:underline shrink-0"
                       >
                         Edit
                       </button>
@@ -1166,7 +1166,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                       onClose();
                       onNavigateToClientPortal();
                     }}
-                    className="w-full sm:w-auto px-6 py-3 bg-[#FF5738] hover:bg-orange-600 text-white rounded-xl text-xs font-extrabold transition shadow-sm"
+                    className="w-full sm:w-auto px-6 py-3 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-extrabold transition shadow-sm"
                   >
                     View in Client Workspace →
                   </button>
@@ -1215,7 +1215,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
               <button
                 type="button"
                 onClick={handleNext}
-                className="px-6 py-2.5 rounded-xl bg-zinc-950 hover:bg-[#FF5738] text-white text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm"
+                className="px-6 py-2.5 rounded-xl bg-zinc-950 hover:bg-[#EE1D45] text-white text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1225,7 +1225,7 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleSubmitProject}
-                className={`px-8 py-2.5 rounded-xl bg-[#FF5738] hover:bg-orange-600 text-white text-xs font-extrabold transition flex items-center gap-2 shadow-sm ${
+                className={`px-8 py-2.5 rounded-xl bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-extrabold transition flex items-center gap-2 shadow-sm ${
                   isSubmitting ? 'opacity-60 cursor-not-allowed' : ''
                 }`}
               >

@@ -15,7 +15,7 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
       <button
         id="btn-pwa-install"
         onClick={install}
-        className={`px-3 py-1.5 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs ${className}`}
+        className={`px-3 py-1.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs ${className}`}
         title="Install Gizmo App on Desktop/Mobile"
       >
         <Download className="w-3.5 h-3.5" />

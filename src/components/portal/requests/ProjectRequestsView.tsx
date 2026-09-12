@@ -199,7 +199,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
       {/* Header Banner */}
       <div className="p-6 rounded-3xl bg-zinc-950 text-white shadow-sm border border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
         <div className="space-y-1.5 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5738]/20 border border-[#FF5738]/30 text-[#FF5738] text-xs font-black tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EE1D45]/20 border border-[#EE1D45]/30 text-[#EE1D45] text-xs font-black tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Client Inflow Pipeline</span>
           </div>
@@ -275,7 +275,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
             placeholder="Search request, client, company, service..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-zinc-200 rounded-xl outline-none focus:border-[#FF5738] transition shadow-2xs"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-zinc-200 rounded-xl outline-none focus:border-[#EE1D45] transition shadow-2xs"
           />
         </div>
       </div>
@@ -303,7 +303,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                     key={req.id}
                     onClick={() => setSelectedRequest(req)}
                     className={`hover:bg-zinc-50/70 transition cursor-pointer ${
-                      selectedRequest?.id === req.id ? 'bg-[#FF5738]/5' : ''
+                      selectedRequest?.id === req.id ? 'bg-[#EE1D45]/5' : ''
                     }`}
                   >
                     {/* Request # */}
@@ -440,7 +440,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                             }}
                             className="px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-900 hover:bg-zinc-800 text-white transition flex items-center gap-1 shadow-2xs"
                           >
-                            <ExternalLink className="w-3 h-3 text-[#FF5738]" />
+                            <ExternalLink className="w-3 h-3 text-[#EE1D45]" />
                             <span>Open Project</span>
                           </button>
                         )}
@@ -508,7 +508,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                     }}
                     className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-1.5"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 text-[#FF5738]" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#EE1D45]" />
                     <span>View Project in Portal</span>
                   </button>
                 )}
@@ -581,7 +581,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                   {/* Services Requested */}
                   <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                      <Layers className="w-3.5 h-3.5 text-[#FF5738]" />
+                      <Layers className="w-3.5 h-3.5 text-[#EE1D45]" />
                       <span>Services Requested</span>
                     </div>
                     <div className="flex flex-wrap gap-2 pt-1">

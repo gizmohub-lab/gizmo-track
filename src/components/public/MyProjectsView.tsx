@@ -169,7 +169,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-200">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-xs font-bold text-zinc-700 mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#FF5738]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#EE1D45]" />
             <span>Client Project Workspace</span>
           </div>
           <h1 className="text-3xl font-black text-zinc-950 tracking-tight">
@@ -183,7 +183,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={onOpenStartProject}
-            className="px-4 py-2.5 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-2"
+            className="px-4 py-2.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-2"
           >
             <span>Commission New Work</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -220,7 +220,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
             <Inbox className="w-4 h-4" />
             <span>Submitted Requests</span>
             {requests.length > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-[#FF5738] text-white">
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-[#EE1D45] text-white">
                 {requests.length}
               </span>
             )}
@@ -239,7 +239,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-zinc-200 rounded-xl outline-none focus:border-[#FF5738] transition"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-zinc-200 rounded-xl outline-none focus:border-[#EE1D45] transition"
           />
         </div>
       </div>
@@ -383,7 +383,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
                     {req.services.map((srv) => (
                       <span
                         key={srv}
-                        className="px-2 py-0.5 rounded-md bg-orange-50 text-[#FF5738] border border-orange-100 text-[11px] font-bold"
+                        className="px-2 py-0.5 rounded-md bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20 text-[11px] font-bold"
                       >
                         {srv}
                       </span>
@@ -464,7 +464,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
             ))
           ) : (
             <div className="p-12 text-center bg-white rounded-3xl border border-zinc-200 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-[#FF5738] flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center mx-auto">
                 <Inbox className="w-6 h-6" />
               </div>
               <div className="space-y-1">
@@ -475,7 +475,7 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
               </div>
               <button
                 onClick={onOpenStartProject}
-                className="px-4 py-2.5 bg-zinc-950 hover:bg-[#FF5738] text-white rounded-xl text-xs font-extrabold transition shadow-xs inline-flex items-center gap-2"
+                className="px-4 py-2.5 bg-zinc-950 hover:bg-[#EE1D45] text-white rounded-xl text-xs font-extrabold transition shadow-xs inline-flex items-center gap-2"
               >
                 <span>Submit a Project Brief</span>
                 <ArrowRight className="w-3.5 h-3.5" />

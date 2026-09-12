@@ -105,7 +105,7 @@ export const WorkView: React.FC<WorkViewProps> = ({
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-xs font-bold text-zinc-700">
-          <Sparkles className="w-3.5 h-3.5 text-[#FF5738]" />
+          <Sparkles className="w-3.5 h-3.5 text-[#EE1D45]" />
           <span>Selected Studio Archive</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-zinc-950 tracking-tight">
@@ -154,7 +154,7 @@ export const WorkView: React.FC<WorkViewProps> = ({
 
                 <div>
                   <span className="text-xs font-semibold text-white/70">{item.client}</span>
-                  <h3 className="text-xl font-black tracking-tight text-white mt-0.5 group-hover:text-[#FF5738] transition-colors">
+                  <h3 className="text-xl font-black tracking-tight text-white mt-0.5 group-hover:text-[#EE1D45] transition-colors">
                     {item.title}
                   </h3>
                 </div>
@@ -181,7 +181,7 @@ export const WorkView: React.FC<WorkViewProps> = ({
               <span className="text-xs font-bold text-zinc-400">Gizmo Production</span>
               <button
                 onClick={onOpenStartProject}
-                className="text-xs font-bold text-[#FF5738] hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-[#EE1D45] hover:underline flex items-center gap-1"
               >
                 <span>Request Similar</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export const WorkView: React.FC<WorkViewProps> = ({
         </p>
         <button
           onClick={onOpenStartProject}
-          className="px-6 py-2.5 bg-zinc-950 hover:bg-[#FF5738] text-white rounded-xl text-xs font-black transition"
+          className="px-6 py-2.5 bg-zinc-950 hover:bg-[#EE1D45] text-white rounded-xl text-xs font-black transition"
         >
           Start Your Project Consultation
         </button>

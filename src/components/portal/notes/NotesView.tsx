@@ -147,7 +147,7 @@ export const NotesView: React.FC<NotesViewProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center font-black">
-              <NotebookPen className="w-5 h-5 text-[#FF5738]" />
+              <NotebookPen className="w-5 h-5 text-[#EE1D45]" />
             </div>
             <h1 className="font-display font-black text-2xl text-zinc-950 tracking-tight">Notes</h1>
           </div>
@@ -164,7 +164,7 @@ export const NotesView: React.FC<NotesViewProps> = ({
               onClick={onOpenQuickNote}
               className="px-3.5 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
             >
-              <NotebookPen className="w-4 h-4 text-[#FF5738]" />
+              <NotebookPen className="w-4 h-4 text-[#EE1D45]" />
               <span>📝 Quick Note</span>
             </button>
           )}
@@ -174,7 +174,7 @@ export const NotesView: React.FC<NotesViewProps> = ({
             onClick={handleCreateNewNote}
             className="px-4 py-2.5 bg-black hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
           >
-            <Plus className="w-4 h-4 text-[#FF5738]" />
+            <Plus className="w-4 h-4 text-[#EE1D45]" />
             <span>＋ New Note</span>
           </button>
 
@@ -297,7 +297,7 @@ export const NotesView: React.FC<NotesViewProps> = ({
                 onClick={handleCreateNewNote}
                 className="px-4 py-2 bg-black text-white text-xs font-bold rounded-xl hover:bg-zinc-800 transition inline-flex items-center gap-1.5 shadow-xs"
               >
-                <Plus className="w-4 h-4 text-[#FF5738]" />
+                <Plus className="w-4 h-4 text-[#EE1D45]" />
                 <span>+ New Note</span>
               </button>
             </div>

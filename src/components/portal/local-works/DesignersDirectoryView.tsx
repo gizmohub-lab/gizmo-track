@@ -124,7 +124,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
-          <div className="w-10 h-10 rounded-xl bg-[#FF5738]/10 text-[#FF5738] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center shrink-0">
             <Users className="w-5 h-5" />
           </div>
           <div>
@@ -142,7 +142,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0"
         >
           <UserPlus className="w-4 h-4" />
           <span>Add Designer</span>
@@ -161,7 +161,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
         </div>
         <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
           <p className="text-[10px] font-mono font-bold uppercase text-zinc-400">External Partners</p>
-          <p className="text-xl font-black text-[#FF5738] mt-0.5">{externalCount}</p>
+          <p className="text-xl font-black text-[#EE1D45] mt-0.5">{externalCount}</p>
         </div>
         <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
           <p className="text-[10px] font-mono font-bold uppercase text-zinc-400">Active Status</p>
@@ -178,7 +178,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
             placeholder="Search designers by name, role, contact..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8.5 pr-3 py-1.5 text-xs rounded-lg border border-zinc-200 focus:border-[#FF5738] outline-none"
+            className="w-full pl-8.5 pr-3 py-1.5 text-xs rounded-lg border border-zinc-200 focus:border-[#EE1D45] outline-none"
           />
         </div>
 
@@ -255,7 +255,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                             className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${
                               isStaff
                                 ? 'bg-zinc-950 text-white'
-                                : 'bg-[#FF5738]/10 text-[#FF5738]'
+                                : 'bg-[#EE1D45]/10 text-[#EE1D45]'
                             }`}
                           >
                             {d.name.charAt(0).toUpperCase()}
@@ -291,7 +291,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                           className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold ${
                             isStaff
                               ? 'bg-zinc-100 text-zinc-800 border border-zinc-200'
-                              : 'bg-[#FF5738]/10 text-[#FF5738] border border-[#FF5738]/20'
+                              : 'bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20'
                           }`}
                         >
                           {isStaff ? '🏢 Portal Staff' : '🌐 External Partner'}
@@ -362,7 +362,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                           onClick={() => onSelectDesignerForFilter && onSelectDesignerForFilter(d.name)}
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono font-bold text-xs transition ${
                             workCount > 0
-                              ? 'bg-zinc-100 text-zinc-900 hover:bg-[#FF5738]/10 hover:text-[#FF5738]'
+                              ? 'bg-zinc-100 text-zinc-900 hover:bg-[#EE1D45]/10 hover:text-[#EE1D45]'
                               : 'text-zinc-400'
                           }`}
                           title="Click to view all works by this designer"
@@ -441,7 +441,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                   type="text"
                   value={editingDesigner.name}
                   onChange={(e) => setEditingDesigner({ ...editingDesigner, name: e.target.value })}
-                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none"
+                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none"
                 />
               </div>
 
@@ -455,7 +455,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                       onClick={() => setEditingDesigner({ ...editingDesigner, type: t })}
                       className={`py-1.5 px-3 rounded-lg font-bold border text-xs ${
                         editingDesigner.type === t
-                          ? 'bg-[#FF5738] text-white border-[#FF5738]'
+                          ? 'bg-[#EE1D45] text-white border-[#EE1D45]'
                           : 'bg-zinc-50 text-zinc-700 border-zinc-200'
                       }`}
                     >
@@ -477,7 +477,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                       whatsapp: e.target.value.replace(/[^\d]/g, ''),
                     })
                   }
-                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none"
+                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none"
                 />
               </div>
 
@@ -487,7 +487,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                   type="email"
                   value={editingDesigner.email || ''}
                   onChange={(e) => setEditingDesigner({ ...editingDesigner, email: e.target.value })}
-                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none"
+                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none"
                 />
               </div>
 
@@ -499,7 +499,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                   onChange={(e) =>
                     setEditingDesigner({ ...editingDesigner, roleSpecialization: e.target.value })
                   }
-                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none"
+                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none"
                 />
               </div>
 
@@ -509,7 +509,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
                   rows={2}
                   value={editingDesigner.notes || ''}
                   onChange={(e) => setEditingDesigner({ ...editingDesigner, notes: e.target.value })}
-                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none"
+                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none"
                 />
               </div>
             </div>
@@ -525,7 +525,7 @@ export const DesignersDirectoryView: React.FC<DesignersDirectoryViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleSaveEdit(editingDesigner)}
-                className="px-4 py-1.5 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl"
+                className="px-4 py-1.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl"
               >
                 Save Changes
               </button>

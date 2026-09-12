@@ -40,9 +40,9 @@ export const WORK_STATUSES: WorkStatusConfig[] = [
     id: 'In Progress',
     label: 'In Progress',
     symbol: '◑',
-    badgeBg: 'bg-[#FFF1EE]',
-    textColor: 'text-[#FF5738]',
-    borderColor: 'border-[#FFB2A1]',
+    badgeBg: 'bg-[#EE1D45]/10',
+    textColor: 'text-[#EE1D45]',
+    borderColor: 'border-[#EE1D45]/20',
     description: 'Active design & layout underway',
   },
   {
@@ -186,7 +186,7 @@ export function calculateWorkDeadline(
     return {
       relativeText: 'Due now',
       urgency: 'DUE_NOW',
-      badgeClass: 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1] font-bold animate-pulse',
+      badgeClass: 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30 font-bold animate-pulse',
       exactFormatted,
       diffMinutes,
     };
@@ -196,7 +196,7 @@ export function calculateWorkDeadline(
     return {
       relativeText: `Due in ${diffMinutes}m`,
       urgency: 'URGENT',
-      badgeClass: 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1] font-bold',
+      badgeClass: 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30 font-bold',
       exactFormatted,
       diffMinutes,
     };
@@ -207,7 +207,7 @@ export function calculateWorkDeadline(
     return {
       relativeText: `Due in ${diffHours}h ${minsRem > 0 ? `${minsRem}m` : ''}`,
       urgency: 'URGENT',
-      badgeClass: 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1] font-semibold',
+      badgeClass: 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30 font-semibold',
       exactFormatted,
       diffMinutes,
     };

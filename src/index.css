@@ -1,11 +1,36 @@
 @import "tailwindcss";
 
+@theme {
+  --color-gizmo-accent: #EE1D45;
+  --color-gizmo-accent-hover: #D8143C;
+  --color-gizmo-accent-active: #B80D30;
+  --color-gizmo-accent-light: #FFF0F3;
+  --color-gizmo-accent-lighter: #FFF5F7;
+  --color-gizmo-accent-border: #FFB8C5;
+}
+
+:root {
+  --gizmo-accent: #EE1D45;
+  --gizmo-accent-hover: #D8143C;
+  --gizmo-accent-active: #B80D30;
+  --gizmo-accent-light: #FFF0F3;
+  --gizmo-accent-lighter: #FFF5F7;
+  --gizmo-accent-border: #FFB8C5;
+  --gizmo-accent-glow: rgba(238, 29, 69, 0.15);
+  --gizmo-accent-muted: rgba(238, 29, 69, 0.08);
+}
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #111827;
     background-color: #f8fafc;
     -webkit-font-smoothing: antialiased;
+  }
+  
+  ::selection {
+    background-color: #EE1D45;
+    color: #ffffff;
   }
 }
 

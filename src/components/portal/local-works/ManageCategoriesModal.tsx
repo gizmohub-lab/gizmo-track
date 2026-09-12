@@ -55,7 +55,7 @@ export const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-[#FF5738]" />
+            <Tag className="w-4 h-4 text-[#EE1D45]" />
             <h2 className="text-base font-bold text-zinc-950">Manage Work Categories</h2>
           </div>
           <button
@@ -75,11 +75,11 @@ export const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
               placeholder="e.g. Wedding Album, Billboard, 3D Mockup"
               value={newCat}
               onChange={(e) => setNewCat(e.target.value)}
-              className="flex-1 px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 text-xs"
+              className="flex-1 px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 text-xs"
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl font-bold flex items-center gap-1 transition"
+              className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl font-bold flex items-center gap-1 transition"
             >
               <Plus className="w-4 h-4" />
               <span>Add</span>

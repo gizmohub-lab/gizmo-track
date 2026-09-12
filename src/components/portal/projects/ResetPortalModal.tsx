@@ -116,7 +116,7 @@ export const ResetPortalModal: React.FC<ResetPortalModalProps> = ({
               className="text-zinc-900 hover:text-black flex items-center gap-2 text-xs font-bold"
             >
               {allSelected ? (
-                <CheckSquare className="w-4 h-4 text-[#FF5738]" />
+                <CheckSquare className="w-4 h-4 text-[#EE1D45]" />
               ) : (
                 <Square className="w-4 h-4 text-zinc-400" />
               )}
@@ -153,7 +153,7 @@ export const ResetPortalModal: React.FC<ResetPortalModalProps> = ({
                 }`}
               >
                 {isChecked ? (
-                  <CheckSquare className="w-4 h-4 text-[#FF5738] shrink-0" />
+                  <CheckSquare className="w-4 h-4 text-[#EE1D45] shrink-0" />
                 ) : (
                   <Square className="w-4 h-4 text-zinc-300 shrink-0" />
                 )}

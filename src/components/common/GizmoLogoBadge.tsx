@@ -116,7 +116,7 @@ export const GizmoLogoBadge: React.FC<GizmoLogoBadgeProps> = ({
             }}
             title={accessibleLabel}
             aria-label={accessibleLabel}
-            className={`absolute ${badgePositionClassName} ${sizeClasses} z-20 rounded-full bg-[#FF5738] text-white font-mono font-black leading-none flex items-center justify-center border-2 border-white shadow-md select-none pointer-events-auto transition-transform active:scale-95 ${
+            className={`absolute ${badgePositionClassName} ${sizeClasses} z-20 rounded-full bg-[#EE1D45] text-white font-mono font-black leading-none flex items-center justify-center border-2 border-white shadow-md select-none pointer-events-auto transition-transform active:scale-95 ${
               onBadgeClick ? 'cursor-pointer hover:scale-110 hover:brightness-105' : 'cursor-default'
             }`}
           >

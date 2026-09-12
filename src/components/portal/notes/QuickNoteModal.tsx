@@ -78,7 +78,7 @@ export const QuickNoteModal: React.FC<QuickNoteModalProps> = ({
         <div className="p-4 border-b border-zinc-200 flex items-center justify-between bg-zinc-50">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-black">
-              <NotebookPen className="w-4 h-4 text-[#FF5738]" />
+              <NotebookPen className="w-4 h-4 text-[#EE1D45]" />
             </div>
             <div>
               <h3 className="font-display font-black text-base text-zinc-950">Quick Note</h3>
@@ -207,7 +207,7 @@ export const QuickNoteModal: React.FC<QuickNoteModalProps> = ({
               type="submit"
               className="px-4 py-2 bg-black hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
             >
-              <Save className="w-3.5 h-3.5 text-[#FF5738]" />
+              <Save className="w-3.5 h-3.5 text-[#EE1D45]" />
               <span>Save Note</span>
             </button>
           </div>

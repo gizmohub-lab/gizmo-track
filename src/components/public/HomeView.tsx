@@ -35,14 +35,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           {/* Studio Tag */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 border border-zinc-200/80 text-xs font-bold text-zinc-800 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-[#FF5738] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#EE1D45] animate-pulse" />
             <span>Gizmo Design Creative Studio &amp; Production Facility</span>
           </div>
 
           {/* Display Headline */}
           <div className="max-w-4xl mx-auto space-y-4">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-zinc-950 tracking-tight leading-[1.08]">
-              Precision Design, <span className="text-[#FF5738]">Motion Graphics</span> &amp; Flex Production.
+              Precision Design, <span className="text-[#EE1D45]">Motion Graphics</span> &amp; Flex Production.
             </h1>
             <p className="text-base sm:text-xl text-zinc-600 max-w-2xl mx-auto font-medium leading-relaxed">
               We craft striking brand identities, kinetic social motion campaigns, and print-ready
@@ -54,7 +54,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
             <button
               onClick={onOpenStartProject}
-              className="px-6 py-3.5 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-sm font-extrabold transition shadow-md shadow-[#FF5738]/20 flex items-center gap-2"
+              className="px-6 py-3.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-sm font-extrabold transition shadow-md shadow-[#EE1D45]/20 flex items-center gap-2"
             >
               <span>Start a Project</span>
               <ArrowRight className="w-4 h-4" />
@@ -73,7 +73,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="px-5 py-3.5 bg-zinc-100 hover:bg-zinc-200/80 text-zinc-800 rounded-xl text-sm font-bold transition flex items-center gap-2"
             >
               <span>Client Portal</span>
-              <span className="px-1.5 py-0.2 rounded-full text-xs font-mono bg-[#FF5738] text-white">
+              <span className="px-1.5 py-0.2 rounded-full text-xs font-mono bg-[#EE1D45] text-white">
                 {activeProjectsCount}
               </span>
             </button>
@@ -105,7 +105,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
-            <div className="text-xs font-black uppercase tracking-wider text-[#FF5738]">
+            <div className="text-xs font-black uppercase tracking-wider text-[#EE1D45]">
               Disciplines &amp; Craft
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight mt-1">
@@ -114,7 +114,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
           <button
             onClick={() => onNavigate('services')}
-            className="text-xs font-bold text-zinc-950 hover:text-[#FF5738] transition flex items-center gap-1.5"
+            className="text-xs font-bold text-zinc-950 hover:text-[#EE1D45] transition flex items-center gap-1.5"
           >
             <span>Detailed service offerings &amp; deliverables</span>
             <ArrowRight className="w-4 h-4" />
@@ -131,7 +131,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <Palette className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#FF5738] transition-colors">
+              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
                 Brand &amp; Visual Identity
               </h3>
               <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
@@ -153,7 +153,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <Video className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#FF5738] transition-colors">
+              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
                 Motion &amp; Video Graphics
               </h3>
               <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
@@ -175,7 +175,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <Printer className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#FF5738] transition-colors">
+              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
                 Flex &amp; Print Production
               </h3>
               <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
@@ -197,7 +197,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <Layers className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#FF5738] transition-colors">
+              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
                 Digital &amp; Web Portals
               </h3>
               <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
@@ -217,7 +217,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="bg-zinc-950 text-white rounded-3xl p-8 sm:p-12 space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="text-xs font-black uppercase tracking-wider text-[#FF5738]">
+              <div className="text-xs font-black uppercase tracking-wider text-[#EE1D45]">
                 Curated Work
               </div>
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">
@@ -244,7 +244,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   Branding · Identity
                 </span>
                 <div>
-                  <h4 className="text-lg font-black text-white group-hover:text-[#FF5738] transition-colors">
+                  <h4 className="text-lg font-black text-white group-hover:text-[#EE1D45] transition-colors">
                     Darul Hasaniyyah Academy
                   </h4>
                   <p className="text-xs text-zinc-400 mt-1">
@@ -254,7 +254,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
               <div className="p-4 flex items-center justify-between text-xs text-zinc-400 border-t border-zinc-800/80">
                 <span>Completed September 2026</span>
-                <span className="font-bold text-white group-hover:text-[#FF5738] flex items-center gap-1">
+                <span className="font-bold text-white group-hover:text-[#EE1D45] flex items-center gap-1">
                   View Case →
                 </span>
               </div>
@@ -266,11 +266,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="group cursor-pointer rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 overflow-hidden transition-all"
             >
               <div className="h-48 bg-gradient-to-tr from-purple-950 via-zinc-900 to-zinc-800 p-6 flex flex-col justify-between">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#FF5738]/20 text-[#FF5738] w-max">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#EE1D45]/20 text-[#EE1D45] w-max">
                   Motion · Reel
                 </span>
                 <div>
-                  <h4 className="text-lg font-black text-white group-hover:text-[#FF5738] transition-colors">
+                  <h4 className="text-lg font-black text-white group-hover:text-[#EE1D45] transition-colors">
                     Apex Realty Launch
                   </h4>
                   <p className="text-xs text-zinc-400 mt-1">
@@ -280,7 +280,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
               <div className="p-4 flex items-center justify-between text-xs text-zinc-400 border-t border-zinc-800/80">
                 <span>Completed August 2026</span>
-                <span className="font-bold text-white group-hover:text-[#FF5738] flex items-center gap-1">
+                <span className="font-bold text-white group-hover:text-[#EE1D45] flex items-center gap-1">
                   View Case →
                 </span>
               </div>
@@ -296,7 +296,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   Print · Large Format Flex
                 </span>
                 <div>
-                  <h4 className="text-lg font-black text-white group-hover:text-[#FF5738] transition-colors">
+                  <h4 className="text-lg font-black text-white group-hover:text-[#EE1D45] transition-colors">
                     Highway Grand Hoarding
                   </h4>
                   <p className="text-xs text-zinc-400 mt-1">
@@ -306,7 +306,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
               <div className="p-4 flex items-center justify-between text-xs text-zinc-400 border-t border-zinc-800/80">
                 <span>Completed August 2026</span>
-                <span className="font-bold text-white group-hover:text-[#FF5738] flex items-center gap-1">
+                <span className="font-bold text-white group-hover:text-[#EE1D45] flex items-center gap-1">
                   View Case →
                 </span>
               </div>
@@ -317,7 +317,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* 4. BOTTOM DIRECT CTA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-gradient-to-br from-zinc-100 via-white to-orange-50/40 border border-zinc-200 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+        <div className="rounded-3xl bg-gradient-to-br from-zinc-100 via-white to-rose-50/40 border border-zinc-200 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
           <div className="space-y-3 max-w-xl">
             <h3 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
               Ready to create something remarkable with Gizmo Design?
@@ -329,7 +329,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={onOpenStartProject}
-              className="px-6 py-3 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-black transition shadow-xs flex items-center gap-2"
+              className="px-6 py-3 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-black transition shadow-xs flex items-center gap-2"
             >
               <span>Start a Project</span>
               <ArrowRight className="w-4 h-4" />

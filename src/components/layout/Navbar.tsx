@@ -139,7 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <GizmoLogo size="md" className="group-hover:scale-105 transition-transform" />
             </GizmoLogoBadge>
             <div>
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-950 group-hover:text-[#FF5738] transition-colors">
+              <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
                 GIZMO DESIGN <sup className="text-[10px] font-mono">®</sup>
               </span>
               <span className="hidden sm:block text-[10px] uppercase font-bold tracking-wider text-zinc-400">
@@ -168,11 +168,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Services</span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    megaMenuOpen ? 'rotate-180 text-[#FF5738]' : 'text-zinc-400'
+                    megaMenuOpen ? 'rotate-180 text-[#EE1D45]' : 'text-zinc-400'
                   }`}
                 />
                 {currentRoute === 'services' && (
-                  <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#FF5738] rounded-full" />
+                  <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
                 )}
               </button>
 
@@ -194,7 +194,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </div>
                       <button
                         onClick={() => handleNavigate('services')}
-                        className="text-xs font-bold text-[#FF5738] hover:underline flex items-center gap-1"
+                        className="text-xs font-bold text-[#EE1D45] hover:underline flex items-center gap-1"
                       >
                         <span>View All Services</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -210,12 +210,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                             onClick={() => handleNavigate('services')}
                             className="group p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50/80 transition-all cursor-pointer flex gap-3"
                           >
-                            <div className="w-9 h-9 rounded-xl bg-zinc-100 group-hover:bg-[#FF5738]/10 group-hover:text-[#FF5738] text-zinc-700 flex items-center justify-center shrink-0 transition-colors">
+                            <div className="w-9 h-9 rounded-xl bg-zinc-100 group-hover:bg-[#EE1D45]/10 group-hover:text-[#EE1D45] text-zinc-700 flex items-center justify-center shrink-0 transition-colors">
                               <Icon className="w-4 h-4" />
                             </div>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-zinc-950 group-hover:text-[#FF5738] transition-colors">
+                                <span className="text-xs font-bold text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
                                   {cat.title}
                                 </span>
                                 <span className="text-[9px] font-semibold px-1.5 py-0.2 bg-zinc-100 text-zinc-600 rounded">
@@ -245,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           if (onOpenStartProject) onOpenStartProject();
                           else handleNavigate('work');
                         }}
-                        className="text-xs font-bold text-zinc-950 hover:text-[#FF5738] flex items-center gap-1 transition-colors"
+                        className="text-xs font-bold text-zinc-950 hover:text-[#EE1D45] flex items-center gap-1 transition-colors"
                       >
                         <span>Schedule Briefing</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -268,7 +268,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <span>Work</span>
               {currentRoute === 'work' && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#FF5738] rounded-full" />
+                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
               )}
             </button>
 
@@ -284,7 +284,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <span>About</span>
               {currentRoute === 'about' && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#FF5738] rounded-full" />
+                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
               )}
             </button>
 
@@ -299,11 +299,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <span>My Projects</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black font-mono bg-[#FF5738] text-white shadow-xs">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black font-mono bg-[#EE1D45] text-white shadow-xs">
                 {activeProjectsCount}
               </span>
               {currentRoute === 'my-projects' && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#FF5738] rounded-full" />
+                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
               )}
             </button>
           </nav>
@@ -338,7 +338,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="px-3.5 py-2 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1.5"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#FF5738]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#EE1D45]" />
               <span className="hidden sm:inline">Director CRM</span>
               <span className="sm:hidden">CRM</span>
             </button>
@@ -350,7 +350,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 if (onOpenStartProject) onOpenStartProject();
                 else handleNavigate('work');
               }}
-              className="px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-1.5"
+              className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-1.5"
             >
               <span>Start a Project</span>
               <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
@@ -468,7 +468,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <div className="flex items-center gap-2">
                     <span>My Projects</span>
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[#FF5738] text-white">
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[#EE1D45] text-white">
                       {activeProjectsCount}
                     </span>
                   </div>
@@ -526,7 +526,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => handleNavigate('admin-dashboard')}
                 className="w-full py-2.5 rounded-xl bg-zinc-950 text-white font-bold text-xs flex items-center justify-center gap-2"
               >
-                <ShieldCheck className="w-4 h-4 text-[#FF5738]" />
+                <ShieldCheck className="w-4 h-4 text-[#EE1D45]" />
                 <span>Director Studio CRM</span>
               </button>
 
@@ -536,7 +536,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (onOpenStartProject) onOpenStartProject();
                   else handleNavigate('work');
                 }}
-                className="w-full py-2.5 rounded-xl bg-[#FF5738] text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm"
+                className="w-full py-2.5 rounded-xl bg-[#EE1D45] text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm"
               >
                 <span>Start a Project</span>
                 <ArrowRight className="w-4 h-4" />

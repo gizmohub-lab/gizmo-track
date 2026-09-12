@@ -1756,7 +1756,7 @@ export const initialNotes: Note[] = [
   {
     id: 'note-1',
     title: 'Client Branding Standards & Color Palette',
-    content: 'Primary Brand Color: #FF5738 (Gizmo Coral Red).\nSecondary Neutral: #09090B (Obsidian Black).\nAlways request vector logo (.AI or .SVG) from clients before starting printing or motion deliverables.',
+    content: 'Primary Brand Color: #EE1D45 (Gizmo Crimson Red).\nSecondary Neutral: #09090B (Obsidian Black).\nAlways request vector logo (.AI or .SVG) from clients before starting printing or motion deliverables.',
     isPinned: true,
     color: 'warm',
     category: 'Client',

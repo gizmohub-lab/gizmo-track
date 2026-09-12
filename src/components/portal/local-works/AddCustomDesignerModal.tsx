@@ -55,7 +55,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#FF5738]/10 text-[#FF5738] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center">
               <UserPlus className="w-4 h-4" />
             </div>
             <div>
@@ -93,7 +93,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
                 onClick={() => setType('External Designer')}
                 className={`py-2 px-3 rounded-xl font-bold border transition text-center ${
                   type === 'External Designer'
-                    ? 'bg-[#FF5738] text-white border-[#FF5738] shadow-xs'
+                    ? 'bg-[#EE1D45] text-white border-[#EE1D45] shadow-xs'
                     : 'bg-zinc-50 text-zinc-700 border-zinc-200 hover:bg-zinc-100'
                 }`}
               >
@@ -105,7 +105,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
           {/* Name */}
           <div>
             <label className="block font-bold text-zinc-800 mb-1">
-              Designer Name <span className="text-[#FF5738]">*</span>
+              Designer Name <span className="text-[#EE1D45]">*</span>
             </label>
             <input
               type="text"
@@ -113,7 +113,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
               placeholder="e.g. Ashi Designs, Studio X, Rahul"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] focus:ring-2 focus:ring-[#FF5738]/20 outline-none text-zinc-900 font-medium text-xs transition"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] focus:ring-2 focus:ring-[#EE1D45]/20 outline-none text-zinc-900 font-medium text-xs transition"
               autoFocus
             />
           </div>
@@ -132,7 +132,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
                     setPhone(e.target.value);
                     setWhatsapp(e.target.value.replace(/[^\d]/g, ''));
                   }}
-                  className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 text-xs"
+                  className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 text-xs"
                 />
               </div>
             </div>
@@ -146,7 +146,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
                   placeholder="designer@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 text-xs"
+                  className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 text-xs"
                 />
               </div>
             </div>
@@ -162,7 +162,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
                 placeholder="e.g. 3D Motion Graphics, Calligraphy, Flex & Print"
                 value={roleSpecialization}
                 onChange={(e) => setRoleSpecialization(e.target.value)}
-                className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 text-xs"
+                className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 text-xs"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
               placeholder="e.g. Freelance contact for peak festive rushes, WhatsApp preferred"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 text-xs"
+              className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 text-xs"
             />
           </div>
 
@@ -190,7 +190,7 @@ export const AddCustomDesignerModal: React.FC<AddCustomDesignerModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+              className="px-4 py-1.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Add Designer</span>

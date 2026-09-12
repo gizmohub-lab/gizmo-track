@@ -726,7 +726,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
       <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-200 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
         {/* Module Title */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#FF5738]/10 text-[#FF5738] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center shrink-0">
             <FolderKanban className="w-5 h-5" />
           </div>
           <div>
@@ -819,7 +819,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
               setEditingWork(null);
               setShowAddModal(true);
             }}
-            className="px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
+            className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
           >
             <Plus className="w-4 h-4" />
             <span>New Work</span>
@@ -1066,11 +1066,11 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
               onClick={() => setQuickFilter('TODAY')}
               className={`p-3.5 rounded-xl border transition cursor-pointer shadow-2xs ${
                 quickFilter === 'TODAY'
-                  ? 'bg-[#FF5738]/10 border-[#FF5738]/40 ring-2 ring-[#FF5738]/20'
+                  ? 'bg-[#EE1D45]/10 border-[#EE1D45]/40 ring-2 ring-[#EE1D45]/20'
                   : 'bg-white border-zinc-200 hover:border-zinc-300'
               }`}
             >
-              <div className="text-[11px] font-bold text-[#FF5738] uppercase tracking-wider flex items-center justify-between">
+              <div className="text-[11px] font-bold text-[#EE1D45] uppercase tracking-wider flex items-center justify-between">
                 <span>Today</span>
                 <Flame className="w-3.5 h-3.5" />
               </div>
@@ -1142,14 +1142,14 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                   }}
                   className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
                     day.isToday
-                      ? 'bg-[#FF5738]/10 border-[#FF5738]/40 shadow-xs'
+                      ? 'bg-[#EE1D45]/10 border-[#EE1D45]/40 shadow-xs'
                       : 'bg-zinc-50/70 border-zinc-200/80 hover:bg-zinc-100'
                   }`}
                 >
                   <div className="flex items-center justify-center gap-1">
                     <span className="text-[10px] font-bold text-zinc-500">{day.label}</span>
                     {day.isToday && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF5738]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#EE1D45]" />
                     )}
                   </div>
                   <div className="text-base font-black text-zinc-900 mt-0.5">{day.count}</div>
@@ -1263,7 +1263,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                   placeholder="Search by title, client, work ID (GZ-LW-101), category, designer, notes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-8 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 outline-none focus:border-[#FF5738] focus:bg-white transition"
+                  className="w-full pl-9 pr-8 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 outline-none focus:border-[#EE1D45] focus:bg-white transition"
                 />
                 {searchQuery && (
                   <button
@@ -1333,7 +1333,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                 >
                   <option value="ALL">All Categories</option>
                   {activeCategories
@@ -1354,7 +1354,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                 <select
                   value={assignedFilter}
                   onChange={(e) => setAssignedFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                 >
                   <option value="ALL">All Designers</option>
                   <optgroup label="Portal Staff">
@@ -1386,7 +1386,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                 >
                   <option value="ALL">All Statuses</option>
                   {WORK_STATUSES.map((s) => (
@@ -1405,7 +1405,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                 <select
                   value={priorityFilter}
                   onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                 >
                   <option value="ALL">All Priorities</option>
                   <option value="Urgent">🔥 Urgent</option>
@@ -1423,7 +1423,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                 <select
                   value={paymentFilter}
                   onChange={(e) => setPaymentFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#FF5738]"
+                  className="w-full px-2.5 py-1.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-800 outline-none focus:border-[#EE1D45]"
                 >
                   <option value="ALL">All Payments</option>
                   <option value="TO_GET">🚨 To Get ({financialSummaries.toGetCount} Pending)</option>
@@ -1444,7 +1444,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                 </span>
                 <button
                   onClick={handleClearFilters}
-                  className="text-[#FF5738] font-bold hover:underline flex items-center gap-1"
+                  className="text-[#EE1D45] font-bold hover:underline flex items-center gap-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset All Filters</span>
@@ -1732,7 +1732,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
                               setEditingWork(null);
                               setShowAddModal(true);
                             }}
-                            className="mt-3 px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5"
+                            className="mt-3 px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5"
                           >
                             <Plus className="w-4 h-4" />
                             <span>Create First Work</span>

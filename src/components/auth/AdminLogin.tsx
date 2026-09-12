@@ -51,7 +51,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4 selection:bg-[#FF5738] selection:text-white">
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4 selection:bg-[#EE1D45] selection:text-white">
       <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-200">
         {/* Card Container */}
         <div className="bg-white rounded-3xl p-8 shadow-2xl border border-zinc-800 space-y-6">
@@ -88,7 +88,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                   placeholder="admin@gizmoportalinvoice.in"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50/50 text-xs font-medium text-zinc-900 outline-none focus:border-[#FF5738] focus:bg-white transition"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50/50 text-xs font-medium text-zinc-900 outline-none focus:border-[#EE1D45] focus:bg-white transition"
                 />
               </div>
             </div>
@@ -101,7 +101,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                 <button
                   type="button"
                   onClick={() => alert('Password reset instructions sent to registered admin email.')}
-                  className="text-[11px] font-bold text-[#FF5738] hover:underline"
+                  className="text-[11px] font-bold text-[#EE1D45] hover:underline"
                 >
                   Forgot password?
                 </button>
@@ -114,7 +114,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50/50 text-xs font-medium text-zinc-900 outline-none focus:border-[#FF5738] focus:bg-white transition"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50/50 text-xs font-medium text-zinc-900 outline-none focus:border-[#EE1D45] focus:bg-white transition"
                 />
               </div>
             </div>

@@ -119,7 +119,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-xs font-bold text-zinc-700">
-          <Sparkles className="w-3.5 h-3.5 text-[#FF5738]" />
+          <Sparkles className="w-3.5 h-3.5 text-[#EE1D45]" />
           <span>Services &amp; Creative Deliverables</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-zinc-950 tracking-tight">
@@ -142,7 +142,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-900 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-[#FF5738]" />
+                    <Icon className="w-6 h-6 text-[#EE1D45]" />
                   </div>
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 text-xs font-mono font-bold text-zinc-700">
                     <Clock className="w-3.5 h-3.5 text-zinc-400" />
@@ -175,7 +175,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                 </div>
                 <button
                   onClick={onOpenStartProject}
-                  className="px-4 py-2 bg-zinc-950 hover:bg-[#FF5738] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ml-3"
+                  className="px-4 py-2 bg-zinc-950 hover:bg-[#EE1D45] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ml-3"
                 >
                   <span>Book Brief</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -189,7 +189,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       {/* Production Workflow */}
       <div className="p-8 sm:p-12 rounded-3xl bg-zinc-950 text-white space-y-8">
         <div className="max-w-2xl">
-          <div className="text-xs font-black uppercase tracking-wider text-[#FF5738]">
+          <div className="text-xs font-black uppercase tracking-wider text-[#EE1D45]">
             Studio Workflow
           </div>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">
@@ -199,7 +199,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
-            <div className="text-2xl font-black text-[#FF5738] font-mono">01</div>
+            <div className="text-2xl font-black text-[#EE1D45] font-mono">01</div>
             <h4 className="text-base font-bold text-white mt-2">Brief &amp; Specs</h4>
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
               Submit dimensions, copy, references and delivery deadline via WhatsApp or web portal.
@@ -207,7 +207,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
           </div>
 
           <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
-            <div className="text-2xl font-black text-[#FF5738] font-mono">02</div>
+            <div className="text-2xl font-black text-[#EE1D45] font-mono">02</div>
             <h4 className="text-base font-bold text-white mt-2">Design Artboard</h4>
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
               Senior designers craft custom concepts adhering to typography standards and color science.
@@ -215,7 +215,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
           </div>
 
           <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
-            <div className="text-2xl font-black text-[#FF5738] font-mono">03</div>
+            <div className="text-2xl font-black text-[#EE1D45] font-mono">03</div>
             <h4 className="text-base font-bold text-white mt-2">Review &amp; Refine</h4>
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
               Real-time proofing and iterative client feedback loops with zero hassle.
@@ -223,7 +223,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
           </div>
 
           <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
-            <div className="text-2xl font-black text-[#FF5738] font-mono">04</div>
+            <div className="text-2xl font-black text-[#EE1D45] font-mono">04</div>
             <h4 className="text-base font-bold text-white mt-2">Press &amp; Delivery</h4>
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
               High-res export or immediate in-house flex roll printing with GST billing settlement.
@@ -252,7 +252,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                   <span>{faq.q}</span>
                   <ChevronDown
                     className={`w-4 h-4 text-zinc-400 transition-transform ${
-                      isOpen ? 'rotate-180 text-[#FF5738]' : ''
+                      isOpen ? 'rotate-180 text-[#EE1D45]' : ''
                     }`}
                   />
                 </div>

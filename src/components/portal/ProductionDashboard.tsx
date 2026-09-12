@@ -120,7 +120,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
           </button>
           <button
             onClick={onCreateWork}
-            className="px-3.5 py-1.5 text-xs font-bold bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-lg flex items-center gap-1.5 transition shadow-xs"
+            className="px-3.5 py-1.5 text-xs font-bold bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-lg flex items-center gap-1.5 transition shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" /> + New Work Order
           </button>
@@ -171,7 +171,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
           className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs hover:shadow-xs transition-shadow"
         >
           <div className="flex items-center gap-1.5 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
-            <Clock className={`w-3.5 h-3.5 text-[#FF5738] ${dueSoonCount > 0 ? 'animate-pulse' : ''}`} />
+            <Clock className={`w-3.5 h-3.5 text-[#EE1D45] ${dueSoonCount > 0 ? 'animate-pulse' : ''}`} />
             <span className="truncate">Due Soon</span>
           </div>
           <div className="text-2xl font-extrabold font-mono text-zinc-950">

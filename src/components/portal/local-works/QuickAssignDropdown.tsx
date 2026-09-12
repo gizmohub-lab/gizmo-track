@@ -72,11 +72,11 @@ export const QuickAssignDropdown: React.FC<QuickAssignDropdownProps> = ({
         }`}
         title="Click to Quick Assign Designer"
       >
-        <div className="w-5 h-5 rounded-full bg-zinc-100 flex items-center justify-center text-[10px] font-bold text-zinc-700 shrink-0 group-hover:bg-[#FF5738]/10 group-hover:text-[#FF5738]">
+        <div className="w-5 h-5 rounded-full bg-zinc-100 flex items-center justify-center text-[10px] font-bold text-zinc-700 shrink-0 group-hover:bg-[#EE1D45]/10 group-hover:text-[#EE1D45]">
           {isAssigned ? currentDesigner.charAt(0).toUpperCase() : <User className="w-3 h-3 text-zinc-400" />}
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="truncate max-w-[130px] font-bold text-zinc-900 group-hover:text-[#FF5738]">
+          <span className="truncate max-w-[130px] font-bold text-zinc-900 group-hover:text-[#EE1D45]">
             {isAssigned ? currentDesigner : 'Unassigned'}
           </span>
           {supportingDesigners.length > 0 && (
@@ -104,11 +104,11 @@ export const QuickAssignDropdown: React.FC<QuickAssignDropdownProps> = ({
                 type="button"
                 onClick={() => handleSelect('Unassigned')}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-zinc-50 ${
-                  !isAssigned ? 'font-bold text-[#FF5738]' : 'text-zinc-600'
+                  !isAssigned ? 'font-bold text-[#EE1D45]' : 'text-zinc-600'
                 }`}
               >
                 <span>Unassigned</span>
-                {!isAssigned && <Check className="w-3.5 h-3.5 text-[#FF5738]" />}
+                {!isAssigned && <Check className="w-3.5 h-3.5 text-[#EE1D45]" />}
               </button>
             </div>
 
@@ -124,14 +124,14 @@ export const QuickAssignDropdown: React.FC<QuickAssignDropdownProps> = ({
                       type="button"
                       onClick={() => handleSelect(d.name)}
                       className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-zinc-50 ${
-                        selected ? 'font-bold text-[#FF5738]' : 'text-zinc-800'
+                        selected ? 'font-bold text-[#EE1D45]' : 'text-zinc-800'
                       }`}
                     >
                       <div className="flex items-center gap-1.5 truncate">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         <span className="truncate">{d.name}</span>
                       </div>
-                      {selected && <Check className="w-3.5 h-3.5 text-[#FF5738] shrink-0" />}
+                      {selected && <Check className="w-3.5 h-3.5 text-[#EE1D45] shrink-0" />}
                     </button>
                   );
                 })}
@@ -150,7 +150,7 @@ export const QuickAssignDropdown: React.FC<QuickAssignDropdownProps> = ({
                       type="button"
                       onClick={() => handleSelect(d.name)}
                       className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-zinc-50 ${
-                        selected ? 'font-bold text-[#FF5738]' : 'text-zinc-800'
+                        selected ? 'font-bold text-[#EE1D45]' : 'text-zinc-800'
                       }`}
                     >
                       <div className="flex items-center gap-1.5 truncate">
@@ -160,7 +160,7 @@ export const QuickAssignDropdown: React.FC<QuickAssignDropdownProps> = ({
                           <span className="text-[10px] text-zinc-400 truncate">({d.roleSpecialization})</span>
                         )}
                       </div>
-                      {selected && <Check className="w-3.5 h-3.5 text-[#FF5738] shrink-0" />}
+                      {selected && <Check className="w-3.5 h-3.5 text-[#EE1D45] shrink-0" />}
                     </button>
                   );
                 })}
@@ -175,7 +175,7 @@ export const QuickAssignDropdown: React.FC<QuickAssignDropdownProps> = ({
               onClick={() => {
                 setShowAddModal(true);
               }}
-              className="w-full px-3 py-2 text-left flex items-center gap-1.5 text-[#FF5738] font-bold hover:bg-[#FF5738]/5 transition"
+              className="w-full px-3 py-2 text-left flex items-center gap-1.5 text-[#EE1D45] font-bold hover:bg-[#EE1D45]/5 transition"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Add Custom Designer</span>

@@ -226,15 +226,15 @@ Wedding Reception Invitation,Rahim & Family,Invitation,2026-09-08,2026-09-14,350
 
         {/* Step Indicator */}
         <div className="px-6 py-2.5 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between text-xs font-bold text-zinc-500">
-          <span className={step === 'upload' ? 'text-[#FF5738]' : 'text-zinc-800'}>
+          <span className={step === 'upload' ? 'text-[#EE1D45]' : 'text-zinc-800'}>
             1. Upload or Paste
           </span>
           <span>→</span>
-          <span className={step === 'mapping' ? 'text-[#FF5738]' : 'text-zinc-800'}>
+          <span className={step === 'mapping' ? 'text-[#EE1D45]' : 'text-zinc-800'}>
             2. Map Sheet Columns
           </span>
           <span>→</span>
-          <span className={step === 'preview' ? 'text-[#FF5738]' : 'text-zinc-800'}>
+          <span className={step === 'preview' ? 'text-[#EE1D45]' : 'text-zinc-800'}>
             3. Preview &amp; Import
           </span>
         </div>
@@ -250,7 +250,7 @@ Wedding Reception Invitation,Rahim & Family,Invitation,2026-09-08,2026-09-14,350
                   onChange={handleFileUpload}
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-                <Upload className="w-8 h-8 text-[#FF5738] mx-auto mb-2" />
+                <Upload className="w-8 h-8 text-[#EE1D45] mx-auto mb-2" />
                 <p className="font-bold text-zinc-800 text-sm">
                   Click to browse or drop your exported Google Sheet CSV
                 </p>
@@ -277,12 +277,12 @@ Wedding Reception Invitation,Rahim & Family,Invitation,2026-09-08,2026-09-14,350
                   placeholder="Paste CSV text here with column headers..."
                   value={rawText}
                   onChange={(e) => setRawText(e.target.value)}
-                  className="w-full p-3 font-mono text-xs border border-zinc-300 rounded-xl outline-none focus:border-[#FF5738]"
+                  className="w-full p-3 font-mono text-xs border border-zinc-300 rounded-xl outline-none focus:border-[#EE1D45]"
                 />
                 {rawText.trim() && (
                   <button
                     onClick={() => parseCSV(rawText)}
-                    className="mt-2 px-4 py-2 bg-[#FF5738] text-white rounded-xl font-bold text-xs"
+                    className="mt-2 px-4 py-2 bg-[#EE1D45] text-white rounded-xl font-bold text-xs"
                   >
                     Parse Pasted CSV
                   </button>
@@ -312,12 +312,12 @@ Wedding Reception Invitation,Rahim & Family,Invitation,2026-09-08,2026-09-14,350
                 ].map(({ key, label, required }) => (
                   <div key={key}>
                     <label className="block font-bold text-zinc-700 mb-1">
-                      {label} {required && <span className="text-[#FF5738]">*</span>}
+                      {label} {required && <span className="text-[#EE1D45]">*</span>}
                     </label>
                     <select
                       value={(mapping as any)[key]}
                       onChange={(e) => setMapping({ ...mapping, [key]: e.target.value })}
-                      className="w-full px-3 py-1.5 bg-white border border-zinc-300 rounded-lg text-xs outline-none focus:border-[#FF5738]"
+                      className="w-full px-3 py-1.5 bg-white border border-zinc-300 rounded-lg text-xs outline-none focus:border-[#EE1D45]"
                     >
                       <option value="">-- Don't Map --</option>
                       {headers.map((h) => (
@@ -341,7 +341,7 @@ Wedding Reception Invitation,Rahim & Family,Invitation,2026-09-08,2026-09-14,350
                 <button
                   type="button"
                   onClick={() => setStep('preview')}
-                  className="px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white font-bold rounded-xl flex items-center gap-1.5"
+                  className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white font-bold rounded-xl flex items-center gap-1.5"
                 >
                   <span>Preview Rows</span>
                   <ArrowRight className="w-4 h-4" />

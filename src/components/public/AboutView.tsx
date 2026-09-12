@@ -56,7 +56,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
       {/* Hero */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-xs font-bold text-zinc-700">
-          <Sparkles className="w-3.5 h-3.5 text-[#FF5738]" />
+          <Sparkles className="w-3.5 h-3.5 text-[#EE1D45]" />
           <span>About Gizmo Design Studio</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-zinc-950 tracking-tight">
@@ -70,7 +70,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
       {/* Manifesto / Story */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         <div className="p-8 sm:p-10 rounded-3xl bg-zinc-950 text-white space-y-5">
-          <div className="text-xs font-black uppercase tracking-wider text-[#FF5738]">
+          <div className="text-xs font-black uppercase tracking-wider text-[#EE1D45]">
             Our Philosophy
           </div>
           <h2 className="text-2xl sm:text-3xl font-black leading-snug">
@@ -94,7 +94,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
         <div className="space-y-4">
           <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-2xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#FF5738] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center font-bold font-mono">
                 01
               </div>
               <div>
@@ -108,7 +108,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
 
           <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-2xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#FF5738] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center font-bold font-mono">
                 02
               </div>
               <div>
@@ -122,7 +122,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
 
           <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-2xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#FF5738] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center font-bold font-mono">
                 03
               </div>
               <div>
@@ -154,7 +154,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
               </div>
               <div>
                 <h4 className="text-sm font-black text-zinc-950">{member.name}</h4>
-                <span className="text-[11px] font-bold text-[#FF5738]">{member.role}</span>
+                <span className="text-[11px] font-bold text-[#EE1D45]">{member.role}</span>
               </div>
               <p className="text-[11px] text-zinc-500 leading-relaxed">{member.bio}</p>
             </div>
@@ -167,7 +167,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
         <div className="space-y-2 text-center md:text-left">
           <h3 className="text-lg font-black text-zinc-950">Gizmo Design Creative Studio</h3>
           <p className="text-xs text-zinc-600 flex items-center justify-center md:justify-start gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-[#FF5738]" />
+            <MapPin className="w-3.5 h-3.5 text-[#EE1D45]" />
             <span>Malappuram / Kozhikode Hub, Kerala, India - 676505</span>
           </p>
           <p className="text-xs text-zinc-500">
@@ -187,7 +187,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
           </a>
           <button
             onClick={onOpenStartProject}
-            className="px-4 py-2.5 bg-zinc-950 hover:bg-[#FF5738] text-white rounded-xl text-xs font-black transition"
+            className="px-4 py-2.5 bg-zinc-950 hover:bg-[#EE1D45] text-white rounded-xl text-xs font-black transition"
           >
             Start a Project
           </button>

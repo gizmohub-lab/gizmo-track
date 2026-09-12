@@ -121,7 +121,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({
                 className="w-full py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold transition flex items-center justify-between border border-zinc-800"
               >
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#FF5738]" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#EE1D45]" />
                   <span>Director CRM Access</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 opacity-60" />
@@ -151,7 +151,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({
             <span>•</span>
             <button
               onClick={onOpenStartProject}
-              className="text-[#FF5738] hover:underline font-bold"
+              className="text-[#EE1D45] hover:underline font-bold"
             >
               Commission a Project
             </button>

@@ -93,7 +93,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
           {permissionState === 'default' && (
             <button
               onClick={handleRequestPermission}
-              className="px-3.5 py-1.5 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+              className="px-3.5 py-1.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
             >
               <Bell className="w-3.5 h-3.5" />
               <span>Request Browser Permission</span>
@@ -119,7 +119,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
       <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
-            <Bell className="w-5 h-5 text-[#FF5738]" />
+            <Bell className="w-5 h-5 text-[#EE1D45]" />
           </div>
           <div>
             <div className="font-extrabold text-sm text-zinc-950">Browser / Desktop Notifications</div>
@@ -136,7 +136,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
             onChange={() => handleToggleCategory('enableBrowserNotifications')}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF5738]" />
+          <div className="w-11 h-6 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#EE1D45]" />
         </label>
       </div>
 
@@ -157,7 +157,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.newProjects}
               onChange={() => handleToggleCategory('newProjects')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -171,7 +171,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.projectUpdates}
               onChange={() => handleToggleCategory('projectUpdates')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -185,7 +185,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.deliverableAssignments}
               onChange={() => handleToggleCategory('deliverableAssignments')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -199,7 +199,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.deadlineAlerts}
               onChange={() => handleToggleCategory('deadlineAlerts')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -213,7 +213,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.overdueAlerts}
               onChange={() => handleToggleCategory('overdueAlerts')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -227,7 +227,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.payments}
               onChange={() => handleToggleCategory('payments')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -241,7 +241,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.invoices}
               onChange={() => handleToggleCategory('invoices')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -255,7 +255,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.localWorks}
               onChange={() => handleToggleCategory('localWorks')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
 
@@ -269,7 +269,7 @@ export const NotificationSettingsSection: React.FC<NotificationSettingsSectionPr
               type="checkbox"
               checked={settings.designerUpdates}
               onChange={() => handleToggleCategory('designerUpdates')}
-              className="w-4 h-4 accent-[#FF5738] rounded cursor-pointer"
+              className="w-4 h-4 accent-[#EE1D45] rounded cursor-pointer"
             />
           </div>
         </div>

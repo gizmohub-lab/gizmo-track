@@ -319,7 +319,7 @@ export const NoteEditorPane: React.FC<NoteEditorPaneProps> = ({
 
           {projectId && (
             <div className="flex items-center gap-1 bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-zinc-900 font-bold">
-              <FolderKanban className="w-3 h-3 text-[#FF5738]" />
+              <FolderKanban className="w-3 h-3 text-[#EE1D45]" />
               <span className="truncate max-w-[160px]">
                 {projects.find((p) => p.id === projectId)?.title || 'Linked Project'}
               </span>
@@ -327,7 +327,7 @@ export const NoteEditorPane: React.FC<NoteEditorPaneProps> = ({
                 <button
                   type="button"
                   onClick={() => onNavigateRoute('admin-projects', projectId)}
-                  className="ml-1 text-[#FF5738] hover:underline flex items-center gap-0.5 text-[10px]"
+                  className="ml-1 text-[#EE1D45] hover:underline flex items-center gap-0.5 text-[10px]"
                 >
                   [Open Project]
                 </button>
@@ -371,7 +371,7 @@ export const NoteEditorPane: React.FC<NoteEditorPaneProps> = ({
         <button
           type="button"
           onClick={() => setShowLinkSelector(!showLinkSelector)}
-          className="text-xs text-black font-bold hover:text-[#FF5738] underline transition flex items-center gap-1"
+          className="text-xs text-black font-bold hover:text-[#EE1D45] underline transition flex items-center gap-1"
         >
           {showLinkSelector ? 'Close Link Options' : '+ Link Project / Client'}
         </button>

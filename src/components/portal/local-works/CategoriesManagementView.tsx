@@ -185,7 +185,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
-          <div className="w-10 h-10 rounded-xl bg-[#FF5738]/10 text-[#FF5738] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#EE1D45]/10 text-[#EE1D45] flex items-center justify-center shrink-0">
             <Tag className="w-5 h-5" />
           </div>
           <div>
@@ -203,7 +203,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add Category</span>
@@ -243,7 +243,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
               placeholder="e.g. Brochure, 3D Mockup, Packaging"
               value={newCatName}
               onChange={(e) => setNewCatName(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white"
               autoFocus
             />
           </div>
@@ -255,7 +255,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
               placeholder="e.g. Print and digital trifold or catalog layouts"
               value={newCatDesc}
               onChange={(e) => setNewCatDesc(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white"
             />
           </div>
 
@@ -293,7 +293,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
         </div>
         <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs">
           <p className="text-[10px] font-mono font-bold uppercase text-zinc-400">Works Tracked</p>
-          <p className="text-xl font-black text-[#FF5738] mt-0.5">{localWorks.length}</p>
+          <p className="text-xl font-black text-[#EE1D45] mt-0.5">{localWorks.length}</p>
         </div>
       </div>
 
@@ -306,7 +306,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
             placeholder="Search categories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8.5 pr-3 py-1.5 text-xs rounded-lg border border-zinc-200 focus:border-[#FF5738] outline-none"
+            className="w-full pl-8.5 pr-3 py-1.5 text-xs rounded-lg border border-zinc-200 focus:border-[#EE1D45] outline-none"
           />
         </div>
         <span className="text-xs text-zinc-400 font-mono">Use arrows to adjust dropdown display order</span>
@@ -364,7 +364,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
                             type="text"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="px-2 py-1 rounded border border-[#FF5738] text-xs font-bold text-zinc-900 outline-none"
+                            className="px-2 py-1 rounded border border-[#EE1D45] text-xs font-bold text-zinc-900 outline-none"
                             autoFocus
                           />
                           <input
@@ -434,7 +434,7 @@ export const CategoriesManagementView: React.FC<CategoriesManagementViewProps> =
                         onClick={() => onSelectCategoryForFilter && onSelectCategoryForFilter(cat.name)}
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-mono font-bold text-xs ${
                           workCount > 0
-                            ? 'bg-zinc-100 text-zinc-900 hover:bg-[#FF5738]/10 hover:text-[#FF5738]'
+                            ? 'bg-zinc-100 text-zinc-900 hover:bg-[#EE1D45]/10 hover:text-[#EE1D45]'
                             : 'text-zinc-400'
                         }`}
                         title="Click to view works with this category"

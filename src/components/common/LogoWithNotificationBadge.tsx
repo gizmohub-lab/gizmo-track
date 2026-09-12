@@ -125,7 +125,7 @@ export const LogoWithNotificationBadge: React.FC<LogoWithNotificationBadgeProps>
             }}
             title={accessibleLabel}
             aria-label={accessibleLabel}
-            className={`absolute ${config.badgePosition} ${config.badgeSize} ${config.borderWidth} z-20 rounded-full bg-[#FF5738] text-white font-mono font-black leading-none flex items-center justify-center border-white shadow-md select-none pointer-events-auto transition-transform active:scale-95 ${
+            className={`absolute ${config.badgePosition} ${config.badgeSize} ${config.borderWidth} z-20 rounded-full bg-[#EE1D45] text-white font-mono font-black leading-none flex items-center justify-center border-white shadow-md select-none pointer-events-auto transition-transform active:scale-95 ${
               onBadgeClick ? 'cursor-pointer hover:scale-110 hover:brightness-105' : 'cursor-default'
             }`}
           >

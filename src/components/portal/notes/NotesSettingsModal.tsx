@@ -34,7 +34,7 @@ export const NotesSettingsModal: React.FC<NotesSettingsModalProps> = ({
         <div className="p-4 border-b border-zinc-200 flex items-center justify-between bg-zinc-50">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-black">
-              <Settings className="w-4 h-4 text-[#FF5738]" />
+              <Settings className="w-4 h-4 text-[#EE1D45]" />
             </div>
             <div>
               <h3 className="font-display font-black text-base text-zinc-950">Notes Settings</h3>
@@ -54,7 +54,7 @@ export const NotesSettingsModal: React.FC<NotesSettingsModalProps> = ({
         <div className="p-5 space-y-4">
           <div>
             <h4 className="font-display font-bold text-sm text-zinc-900 mb-2 flex items-center gap-1.5">
-              <Tag className="w-4 h-4 text-[#FF5738]" />
+              <Tag className="w-4 h-4 text-[#EE1D45]" />
               <span>Note Categories</span>
             </h4>
 

@@ -83,14 +83,14 @@ export const DeadlineDetailModal: React.FC<DeadlineDetailModalProps> = ({
                 isOverdue
                   ? 'bg-rose-100 text-rose-700 border border-rose-200'
                   : isCritical
-                  ? 'bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1]'
+                  ? 'bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20'
                   : 'bg-zinc-100 text-black border border-zinc-200'
               }`}
             >
               {isOverdue ? (
                 <AlertTriangle className="w-5 h-5" />
               ) : isCritical ? (
-                <Bell className="w-5 h-5 text-[#FF5738]" />
+                <Bell className="w-5 h-5 text-[#EE1D45]" />
               ) : (
                 <Clock className="w-5 h-5" />
               )}
@@ -101,7 +101,7 @@ export const DeadlineDetailModal: React.FC<DeadlineDetailModalProps> = ({
                   {deadline.type.toUpperCase()}
                 </span>
                 {deadline.priority === 'Urgent' && (
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1]">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#EE1D45]/10 text-[#EE1D45] border border-[#EE1D45]/20">
                     Urgent Priority
                   </span>
                 )}
@@ -128,7 +128,7 @@ export const DeadlineDetailModal: React.FC<DeadlineDetailModalProps> = ({
               : isOverdue
               ? 'bg-rose-50 border-rose-100 text-rose-800'
               : isCritical
-              ? 'bg-[#FFF1EE] border-[#FFB2A1] text-[#FF5738]'
+              ? 'bg-[#EE1D45]/10 border-[#EE1D45]/20 text-[#EE1D45]'
               : 'bg-zinc-50 border-zinc-100 text-zinc-800'
           }`}
         >
@@ -172,7 +172,7 @@ export const DeadlineDetailModal: React.FC<DeadlineDetailModalProps> = ({
           <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
             <div className="flex items-center justify-between text-zinc-500 font-semibold mb-1">
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-[#FF5738]" />
+                <Calendar className="w-3.5 h-3.5 text-[#EE1D45]" />
                 <span>Exact Due Date &amp; Time</span>
               </span>
               <span className="font-mono text-[11px]">Local System Time</span>
@@ -239,7 +239,7 @@ export const DeadlineDetailModal: React.FC<DeadlineDetailModalProps> = ({
               deadline.type === 'invoice') && (
               <button
                 onClick={handleOpenRelated}
-                className="px-3.5 py-2 text-xs font-bold bg-[#FF5738] hover:bg-[#e0482c] text-white rounded-lg transition flex items-center gap-1.5 shadow-xs"
+                className="px-3.5 py-2 text-xs font-bold bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-lg transition flex items-center gap-1.5 shadow-xs"
               >
                 <span>Open in {deadline.type === 'project' ? 'Projects' : deadline.type === 'invoice' ? 'Invoices' : 'Local Works'}</span>
                 <ExternalLink className="w-3.5 h-3.5" />

@@ -316,7 +316,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5738]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#EE1D45]" />
             <div>
               <h2 className="text-base font-bold text-zinc-950">
                 {editingWork ? `Edit Work: ${editingWork.workId}` : 'New Local Work Order'}
@@ -339,7 +339,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
           {/* FIELD 1: Work Title */}
           <div>
             <label className="block font-bold text-zinc-900 mb-1">
-              1. Work Title <span className="text-[#FF5738]">*</span>
+              1. Work Title <span className="text-[#EE1D45]">*</span>
             </label>
             <input
               type="text"
@@ -347,7 +347,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
               placeholder="e.g. SNEC Annual Day Poster, Ramadan Special Flex 10x4"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] focus:ring-2 focus:ring-[#FF5738]/20 outline-none text-zinc-900 font-semibold text-xs transition"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] focus:ring-2 focus:ring-[#EE1D45]/20 outline-none text-zinc-900 font-semibold text-xs transition"
               autoFocus
             />
           </div>
@@ -356,7 +356,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
           <div className="p-3.5 rounded-xl bg-zinc-50/80 border border-zinc-200/80 space-y-3">
             <div className="flex items-center justify-between">
               <label className="block font-bold text-zinc-900">
-                2. Client Details <span className="text-[#FF5738]">*</span>
+                2. Client Details <span className="text-[#EE1D45]">*</span>
               </label>
               {clients.length > 0 && (
                 <div className="flex items-center gap-1.5 text-[11px]">
@@ -390,7 +390,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                     placeholder="e.g. DARUL HASANIYYAH SNEC"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white font-medium text-zinc-900"
+                    className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white font-medium text-zinc-900"
                   />
                 </div>
               </div>
@@ -407,7 +407,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                       setClientPhone(e.target.value);
                       setClientWhatsApp(e.target.value.replace(/[^\d]/g, ''));
                     }}
-                    className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white text-zinc-900"
+                    className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white text-zinc-900"
                   />
                 </div>
               </div>
@@ -420,7 +420,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                 placeholder="e.g. Darul Hasaniyyah Educational Council"
                 value={clientOrg}
                 onChange={(e) => setClientOrg(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white text-zinc-900"
+                className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white text-zinc-900"
               />
             </div>
           </div>
@@ -429,7 +429,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
           <div className="p-3.5 rounded-xl bg-zinc-50/80 border border-zinc-200/80 space-y-2.5">
             <div className="flex items-center justify-between">
               <label className="block font-bold text-zinc-900">
-                3. Work Type <span className="text-[#FF5738]">*</span>
+                3. Work Type <span className="text-[#EE1D45]">*</span>
               </label>
               <span className="text-[10px] text-zinc-400 font-mono">Top-level creative format</span>
             </div>
@@ -487,7 +487,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                   placeholder="e.g. Acrylic Board, Rubber Stamp Fabrication, 3D Mockup"
                   value={otherWorkTypeDetail}
                   onChange={(e) => setOtherWorkTypeDetail(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white text-zinc-900 text-xs"
+                  className="w-full px-3 py-1.5 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white text-zinc-900 text-xs"
                   autoFocus
                 />
               </div>
@@ -498,13 +498,13 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block font-bold text-zinc-900">
-                4. Design Work Category <span className="text-[#FF5738]">*</span>
+                4. Design Work Category <span className="text-[#EE1D45]">*</span>
               </label>
               {onOpenManageCategories && (
                 <button
                   type="button"
                   onClick={onOpenManageCategories}
-                  className="text-[11px] font-bold text-[#FF5738] hover:underline"
+                  className="text-[11px] font-bold text-[#EE1D45] hover:underline"
                 >
                   + Manage Categories
                 </button>
@@ -513,7 +513,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white text-zinc-900 font-medium text-xs"
+              className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white text-zinc-900 font-medium text-xs"
             >
               {activeCategoryList.map((catName) => (
                 <option key={catName} value={catName}>
@@ -527,12 +527,12 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
           <div className="p-3.5 rounded-xl bg-zinc-50/80 border border-zinc-200/80 space-y-3">
             <div className="flex items-center justify-between">
               <label className="block font-bold text-zinc-900">
-                5. Assigned Designer <span className="text-[#FF5738]">*</span>
+                5. Assigned Designer <span className="text-[#EE1D45]">*</span>
               </label>
               <button
                 type="button"
                 onClick={() => setShowAddDesignerModal(true)}
-                className="text-[11px] font-bold text-[#FF5738] hover:underline flex items-center gap-1"
+                className="text-[11px] font-bold text-[#EE1D45] hover:underline flex items-center gap-1"
               >
                 <UserPlus className="w-3 h-3" />
                 <span>+ Add Custom Designer</span>
@@ -545,7 +545,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
               <select
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white text-zinc-900 font-semibold text-xs"
+                className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white text-zinc-900 font-semibold text-xs"
               >
                 <option value="Unassigned">Unassigned</option>
 
@@ -588,12 +588,12 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                       onClick={() => handleToggleSupportingDesigner(d.name)}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition flex items-center gap-1 ${
                         isSelected
-                          ? 'bg-[#FF5738]/10 text-[#FF5738] border-[#FF5738]/30 font-bold'
+                          ? 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30 font-bold'
                           : 'bg-zinc-50 text-zinc-600 border-zinc-200 hover:bg-zinc-100'
                       }`}
                     >
                       <span>{d.name}</span>
-                      {isSelected && <Check className="w-3 h-3 text-[#FF5738]" />}
+                      {isSelected && <Check className="w-3 h-3 text-[#EE1D45]" />}
                     </button>
                   );
                 })}
@@ -635,7 +635,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-zinc-900 mb-1">
-                7. Deadline Date <span className="text-[#FF5738]">*</span>
+                7. Deadline Date <span className="text-[#EE1D45]">*</span>
               </label>
               <div className="relative">
                 <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -644,7 +644,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                   required
                   value={deadlineDate}
                   onChange={(e) => setDeadlineDate(e.target.value)}
-                  className="w-full pl-8.5 pr-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 font-medium text-xs"
+                  className="w-full pl-8.5 pr-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 font-medium text-xs"
                 />
               </div>
             </div>
@@ -657,7 +657,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                   type="time"
                   value={deadlineTime}
                   onChange={(e) => setDeadlineTime(e.target.value)}
-                  className="w-full pl-8.5 pr-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 font-medium text-xs"
+                  className="w-full pl-8.5 pr-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 font-medium text-xs"
                 />
               </div>
             </div>
@@ -689,7 +689,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
               {/* Total Amount */}
               <div>
                 <label className="block font-bold text-zinc-700 text-[11px] mb-1">
-                  Total Amount (₹) <span className="text-[#FF5738]">*</span>
+                  Total Amount (₹) <span className="text-[#EE1D45]">*</span>
                 </label>
                 <div className="relative">
                   <IndianRupee className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -702,7 +702,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
                     onChange={(e) =>
                       setTotalAmount(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))
                     }
-                    className="w-full pl-8 pr-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 font-bold text-xs bg-white"
+                    className="w-full pl-8 pr-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 font-bold text-xs bg-white"
                   />
                 </div>
                 <span className="text-[10px] text-zinc-400">Total charged</span>
@@ -734,12 +734,12 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
               <div>
                 <label className="block font-bold text-zinc-700 text-[11px] mb-1 flex items-center justify-between">
                   <span>Amount To Get (₹)</span>
-                  <span className="text-[10px] text-[#FF5738] font-semibold">Auto</span>
+                  <span className="text-[10px] text-[#EE1D45] font-semibold">Auto</span>
                 </label>
                 <div
                   className={`w-full px-3 py-2 rounded-xl border font-mono font-bold text-xs flex items-center justify-between select-none ${
                     calculatedAmountToGet > 0
-                      ? 'bg-[#FFF1EE] border-[#FFB2A1] text-[#FF5738]'
+                      ? 'bg-[#FFF0F3] border-[#FFB8C5] text-[#EE1D45]'
                       : 'bg-zinc-100 border-zinc-200 text-zinc-600'
                   }`}
                 >
@@ -760,7 +760,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as LocalWorkStatus)}
-                className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none bg-white text-zinc-900 font-semibold text-xs"
+                className="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none bg-white text-zinc-900 font-semibold text-xs"
               >
                 <option value="New">New</option>
                 <option value="Assigned">Assigned</option>
@@ -782,7 +782,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
               placeholder="e.g. Dimensions 18x24 inches, client requested Malayalam calligraphy title and high-res PDF for digital press..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 focus:border-[#FF5738] outline-none text-zinc-900 text-xs"
+              className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 focus:border-[#EE1D45] outline-none text-zinc-900 text-xs"
             />
           </div>
 
@@ -797,7 +797,7 @@ export const NewLocalWorkModal: React.FC<NewLocalWorkModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#FF5738] hover:bg-[#ff4220] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+              className="px-5 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
             >
               <Check className="w-4 h-4" />
               <span>{editingWork ? 'Save Changes' : 'Create Work Order'}</span>

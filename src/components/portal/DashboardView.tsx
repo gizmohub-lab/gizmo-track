@@ -57,7 +57,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FF5738]/20 text-[#FF5738] uppercase tracking-wider border border-[#FF5738]/30">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EE1D45]/20 text-[#EE1D45] uppercase tracking-wider border border-[#EE1D45]/30">
                 Gizmo Design Studio
               </span>
               <span className="text-xs text-zinc-400 font-mono">Live Operations</span>
@@ -81,7 +81,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             <button
               onClick={onCreateInvoice}
-              className="px-3.5 py-2 bg-[#FF5738] hover:bg-[#ff4220] active:scale-98 text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-2"
+              className="px-3.5 py-2 bg-[#EE1D45] hover:bg-[#D8143C] active:scale-98 text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-2"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>+ Create Invoice</span>

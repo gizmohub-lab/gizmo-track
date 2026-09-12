@@ -300,7 +300,7 @@ export default function App() {
         document.querySelector("link[rel*='icon']") || document.createElement('link');
       link.type = 'image/svg+xml';
       link.rel = 'shortcut icon';
-      link.href = `/icon.svg?v=gizmo-icon-official`;
+      link.href = `/icon.svg?v=gizmo-02`;
       if (!document.head.contains(link)) {
         document.head.appendChild(link);
       }
@@ -1549,7 +1549,7 @@ export default function App() {
   }, [currentRoute, isAdminAuthenticated]);
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 flex flex-col font-sans antialiased selection:bg-[#FF5738] selection:text-white">
+    <div className="min-h-screen bg-white text-zinc-900 flex flex-col font-sans antialiased selection:bg-[#EE1D45] selection:text-white">
       {isAdminLogin ? (
         <AdminLoginView
           onLoginSuccess={(targetRoute?: AppRoute) => {
@@ -1855,7 +1855,7 @@ export default function App() {
                   </div>
                   <button
                     onClick={() => setShowSettingsModal(true)}
-                    className="px-4 py-2.5 bg-[#FF5738] hover:bg-[#ff4220] text-white rounded-xl text-xs font-bold transition shadow-sm"
+                    className="px-4 py-2.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-bold transition shadow-sm"
                   >
                     Edit Studio Settings
                   </button>

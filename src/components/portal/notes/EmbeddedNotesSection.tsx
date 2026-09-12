@@ -86,7 +86,7 @@ export const EmbeddedNotesSection: React.FC<EmbeddedNotesSectionProps> = ({
       <div className="flex items-center justify-between gap-3 flex-wrap bg-zinc-50 p-4 rounded-2xl border border-zinc-200">
         <div>
           <h3 className="font-display font-black text-base text-zinc-950 flex items-center gap-2">
-            <NotebookPen className="w-4 h-4 text-[#FF5738]" />
+            <NotebookPen className="w-4 h-4 text-[#EE1D45]" />
             <span>Notes ({filteredNotes.length})</span>
           </h3>
           <p className="text-xs text-zinc-500">
@@ -103,7 +103,7 @@ export const EmbeddedNotesSection: React.FC<EmbeddedNotesSectionProps> = ({
           onClick={handleCreateNewNote}
           className="px-3.5 py-2 bg-black hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
         >
-          <Plus className="w-4 h-4 text-[#FF5738]" />
+          <Plus className="w-4 h-4 text-[#EE1D45]" />
           <span>+ Add Note</span>
         </button>
       </div>

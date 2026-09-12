@@ -222,12 +222,12 @@ export function evaluateDeadlineDynamic(
     statusType = 'DUE_NOW';
     badgeLabel = 'Due Now';
     countdownText = 'Due now';
-    badgeClass = 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1] font-bold';
+    badgeClass = 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30 font-bold';
   } else if (diffHours < 3) {
     // Due Soon
     statusType = 'DUE_SOON';
     badgeLabel = 'Due Soon';
-    badgeClass = 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1]';
+    badgeClass = 'bg-[#EE1D45]/10 text-[#EE1D45] border-[#EE1D45]/30';
 
     if (diffMin < 60) {
       countdownText = `Due in ${diffMin}m`;

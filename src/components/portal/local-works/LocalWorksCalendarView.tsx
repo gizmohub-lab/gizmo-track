@@ -128,13 +128,13 @@ export const LocalWorksCalendarView: React.FC<LocalWorksCalendarViewProps> = ({
               key={idx}
               className={`min-h-[105px] p-2 bg-white transition flex flex-col justify-between ${
                 !item.isCurrentMonth ? 'bg-zinc-50/50 text-zinc-300' : ''
-              } ${isToday ? 'ring-2 ring-inset ring-[#FF5738]/30 bg-[#FFF1EE]/10' : ''}`}
+              } ${isToday ? 'ring-2 ring-inset ring-[#EE1D45]/30 bg-[#FFF0F3]/10' : ''}`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span
                   className={`text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
                     isToday
-                      ? 'bg-[#FF5738] text-white'
+                      ? 'bg-[#EE1D45] text-white'
                       : item.isCurrentMonth
                       ? 'text-zinc-800'
                       : 'text-zinc-400'
@@ -162,7 +162,7 @@ export const LocalWorksCalendarView: React.FC<LocalWorksCalendarViewProps> = ({
                       onClick={() => onSelectWork(w)}
                       className={`w-full text-left p-1 rounded text-[10px] font-bold truncate block border transition ${
                         isUrgent
-                          ? 'bg-[#FFF1EE] text-[#FF5738] border-[#FFB2A1]'
+                          ? 'bg-[#FFF0F3] text-[#EE1D45] border-[#FFB8C5]'
                           : `${statusCfg.badgeBg} ${statusCfg.textColor} ${statusCfg.borderColor}`
                       }`}
                       title={`${w.title} (${w.clientName}) · ${w.deadlineTime || ''}`}

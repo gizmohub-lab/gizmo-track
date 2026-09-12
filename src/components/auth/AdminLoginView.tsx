@@ -49,10 +49,10 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center items-center p-4 selection:bg-[#FF5738] selection:text-white">
+    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center items-center p-4 selection:bg-[#EE1D45] selection:text-white">
       {/* Background glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#FF5738]/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#EE1D45]/10 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl space-y-6">
@@ -81,7 +81,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="admin@gizmoportalin.com"
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pl-10 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF5738] transition font-medium"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pl-10 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#EE1D45] transition font-medium"
               />
             </div>
           </div>
@@ -92,7 +92,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
               <button
                 type="button"
                 onClick={() => alert('Password reset link has been dispatched to configured admin security email.')}
-                className="text-[11px] text-[#FF5738] hover:underline font-semibold"
+                className="text-[11px] text-[#EE1D45] hover:underline font-semibold"
               >
                 Forgot password?
               </button>
@@ -105,7 +105,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pl-10 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF5738] transition font-medium"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pl-10 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#EE1D45] transition font-medium"
               />
             </div>
           </div>
@@ -116,7 +116,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-zinc-700 bg-zinc-950 text-[#FF5738] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                className="w-4 h-4 rounded border-zinc-700 bg-zinc-950 text-[#EE1D45] focus:ring-0 focus:ring-offset-0 cursor-pointer"
               />
               <span className="text-zinc-400 font-medium">Remember me</span>
             </label>
@@ -125,7 +125,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-4 rounded-xl bg-[#FF5738] hover:bg-[#ff4220] text-white font-extrabold transition shadow-lg shadow-[#FF5738]/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="w-full py-3.5 px-4 rounded-xl bg-[#EE1D45] hover:bg-[#D8143C] text-white font-extrabold transition shadow-lg shadow-[#EE1D45]/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <span className="flex items-center gap-2">

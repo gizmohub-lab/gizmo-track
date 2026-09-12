@@ -78,6 +78,7 @@ import { LocalWorksCalendarView } from './local-works/LocalWorksCalendarView';
 import { WorkTypeBadge } from './local-works/WorkTypeBadge';
 import { QuickAssignDropdown } from './local-works/QuickAssignDropdown';
 import { DesignersDirectoryView } from './local-works/DesignersDirectoryView';
+import { removeVaultFile } from '../../services/fileStorageVault';
 import { CategoriesManagementView } from './local-works/CategoriesManagementView';
 import { LocalWorksSettingsView } from './local-works/LocalWorksSettingsView';
 
@@ -513,6 +514,31 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
           id: `hist-${Date.now()}`,
           timestamp: `10 Sep 2026 · 11:35 AM`,
           action: `Attached ${attachment.name}`,
+        },
+      ],
+    };
+    onUpdateLocalWork(updated);
+    setSelectedWork(updated);
+  };
+
+  const handleDeleteAttachment = (workId: string, attachmentId: string) => {
+    const work = localWorks.find((w) => w.id === workId);
+    if (!work) return;
+
+    const targetAtt = (work.attachments || []).find((a) => a.id === attachmentId);
+    if (targetAtt) {
+      removeVaultFile(targetAtt.storagePath || targetAtt.id);
+    }
+
+    const updated: LocalWork = {
+      ...work,
+      attachments: (work.attachments || []).filter((a) => a.id !== attachmentId),
+      history: [
+        ...(work.history || []),
+        {
+          id: `hist-${Date.now()}`,
+          timestamp: `10 Sep 2026 · 11:35 AM`,
+          action: `Removed attachment ${targetAtt?.name || attachmentId}`,
         },
       ],
     };
@@ -1761,6 +1787,7 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
         onOpenPaymentModal={(work) => handleOpenPaymentModal(work)}
         onAddRevision={handleAddRevision}
         onAddAttachment={handleAddAttachment}
+        onDeleteAttachment={handleDeleteAttachment}
         onCreateInvoice={(work) => {
           setShowDetailModal(false);
           onCreateInvoiceForWork(work);

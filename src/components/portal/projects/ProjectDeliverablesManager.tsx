@@ -45,6 +45,7 @@ import {
   getDeliverableDeadlineStatus,
   formatSystemTimestamp,
 } from '../../../utils/projectUtils';
+import { registerVaultFile, removeVaultFile } from '../../../services/fileStorageVault';
 import { AddCustomDesignerModal } from '../local-works/AddCustomDesignerModal';
 
 interface ProjectDeliverablesManagerProps {
@@ -405,14 +406,26 @@ export const ProjectDeliverablesManager: React.FC<ProjectDeliverablesManagerProp
     const target = (project.deliverables || []).find((d) => d.id === deliverableId);
     if (!target || !fileObj.name.trim()) return;
 
+    const fileId = `file-${Date.now()}`;
+    const vaultAsset = registerVaultFile('project', project.id, {
+      id: fileId,
+      name: fileObj.name.trim(),
+      size: fileObj.size || '1.8 MB',
+      category: fileObj.category || 'Draft',
+      url: fileObj.url || undefined,
+      subEntityId: deliverableId,
+      uploadedAt: formatSystemTimestamp(),
+    });
+
     const newFile: ProjectFileAttachment = {
-      id: `file-${Date.now()}`,
+      id: fileId,
       name: fileObj.name.trim(),
       size: fileObj.size || '1.8 MB',
       category: fileObj.category || 'Draft',
       url: fileObj.url || undefined,
       deliverableId,
       uploadedAt: formatSystemTimestamp(),
+      storagePath: vaultAsset.storagePath,
     };
 
     const updatedDeliverables = (project.deliverables || []).map((d) => {
@@ -434,6 +447,31 @@ export const ProjectDeliverablesManager: React.FC<ProjectDeliverablesManagerProp
     });
 
     setFilesDeliverable(null);
+  };
+
+  const handleDeleteDeliverableAttachment = (deliverableId: string, fileId: string, storagePath?: string) => {
+    removeVaultFile(storagePath || fileId);
+    const updatedDeliverables = (project.deliverables || []).map((d) => {
+      if (d.id === deliverableId) {
+        return {
+          ...d,
+          attachments: (d.attachments || []).filter((a) => a.id !== fileId),
+        };
+      }
+      return d;
+    });
+    onUpdateProject({
+      ...project,
+      deliverables: updatedDeliverables,
+      files: (project.files || []).filter((f) => f.id !== fileId),
+    });
+    setFilesDeliverable((prev) => {
+      if (!prev || prev.id !== deliverableId) return prev;
+      return {
+        ...prev,
+        attachments: (prev.attachments || []).filter((a) => a.id !== fileId),
+      };
+    });
   };
 
   // --------------------------------------------------------------------------
@@ -1528,6 +1566,9 @@ export const ProjectDeliverablesManager: React.FC<ProjectDeliverablesManagerProp
           onAttachFile={(fileObj) =>
             handleAttachFileToDeliverable(filesDeliverable.id, fileObj)
           }
+          onDeleteFile={(fileId, storagePath) =>
+            handleDeleteDeliverableAttachment(filesDeliverable.id, fileId, storagePath)
+          }
         />
       )}
 
@@ -2289,12 +2330,14 @@ interface DeliverableFilesModalProps {
   deliverable: ProjectDeliverable;
   onClose: () => void;
   onAttachFile: (fileObj: { name: string; size?: string; category?: string; url?: string }) => void;
+  onDeleteFile?: (fileId: string, storagePath?: string) => void;
 }
 
 const DeliverableFilesModal: React.FC<DeliverableFilesModalProps> = ({
   deliverable,
   onClose,
   onAttachFile,
+  onDeleteFile,
 }) => {
   const [fileName, setFileName] = useState('');
   const [fileSize, setFileSize] = useState('2.4 MB');
@@ -2367,17 +2410,29 @@ const DeliverableFilesModal: React.FC<DeliverableFilesModalProps> = ({
                       </div>
                     </div>
 
-                    {file.url && (
-                      <a
-                        href={file.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-1.5 text-slate-400 hover:text-violet-600 rounded-lg hover:bg-slate-100"
-                        title="Open file"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </a>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {file.url && (
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-1.5 text-slate-400 hover:text-violet-600 rounded-lg hover:bg-slate-100"
+                          title="Open file"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                      {onDeleteFile && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteFile(file.id, file.storagePath)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+                          title="Remove file"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

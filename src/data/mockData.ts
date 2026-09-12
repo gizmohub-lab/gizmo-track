@@ -11,6 +11,8 @@ import {
   Note,
 } from '../types';
 import { normalizeProject } from '../utils/projectUtils';
+import { safeLoadItem, safeSaveItem, PORTAL_STORAGE_KEYS } from '../services/safeStorage';
+import { getEntityVaultFiles, registerVaultFile } from '../services/fileStorageVault';
 
 export const defaultSettings: InvoiceSettings = {
   businessProfile: {
@@ -1518,92 +1520,33 @@ export const initialDeadlines: DeadlineItem[] = [
   },
 ];
 
-// Helper functions for persistent storage
-const STORAGE_KEYS = {
-  INVOICES: 'gizmo_portal_invoices_v1',
-  SETTINGS: 'gizmo_portal_settings_v1',
-  CLIENTS: 'gizmo_portal_clients_v1',
-  PROJECTS: 'gizmo_portal_projects_v1',
-  LOCAL_WORKS: 'gizmo_portal_local_works_v3',
-  DEADLINES: 'gizmo_portal_deadlines_v1',
-  CATEGORIES: 'gizmo_portal_categories_v1',
-  DESIGN_CATEGORIES: 'gizmo_portal_design_categories_v2',
-  DESIGNERS: 'gizmo_portal_designers_v1',
-  WORK_TYPES: 'gizmo_portal_work_types_v1',
-  SMART_DEFAULTS: 'gizmo_portal_smart_defaults_v1',
-  NOTES: 'gizmo_portal_notes_v1',
-  NOTE_CATEGORIES: 'gizmo_portal_note_categories_v1',
-};
+// Helper functions for persistent storage & change isolation
+export const STORAGE_KEYS = PORTAL_STORAGE_KEYS;
 
 export function loadWorkTypes(): WorkTypeItem[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.WORK_TYPES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading work types from localStorage', e);
-  }
-  return initialWorkTypes;
+  return safeLoadItem<WorkTypeItem[]>(STORAGE_KEYS.WORK_TYPES, initialWorkTypes);
 }
 
 export function saveWorkTypes(workTypes: WorkTypeItem[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.WORK_TYPES, JSON.stringify(workTypes));
-  } catch (e) {
-    console.warn('Error saving work types', e);
-  }
+  safeSaveItem(STORAGE_KEYS.WORK_TYPES, workTypes);
 }
 
 export function loadDesignCategories(): DesignCategory[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.DESIGN_CATEGORIES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading design categories from localStorage', e);
-  }
-  return initialDesignCategories;
+  return safeLoadItem<DesignCategory[]>(STORAGE_KEYS.DESIGN_CATEGORIES, initialDesignCategories);
 }
 
 export function saveDesignCategories(categories: DesignCategory[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.DESIGN_CATEGORIES, JSON.stringify(categories));
-    // Also sync string list for backward compatibility
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories.map((c) => c.name)));
-  } catch (e) {
-    console.warn('Error saving design categories', e);
-  }
+  safeSaveItem(STORAGE_KEYS.DESIGN_CATEGORIES, categories);
+  // Also sync string list for backward compatibility
+  safeSaveItem(STORAGE_KEYS.CATEGORIES, categories.map((c) => c.name));
 }
 
 export function loadDesigners(): CustomDesigner[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.DESIGNERS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading designers from localStorage', e);
-  }
-  return initialDesigners;
+  return safeLoadItem<CustomDesigner[]>(STORAGE_KEYS.DESIGNERS, initialDesigners);
 }
 
 export function saveDesigners(designers: CustomDesigner[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.DESIGNERS, JSON.stringify(designers));
-  } catch (e) {
-    console.warn('Error saving designers', e);
-  }
+  safeSaveItem(STORAGE_KEYS.DESIGNERS, designers);
 }
 
 export interface SmartDefaults {
@@ -1613,197 +1556,191 @@ export interface SmartDefaults {
 }
 
 export function loadSmartDefaults(): SmartDefaults {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.SMART_DEFAULTS);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (e) {
-    console.warn('Error reading smart defaults from localStorage', e);
-  }
-  return {
+  return safeLoadItem<SmartDefaults>(STORAGE_KEYS.SMART_DEFAULTS, {
     lastWorkType: 'Poster',
     lastCategory: 'Poster',
     defaultDesigner: undefined,
-  };
+  });
 }
 
 export function saveSmartDefaults(defaults: SmartDefaults): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.SMART_DEFAULTS, JSON.stringify(defaults));
-  } catch (e) {
-    console.warn('Error saving smart defaults', e);
-  }
+  safeSaveItem(STORAGE_KEYS.SMART_DEFAULTS, defaults);
 }
 
 export function loadCategories(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading categories from localStorage', e);
-  }
-  return initialWorkCategories;
+  return safeLoadItem<string[]>(STORAGE_KEYS.CATEGORIES, initialWorkCategories);
 }
 
 export function saveCategories(categories: string[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
-  } catch (e) {
-    console.warn('Error saving categories', e);
-  }
+  safeSaveItem(STORAGE_KEYS.CATEGORIES, categories);
 }
 
 export function loadInvoices(): Invoice[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.INVOICES);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (e) {
-    console.warn('Error reading invoices from localStorage', e);
-  }
-  return initialInvoices;
+  return safeLoadItem<Invoice[]>(STORAGE_KEYS.INVOICES, initialInvoices);
 }
 
 export function saveInvoices(invoices: Invoice[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-  } catch (e) {
-    console.warn('Error saving invoices', e);
-  }
+  safeSaveItem(STORAGE_KEYS.INVOICES, invoices);
 }
 
 export function loadSettings(): InvoiceSettings {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-    if (raw) {
-      return { ...defaultSettings, ...JSON.parse(raw) };
-    }
-  } catch (e) {
-    console.warn('Error reading settings from localStorage', e);
+  const loaded = safeLoadItem<InvoiceSettings | null>(STORAGE_KEYS.SETTINGS, null);
+  if (loaded) {
+    return { ...defaultSettings, ...loaded };
   }
   return defaultSettings;
 }
 
 export function saveSettings(settings: InvoiceSettings): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
-  } catch (e) {
-    console.warn('Error saving settings', e);
-  }
+  safeSaveItem(STORAGE_KEYS.SETTINGS, settings);
 }
 
 export function loadClients(): Client[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CLIENTS);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (e) {
-    console.warn('Error reading clients from localStorage', e);
-  }
-  return initialClients;
+  return safeLoadItem<Client[]>(STORAGE_KEYS.CLIENTS, initialClients);
 }
 
 export function saveClients(clients: Client[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.CLIENTS, JSON.stringify(clients));
-  } catch (e) {
-    console.warn('Error saving clients', e);
-  }
+  safeSaveItem(STORAGE_KEYS.CLIENTS, clients);
 }
 
 export function loadProjects(): Project[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PROJECTS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((p, idx) => normalizeProject(p, idx));
+  const loaded = safeLoadItem<Project[]>(
+    STORAGE_KEYS.PROJECTS,
+    initialProjects.map((p, idx) => normalizeProject(p, idx))
+  );
+
+  return loaded.map((p, idx) => {
+    const normalized = normalizeProject(p, idx);
+    // Non-destructively merge persistent files from the File Storage Vault
+    const vaultFiles = getEntityVaultFiles('project', normalized.id);
+    if (vaultFiles.length > 0) {
+      const existingFileIds = new Set((normalized.files || []).map((f) => f.id));
+      const missingFiles = vaultFiles
+        .filter((vf) => !existingFileIds.has(vf.fileId))
+        .map((vf) => ({
+          id: vf.fileId,
+          name: vf.fileName,
+          size: vf.fileSize,
+          type: vf.fileType,
+          category: vf.category,
+          url: vf.url,
+          deliverableId: vf.subEntityId,
+          uploadedAt: vf.uploadedAt,
+          storagePath: vf.storagePath,
+        }));
+
+      if (missingFiles.length > 0) {
+        normalized.files = [...(normalized.files || []), ...missingFiles];
       }
     }
-  } catch (e) {
-    console.warn('Error reading projects from localStorage', e);
-  }
-  return initialProjects.map((p, idx) => normalizeProject(p, idx));
+    return normalized;
+  });
 }
 
 export function saveProjects(projects: Project[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(projects));
-  } catch (e) {
-    console.warn('Error saving projects', e);
-  }
+  // Ensure any attached files are persistently registered in the vault
+  projects.forEach((proj) => {
+    if (proj.files && proj.files.length > 0) {
+      proj.files.forEach((f) => {
+        registerVaultFile('project', proj.id, {
+          id: f.id,
+          name: f.name,
+          size: f.size,
+          type: f.type,
+          category: f.category,
+          url: f.url,
+          subEntityId: f.deliverableId,
+          uploadedAt: f.uploadedAt,
+        });
+      });
+    }
+  });
+
+  safeSaveItem(STORAGE_KEYS.PROJECTS, projects);
 }
 
 export function loadLocalWorks(): LocalWork[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.LOCAL_WORKS);
-    if (raw) {
-      const parsed: LocalWork[] = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((w) => {
-          const total = Number(w.totalAmount ?? w.amount ?? 0);
-          let got = w.amountGot;
-          if (got === undefined || got === null) {
-            got = w.paymentStatus === 'Paid' ? total : w.paymentStatus === 'Partially Paid' ? Math.round(total / 2) : 0;
-          }
-          const numGot = Number(got) || 0;
-          const toGet = Math.max(0, total - numGot);
-          let status: any = w.paymentStatus;
-          if (!status || status === 'Pending') {
-            status = numGot >= total && total > 0 ? 'Paid' : numGot > 0 ? 'Partially Paid' : 'Not Paid';
-          }
-          return {
-            ...w,
-            totalAmount: total,
-            amount: total,
-            amountGot: numGot,
-            amountToGet: toGet,
-            paymentStatus: status,
-            paymentRecords: w.paymentRecords || (numGot > 0 ? [{ id: `pr-init-${w.id}`, amount: numGot, date: w.date || '2026-09-08', method: 'UPI', note: 'Initial payment' }] : []),
-          };
-        });
+  const loaded = safeLoadItem<LocalWork[]>(STORAGE_KEYS.LOCAL_WORKS, initialLocalWorks);
+
+  return loaded.map((w) => {
+    const total = Number(w.totalAmount ?? w.amount ?? 0);
+    let got = w.amountGot;
+    if (got === undefined || got === null) {
+      got = w.paymentStatus === 'Paid' ? total : w.paymentStatus === 'Partially Paid' ? Math.round(total / 2) : 0;
+    }
+    const numGot = Number(got) || 0;
+    const toGet = Math.max(0, total - numGot);
+    let status: any = w.paymentStatus;
+    if (!status || status === 'Pending') {
+      status = numGot >= total && total > 0 ? 'Paid' : numGot > 0 ? 'Partially Paid' : 'Not Paid';
+    }
+
+    // Merge any files from vault
+    const vaultFiles = getEntityVaultFiles('local-work', w.id);
+    let attachments = w.attachments || [];
+    if (vaultFiles.length > 0) {
+      const existingAttIds = new Set(attachments.map((a) => a.id));
+      const missingAtts = vaultFiles
+        .filter((vf) => !existingAttIds.has(vf.fileId))
+        .map((vf) => ({
+          id: vf.fileId,
+          name: vf.fileName,
+          size: vf.fileSize,
+          type: vf.fileType,
+          category: vf.category as any,
+          url: vf.url,
+          uploadedAt: vf.uploadedAt,
+          storagePath: vf.storagePath,
+        }));
+      if (missingAtts.length > 0) {
+        attachments = [...attachments, ...missingAtts];
       }
     }
-  } catch (e) {
-    console.warn('Error reading local works from localStorage', e);
-  }
-  return initialLocalWorks;
+
+    return {
+      ...w,
+      totalAmount: total,
+      amount: total,
+      amountGot: numGot,
+      amountToGet: toGet,
+      paymentStatus: status,
+      attachments,
+      paymentRecords:
+        w.paymentRecords ||
+        (numGot > 0
+          ? [{ id: `pr-init-${w.id}`, amount: numGot, date: w.date || '2026-09-08', method: 'UPI', note: 'Initial payment' }]
+          : []),
+    };
+  });
 }
 
 export function saveLocalWorks(works: LocalWork[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.LOCAL_WORKS, JSON.stringify(works));
-  } catch (e) {
-    console.warn('Error saving local works', e);
-  }
+  // Sync attachments to vault
+  works.forEach((w) => {
+    if (w.attachments && w.attachments.length > 0) {
+      w.attachments.forEach((a) => {
+        registerVaultFile('local-work', w.id, {
+          id: a.id,
+          name: a.name,
+          size: a.size,
+          type: a.type,
+          category: a.category,
+          url: a.url,
+          uploadedAt: a.uploadedAt,
+        });
+      });
+    }
+  });
+
+  safeSaveItem(STORAGE_KEYS.LOCAL_WORKS, works);
 }
 
 export function loadDeadlines(): DeadlineItem[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.DEADLINES);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (e) {
-    console.warn('Error reading deadlines from localStorage', e);
-  }
-  return initialDeadlines;
+  return safeLoadItem<DeadlineItem[]>(STORAGE_KEYS.DEADLINES, initialDeadlines);
 }
 
 export function saveDeadlines(deadlines: DeadlineItem[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.DEADLINES, JSON.stringify(deadlines));
-  } catch (e) {
-    console.warn('Error saving deadlines', e);
-  }
+  safeSaveItem(STORAGE_KEYS.DEADLINES, deadlines);
 }
 
 export const initialNoteCategories: string[] = [
@@ -1877,48 +1814,18 @@ export const initialNotes: Note[] = [
 ];
 
 export function loadNotes(): Note[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading notes from localStorage', e);
-  }
-  return initialNotes;
+  return safeLoadItem<Note[]>(STORAGE_KEYS.NOTES, initialNotes);
 }
 
 export function saveNotes(notes: Note[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
-  } catch (e) {
-    console.warn('Error saving notes', e);
-  }
+  safeSaveItem(STORAGE_KEYS.NOTES, notes);
 }
 
 export function loadNoteCategories(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.NOTE_CATEGORIES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading note categories from localStorage', e);
-  }
-  return initialNoteCategories;
+  return safeLoadItem<string[]>(STORAGE_KEYS.NOTE_CATEGORIES, initialNoteCategories);
 }
 
 export function saveNoteCategories(categories: string[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.NOTE_CATEGORIES, JSON.stringify(categories));
-  } catch (e) {
-    console.warn('Error saving note categories', e);
-  }
+  safeSaveItem(STORAGE_KEYS.NOTE_CATEGORIES, categories);
 }
 

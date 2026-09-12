@@ -13,6 +13,8 @@ import {
   Client,
 } from '../types';
 import { calculatePaymentStatus, calculateAmountToGet, sumReceivedPayments } from './paymentUtils';
+import { safeLoadItem, safeSaveItem } from '../services/safeStorage';
+import { buildStoragePath } from '../services/fileStorageVault';
 
 export const PROJECT_STORAGE_KEYS = {
   PROJECT_TYPES: 'gizmo_project_types_v2',
@@ -494,9 +496,9 @@ export function normalizeProject(raw: any, index: number = 0): Project {
     },
   ] : []);
 
-  // Default sample deliverables if none present
+  // Preserve user's deliverables array if already defined (including empty list)
   let deliverables: ProjectDeliverable[] = raw.deliverables;
-  if (!deliverables || deliverables.length === 0) {
+  if (!Array.isArray(deliverables)) {
     if (raw.status === 'Completed') {
       deliverables = [
         { id: `del-${id}-1`, title: 'Concept Design & Initial Proof', type: 'Milestone', isRequired: true, isCompleted: true, completedAt: '12 Aug 2026 · 02:00 PM', orderIndex: 1 },
@@ -604,7 +606,10 @@ export function normalizeProject(raw: any, index: number = 0): Project {
     description: raw.description || '',
     deliverables,
     revisions: raw.revisions || [],
-    files: raw.files || [],
+    files: (raw.files || []).map((f: any) => ({
+      ...f,
+      storagePath: f.storagePath || buildStoragePath('project', id, f.id),
+    })),
     customFieldValues: raw.customFieldValues || {},
     history,
     internalNotes: raw.internalNotes || '',
@@ -1127,127 +1132,49 @@ export function getProjectsControlCenterSummary(projects: Project[] = []) {
 
 // 15. LOCAL STORAGE ACCESSORS FOR CONFIGURABLE LISTS
 export function loadProjectTypes(): ProjectTypeItem[] {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEYS.PROJECT_TYPES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn('Error reading project types', e);
-  }
-  return defaultProjectTypes;
+  return safeLoadItem<ProjectTypeItem[]>(PROJECT_STORAGE_KEYS.PROJECT_TYPES, defaultProjectTypes);
 }
 
 export function saveProjectTypes(types: ProjectTypeItem[]): void {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEYS.PROJECT_TYPES, JSON.stringify(types));
-  } catch (e) {
-    console.warn('Error saving project types', e);
-  }
+  safeSaveItem(PROJECT_STORAGE_KEYS.PROJECT_TYPES, types);
 }
 
 export function loadProjectPriorities(): ProjectPriorityItem[] {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEYS.PROJECT_PRIORITIES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn('Error reading priorities', e);
-  }
-  return defaultProjectPriorities;
+  return safeLoadItem<ProjectPriorityItem[]>(PROJECT_STORAGE_KEYS.PROJECT_PRIORITIES, defaultProjectPriorities);
 }
 
 export function saveProjectPriorities(items: ProjectPriorityItem[]): void {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEYS.PROJECT_PRIORITIES, JSON.stringify(items));
-  } catch (e) {
-    console.warn('Error saving priorities', e);
-  }
+  safeSaveItem(PROJECT_STORAGE_KEYS.PROJECT_PRIORITIES, items);
 }
 
 export function loadDeliverableTypes(): DeliverableTypeItem[] {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEYS.DELIVERABLE_TYPES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn('Error reading deliverable types', e);
-  }
-  return defaultDeliverableTypes;
+  return safeLoadItem<DeliverableTypeItem[]>(PROJECT_STORAGE_KEYS.DELIVERABLE_TYPES, defaultDeliverableTypes);
 }
 
 export function saveDeliverableTypes(items: DeliverableTypeItem[]): void {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEYS.DELIVERABLE_TYPES, JSON.stringify(items));
-  } catch (e) {
-    console.warn('Error saving deliverable types', e);
-  }
+  safeSaveItem(PROJECT_STORAGE_KEYS.DELIVERABLE_TYPES, items);
 }
 
 export function loadProjectStatuses(): ProjectStatusItem[] {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEYS.PROJECT_STATUSES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn('Error reading project statuses', e);
-  }
-  return defaultProjectStatuses;
+  return safeLoadItem<ProjectStatusItem[]>(PROJECT_STORAGE_KEYS.PROJECT_STATUSES, defaultProjectStatuses);
 }
 
 export function saveProjectStatuses(items: ProjectStatusItem[]): void {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEYS.PROJECT_STATUSES, JSON.stringify(items));
-  } catch (e) {
-    console.warn('Error saving project statuses', e);
-  }
+  safeSaveItem(PROJECT_STORAGE_KEYS.PROJECT_STATUSES, items);
 }
 
 export function loadProjectCustomFields(): ProjectCustomFieldDef[] {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEYS.CUSTOM_FIELDS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn('Error reading custom fields', e);
-  }
-  return defaultCustomFields;
+  return safeLoadItem<ProjectCustomFieldDef[]>(PROJECT_STORAGE_KEYS.CUSTOM_FIELDS, defaultCustomFields);
 }
 
 export function saveProjectCustomFields(items: ProjectCustomFieldDef[]): void {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEYS.CUSTOM_FIELDS, JSON.stringify(items));
-  } catch (e) {
-    console.warn('Error saving custom fields', e);
-  }
+  safeSaveItem(PROJECT_STORAGE_KEYS.CUSTOM_FIELDS, items);
 }
 
 export function loadProjectTemplates(): ProjectTemplate[] {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEYS.TEMPLATES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn('Error reading templates', e);
-  }
-  return defaultProjectTemplates;
+  return safeLoadItem<ProjectTemplate[]>(PROJECT_STORAGE_KEYS.TEMPLATES, defaultProjectTemplates);
 }
 
 export function saveProjectTemplates(items: ProjectTemplate[]): void {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEYS.TEMPLATES, JSON.stringify(items));
-  } catch (e) {
-    console.warn('Error saving templates', e);
-  }
+  safeSaveItem(PROJECT_STORAGE_KEYS.TEMPLATES, items);
 }

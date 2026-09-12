@@ -43,6 +43,7 @@ import {
 } from '../../../utils/localWorkUtils';
 import { WorkTypeBadge } from './WorkTypeBadge';
 import { QuickAssignDropdown } from './QuickAssignDropdown';
+import { registerVaultFile, removeVaultFile } from '../../../services/fileStorageVault';
 
 interface LocalWorkDetailModalProps {
   work: LocalWork | null;
@@ -56,6 +57,7 @@ interface LocalWorkDetailModalProps {
   onOpenPaymentModal?: (work: LocalWork) => void;
   onAddRevision: (id: string, note: string) => void;
   onAddAttachment: (id: string, attachment: LocalWorkAttachment) => void;
+  onDeleteAttachment?: (workId: string, attachmentId: string) => void;
   onCreateInvoice: (work: LocalWork) => void;
   designers?: CustomDesigner[];
   onQuickAssignDesigner?: (id: string, designer: string) => void;
@@ -74,6 +76,7 @@ export const LocalWorkDetailModal: React.FC<LocalWorkDetailModalProps> = ({
   onOpenPaymentModal,
   onAddRevision,
   onAddAttachment,
+  onDeleteAttachment,
   onCreateInvoice,
   designers = [],
   onQuickAssignDesigner,
@@ -116,14 +119,26 @@ export const LocalWorkDetailModal: React.FC<LocalWorkDetailModalProps> = ({
     e.preventDefault();
     if (!attachmentName.trim()) return;
 
-    const newAtt: LocalWorkAttachment = {
-      id: `att-${Date.now()}`,
+    const attId = `att-${Date.now()}`;
+    const vaultAsset = registerVaultFile('local-work', work.id, {
+      id: attId,
       name: attachmentName.trim(),
       type: attachmentUrl.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
       size: '1.2 MB',
       category: attachmentCategory,
       url: attachmentUrl.trim() || undefined,
       uploadedAt: new Date().toISOString().split('T')[0],
+    });
+
+    const newAtt: LocalWorkAttachment = {
+      id: attId,
+      name: attachmentName.trim(),
+      type: attachmentUrl.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+      size: '1.2 MB',
+      category: attachmentCategory,
+      url: attachmentUrl.trim() || undefined,
+      uploadedAt: new Date().toISOString().split('T')[0],
+      storagePath: vaultAsset.storagePath,
     };
 
     onAddAttachment(work.id, newAtt);
@@ -565,20 +580,33 @@ export const LocalWorkDetailModal: React.FC<LocalWorkDetailModalProps> = ({
                       <p className="font-bold text-zinc-900 truncate mt-1 text-xs">{att.name}</p>
                       <p className="text-[10px] text-zinc-400 font-mono">{att.size || '1.5 MB'}</p>
                     </div>
-                    {att.url ? (
-                      <a
-                        href={att.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-lg"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    ) : (
-                      <span className="p-2 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-lg cursor-pointer">
-                        <Download className="w-4 h-4" />
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {att.url ? (
+                        <a
+                          href={att.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-lg transition"
+                          title="Open link"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        <span className="p-1.5 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-lg cursor-pointer transition">
+                          <Download className="w-4 h-4" />
+                        </span>
+                      )}
+                      {onDeleteAttachment && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteAttachment(work.id, att.id)}
+                          className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                          title="Delete file"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))
               ) : (

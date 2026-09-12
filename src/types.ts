@@ -42,6 +42,7 @@ export type ProjectRevision = ProjectDeliverableRevision;
 export interface ProjectFileAttachment {
   id: string;
   name: string;
+  storagePath?: string; // Canonical persistent path e.g. /projects/{projectId}/files/{fileId}
   url?: string;
   size?: string;
   type?: string;
@@ -278,6 +279,7 @@ export interface LocalWorkPaymentRecord {
 export interface LocalWorkAttachment {
   id: string;
   name: string;
+  storagePath?: string; // Canonical persistent path e.g. /local-works/{workId}/files/{fileId}
   type: string;
   size?: string;
   category?: 'Design reference' | 'Client image' | 'Brief' | 'Final design' | 'Other';

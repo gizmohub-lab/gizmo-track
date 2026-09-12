@@ -63,6 +63,7 @@ import {
   getPaymentStatusBadgeStyle,
 } from '../../../utils/paymentUtils';
 import { generateInvoicePDF } from '../../../utils/pdfGenerator';
+import { registerVaultFile, removeVaultFile } from '../../../services/fileStorageVault';
 import { QuickAddCustomModal } from './QuickAddCustomModal';
 import { ProjectCreateInvoiceModal, InvoiceCreationMode } from './ProjectCreateInvoiceModal';
 import { ProjectDeliverablesManager } from './ProjectDeliverablesManager';
@@ -488,14 +489,26 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
     e.preventDefault();
     if (!fileName.trim()) return;
 
-    const newFile: ProjectFile = {
-      id: `file-${Date.now()}`,
+    const fileId = `file-${Date.now()}`;
+    const vaultAsset = registerVaultFile('project', project.id, {
+      id: fileId,
       name: fileName.trim(),
       type: 'document',
       size: fileSize.trim() || '1.0 MB',
       url: fileUrl.trim() || undefined,
       category: fileCategory,
       uploadedAt: formatSystemTimestamp(),
+    });
+
+    const newFile: ProjectFile = {
+      id: fileId,
+      name: fileName.trim(),
+      type: 'document',
+      size: fileSize.trim() || '1.0 MB',
+      url: fileUrl.trim() || undefined,
+      category: fileCategory,
+      uploadedAt: formatSystemTimestamp(),
+      storagePath: vaultAsset.storagePath,
     };
 
     const updated = {
@@ -1508,6 +1521,7 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
                         )}
                         <button
                           onClick={() => {
+                            removeVaultFile(file.storagePath || file.id);
                             const updated = {
                               ...project,
                               files: (project.files || []).filter((f) => f.id !== file.id),

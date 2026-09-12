@@ -300,7 +300,7 @@ export default function App() {
         document.querySelector("link[rel*='icon']") || document.createElement('link');
       link.type = 'image/svg+xml';
       link.rel = 'shortcut icon';
-      link.href = `/icon.svg?v=gizmo-02`;
+      link.href = `/icon.svg?v=gizmo-icon-v3`;
       if (!document.head.contains(link)) {
         document.head.appendChild(link);
       }

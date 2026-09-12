@@ -86,6 +86,44 @@
   animation: skeleton-glow 1.5s ease-in-out infinite;
 }
 
+/* Subtle Slow Studio Marquee */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee-slow {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-slow:hover {
+  animation-play-state: paused;
+}
+
+/* Subtle Hero Scroll Indicator Bounce */
+@keyframes scroll-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+.animate-scroll-bob {
+  animation: scroll-bob 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-slow {
+    animation: none !important;
+    transform: none !important;
+  }
+  .animate-scroll-bob {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 /* Continuous Hanging Bell Swing Animation for Permission Banner Icon Only */
 @keyframes bell-swing {
   0% { transform: rotate(-18deg); }

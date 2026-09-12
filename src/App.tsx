@@ -1937,16 +1937,20 @@ export default function App() {
             onNavigate={navigate}
             activeProjectsCount={projects.filter((p) => p.status !== 'Completed').length || 3}
             onOpenStartProject={() => setShowStartProjectModal(true)}
-            unreadNotificationsCount={gizmoNotifications.filter((n) => !n.read && !n.isRead).length}
-            onOpenNotifications={() => navigate('admin-dashboard')}
+            isAdminAuthenticated={isAdminAuthenticated}
           />
 
-          <main className="flex-1 pt-16 sm:pt-20">
+          <main className="flex-1">
             {currentRoute === 'home' && (
               <HomeView
                 onNavigate={navigate}
-                onOpenStartProject={() => setShowStartProjectModal(true)}
+                onOpenStartProject={(initialService) => {
+                  setShowStartProjectModal(true);
+                }}
                 activeProjectsCount={projects.filter((p) => p.status !== 'Completed').length || 3}
+                projects={projects}
+                clients={clients}
+                localWorks={localWorks}
               />
             )}
 
@@ -1961,6 +1965,7 @@ export default function App() {
               <WorkView
                 onNavigate={navigate}
                 onOpenStartProject={() => setShowStartProjectModal(true)}
+                projects={projects}
               />
             )}
 

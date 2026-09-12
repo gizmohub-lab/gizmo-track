@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
-import {defineConfig, Plugin} from 'vite';
+import { defineConfig, Plugin } from 'vite';
 
 // LINT.IfChange(aistudio_media_plugin)
 function aistudioMediaPlugin(): Plugin {
@@ -19,7 +19,7 @@ function aistudioMediaPlugin(): Plugin {
               __dirname,
               'public',
               'assets',
-              'aistudio',
+              'aistudio'
             );
             const filePath = path.resolve(__dirname, 'public', relativePath);
             if (
@@ -47,7 +47,7 @@ function aistudioMediaPlugin(): Plugin {
               };
               res.setHeader(
                 'Content-Type',
-                mimeMap[ext] || 'application/octet-stream',
+                mimeMap[ext] || 'application/octet-stream'
               );
               res.setHeader('Cache-Control', 'no-cache');
               fs.createReadStream(filePath).pipe(res);
@@ -79,11 +79,15 @@ export default defineConfig(() => {
       },
     },
     server: {
+      host: '0.0.0.0',
+      port: 3000,
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
+    },
+    build: {
+      outDir: 'dist',
+      emptyOutDir: true,
     },
   };
 });

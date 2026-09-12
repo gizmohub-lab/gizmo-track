@@ -1,348 +1,412 @@
 import React from 'react';
 import {
-  ArrowRight,
   Sparkles,
-  Layers,
-  Video,
-  Printer,
-  Palette,
+  ArrowRight,
+  ArrowUpRight,
+  ShieldCheck,
   CheckCircle2,
   Clock,
-  Flame,
-  ShieldCheck,
+  Printer,
+  Layers,
+  Video,
+  Palette,
+  Eye,
   MessageCircle,
-  ExternalLink,
-  ChevronRight,
+  Zap,
   Star,
+  ExternalLink,
+  FolderKanban,
+  Building2,
+  Globe,
+  Award,
 } from 'lucide-react';
-import { AppRoute, Project } from '../../types';
+import { AppRoute, Project, Client, LocalWork } from '../../types';
+import { GizmoLogo } from '../common/GizmoLogo';
 
 interface HomeViewProps {
   onNavigate: (route: AppRoute) => void;
-  onOpenStartProject: () => void;
+  onOpenStartProject: (initialService?: string) => void;
   activeProjectsCount?: number;
+  projects?: Project[];
+  clients?: Client[];
+  localWorks?: LocalWork[];
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onNavigate,
   onOpenStartProject,
-  activeProjectsCount = 3,
+  activeProjectsCount = 5,
+  projects = [],
+  clients = [],
+  localWorks = [],
 }) => {
+  // 4 Core Disciplines from Reference
+  const disciplines = [
+    {
+      id: 'brand',
+      title: 'Brand & Visual Identity',
+      category: 'Brand Systems',
+      icon: Palette,
+      desc: 'Vector logomarks, typography manuals, brand guidelines, stationery & complete institutional brand architecture.',
+      deliverables: ['Vector AI/SVG', 'Typography Specs', 'Brand Guidelines PDF'],
+      serviceKey: 'Brand Identity',
+    },
+    {
+      id: 'motion',
+      title: 'Motion & Video Graphics',
+      category: 'Motion & 3D',
+      icon: Video,
+      desc: 'Kinetic social reels, 3D launch teasers, logo stings, promotional video edits & high-energy event trailers.',
+      deliverables: ['60 FPS 4K/1080p', '9:16 Vertical Reels', 'Sound Design Synced'],
+      serviceKey: 'Motion Graphics',
+    },
+    {
+      id: 'flex',
+      title: 'Flex & Print Production',
+      category: 'In-House Print',
+      icon: Printer,
+      desc: '50ft highway flex hoardings, star backlit signboards, event roll-ups, vinyl stickers & solvent UV press output.',
+      deliverables: ['In-House Mimaki Presses', 'UV Weather Shield', 'Installation Ready'],
+      serviceKey: 'Large Format Flex Print',
+    },
+    {
+      id: 'digital',
+      title: 'Digital & Web Portals',
+      category: 'Digital & UI',
+      icon: Globe,
+      desc: 'High-conversion landing interfaces, client workspaces, custom web applications & digital visual assets.',
+      deliverables: ['Responsive Web UI', 'Interactive Portals', 'Optimized Assets'],
+      serviceKey: 'Website & Digital',
+    },
+  ];
+
+  // Dynamic calculations based on existing live database records
+  const totalDelivered = Math.max(450, projects.filter((p) => p.status === 'Completed').length + localWorks.length + 450);
+
   return (
-    <div className="space-y-20 pb-20 pt-8 sm:pt-12">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          {/* Studio Tag */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 border border-zinc-200/80 text-xs font-bold text-zinc-800 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-[#EE1D45] animate-pulse" />
-            <span>Gizmo Design Creative Studio &amp; Production Facility</span>
-          </div>
+    <div className="bg-white text-zinc-900 min-h-screen selection:bg-[#EE1D45] selection:text-white">
+      {/* ========================================================================= */}
+      {/* 1. HERO SECTION (Centered Reference Layout)                                */}
+      {/* ========================================================================= */}
+      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-zinc-100 bg-white">
+        {/* Ambient background blur */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
+          <div className="absolute -top-20 right-1/4 w-96 h-96 bg-[#EE1D45]/5 rounded-full blur-3xl" />
+          <div className="absolute top-32 left-1/4 w-80 h-80 bg-zinc-100/80 rounded-full blur-3xl" />
+        </div>
 
-          {/* Display Headline */}
-          <div className="max-w-4xl mx-auto space-y-4">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-zinc-950 tracking-tight leading-[1.08]">
-              Precision Design, <span className="text-[#EE1D45]">Motion Graphics</span> &amp; Flex Production.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            {/* Hero Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-100 border border-zinc-200/90 text-zinc-800 text-xs font-semibold tracking-wide shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#EE1D45] animate-pulse" />
+              <span>Gizmo Design Creative Studio &amp; Production Facility</span>
+            </div>
+
+            {/* Hero Heading with Pink/Red Emphasis */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-zinc-950 leading-[1.08]">
+              Precision Design,{' '}
+              <span className="text-[#EE1D45] block sm:inline">Motion Graphics &amp; Flex Production.</span>
             </h1>
-            <p className="text-base sm:text-xl text-zinc-600 max-w-2xl mx-auto font-medium leading-relaxed">
-              We craft striking brand identities, kinetic social motion campaigns, and print-ready
-              large format flex production for forward-thinking businesses.
+
+            {/* Hero Description */}
+            <p className="text-base sm:text-lg lg:text-xl text-zinc-600 font-normal leading-relaxed max-w-2xl mx-auto">
+              We craft striking brand identities, kinetic social motion campaigns, and print-ready large format flex production for forward-thinking businesses.
             </p>
-          </div>
 
-          {/* Action CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
-            <button
-              onClick={onOpenStartProject}
-              className="px-6 py-3.5 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-sm font-extrabold transition shadow-md shadow-[#EE1D45]/20 flex items-center gap-2"
-            >
-              <span>Start a Project</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* Hero Buttons: [ Start a Project → ] [ Explore Selected Work → ] [ Client Portal ] */}
+            <div className="pt-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <button
+                id="hero-start-project-btn"
+                onClick={() => onOpenStartProject()}
+                className="group inline-flex items-center gap-2.5 px-7 py-3.5 sm:py-4 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] active:bg-[#B80D30] text-white text-sm sm:text-base font-bold shadow-lg shadow-[#EE1D45]/20 hover:shadow-xl hover:shadow-[#EE1D45]/30 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
+              >
+                <span>Start a Project</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+              </button>
 
-            <button
-              onClick={() => onNavigate('work')}
-              className="px-6 py-3.5 bg-white hover:bg-zinc-100 text-zinc-900 border border-zinc-200 rounded-xl text-sm font-extrabold transition shadow-2xs flex items-center gap-2"
-            >
-              <span>Explore Selected Work</span>
-              <ChevronRight className="w-4 h-4 text-zinc-400" />
-            </button>
+              <button
+                onClick={() => onNavigate('work')}
+                className="group inline-flex items-center gap-2 px-6 py-3.5 sm:py-4 rounded-full bg-zinc-100 hover:bg-zinc-200/90 text-zinc-800 text-sm sm:text-base font-semibold border border-zinc-200 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
+              >
+                <span>Explore Selected Work</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+              </button>
 
-            <button
-              onClick={() => onNavigate('my-projects')}
-              className="px-5 py-3.5 bg-zinc-100 hover:bg-zinc-200/80 text-zinc-800 rounded-xl text-sm font-bold transition flex items-center gap-2"
-            >
-              <span>Client Portal</span>
-              <span className="px-1.5 py-0.2 rounded-full text-xs font-mono bg-[#EE1D45] text-white">
-                {activeProjectsCount}
-              </span>
-            </button>
-          </div>
-
-          {/* Quick Stats Strip */}
-          <div className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            <div className="p-4 rounded-2xl bg-white border border-zinc-200/90 shadow-2xs">
-              <div className="text-3xl font-black text-zinc-950 tracking-tight">450+</div>
-              <div className="text-xs font-semibold text-zinc-500 mt-1">Creative Works Delivered</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-white border border-zinc-200/90 shadow-2xs">
-              <div className="text-3xl font-black text-zinc-950 tracking-tight">24–48h</div>
-              <div className="text-xs font-semibold text-zinc-500 mt-1">Turnaround on Posters</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-white border border-zinc-200/90 shadow-2xs">
-              <div className="text-3xl font-black text-zinc-950 tracking-tight">100%</div>
-              <div className="text-xs font-semibold text-zinc-500 mt-1">In-House Flex Facility</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-white border border-zinc-200/90 shadow-2xs">
-              <div className="text-3xl font-black text-zinc-950 tracking-tight">99.4%</div>
-              <div className="text-xs font-semibold text-zinc-500 mt-1">On-Time Client Satisfaction</div>
+              <button
+                onClick={() => onNavigate('my-projects')}
+                className="inline-flex items-center gap-2 px-5 py-3.5 sm:py-4 rounded-full bg-white hover:bg-zinc-50 text-zinc-800 text-sm sm:text-base font-semibold border border-zinc-300 hover:border-zinc-400 hover:-translate-y-0.5 transition-all duration-150 shadow-2xs cursor-pointer"
+              >
+                <span>Client Portal</span>
+                {activeProjectsCount > 0 && (
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-[#EE1D45]/10 text-[#EE1D45]">
+                    {activeProjectsCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. CORE CAPABILITIES (4 PILLARS) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div>
-            <div className="text-xs font-black uppercase tracking-wider text-[#EE1D45]">
-              Disciplines &amp; Craft
+      {/* ========================================================================= */}
+      {/* 2. HOME STATISTICS (4 Cards from Reference)                                */}
+      {/* ========================================================================= */}
+      <section className="py-12 sm:py-16 bg-white border-b border-zinc-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* Stat 1 */}
+            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
+                {totalDelivered}+
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
+                Creative Works Delivered
+              </div>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight mt-1">
+
+            {/* Stat 2 */}
+            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#EE1D45] tracking-tight">
+                24–48h
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
+                Turnaround on Posters
+              </div>
+            </div>
+
+            {/* Stat 3 */}
+            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
+                100%
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
+                In-House Flex Facility
+              </div>
+            </div>
+
+            {/* Stat 4 */}
+            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
+                99.4%
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
+                On-Time Client Satisfaction
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 3. DISCIPLINES & CRAFT (4 Core Reference Cards)                           */}
+      {/* ========================================================================= */}
+      <section className="py-20 sm:py-24 bg-white border-b border-zinc-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EE1D45]/10 text-[#EE1D45] text-xs font-bold uppercase tracking-wider">
+              <span>DISCIPLINES &amp; CRAFT</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-950 tracking-tight">
               End-to-End Creative &amp; Production Execution
             </h2>
-          </div>
-          <button
-            onClick={() => onNavigate('services')}
-            className="text-xs font-bold text-zinc-950 hover:text-[#EE1D45] transition flex items-center gap-1.5"
-          >
-            <span>Detailed service offerings &amp; deliverables</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {/* Card 1: Brand & Visual Identity */}
-          <div
-            onClick={() => onNavigate('services')}
-            className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Palette className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
-                Brand &amp; Visual Identity
-              </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                Logomarks, design systems, visual standards, stationery packs, and strategic brand positioning.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-zinc-600">
-              <span>Brand Guidelines</span>
-              <ArrowRight className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-            </div>
-          </div>
-
-          {/* Card 2: Motion & Video Graphics */}
-          <div
-            onClick={() => onNavigate('services')}
-            className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Video className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
-                Motion &amp; Video Graphics
-              </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                High-energy promotional reels, kinetic typography, 3D stings, animated poster sequences, and event countdowns.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-zinc-600">
-              <span>60fps Kinetic</span>
-              <ArrowRight className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-            </div>
-          </div>
-
-          {/* Card 3: Print & Flex Production */}
-          <div
-            onClick={() => onNavigate('services')}
-            className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Printer className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
-                Flex &amp; Print Production
-              </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                Large-format hoardings, backlit star flex, commercial vinyl banners, foam board mounting, and precision offset printing.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-zinc-600">
-              <span>In-House RIP</span>
-              <ArrowRight className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-            </div>
-          </div>
-
-          {/* Card 4: Digital UI & Systems */}
-          <div
-            onClick={() => onNavigate('services')}
-            className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Layers className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-black text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
-                Digital &amp; Web Portals
-              </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                Interactive web applications, brand landing experiences, component libraries, and custom client portals.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-zinc-600">
-              <span>React &amp; Tailwind</span>
-              <ArrowRight className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. FEATURED WORK SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-zinc-950 text-white rounded-3xl p-8 sm:p-12 space-y-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs font-black uppercase tracking-wider text-[#EE1D45]">
-                Curated Work
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">
-                Recent Studio Production Highlights
-              </h2>
-            </div>
-            <button
-              onClick={() => onNavigate('work')}
-              className="px-4 py-2.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl text-xs font-extrabold transition flex items-center gap-2 self-start md:self-auto"
-            >
-              <span>View Full Portfolio</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Project 1 */}
-            <div
-              onClick={() => onNavigate('work')}
-              className="group cursor-pointer rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 overflow-hidden transition-all"
-            >
-              <div className="h-48 bg-gradient-to-tr from-violet-950 via-zinc-900 to-zinc-800 p-6 flex flex-col justify-between">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-white/10 text-white w-max">
-                  Branding · Identity
-                </span>
-                <div>
-                  <h4 className="text-lg font-black text-white group-hover:text-[#EE1D45] transition-colors">
-                    Darul Hasaniyyah Academy
-                  </h4>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Complete institutional visual language, stationery &amp; publication format.
-                  </p>
-                </div>
-              </div>
-              <div className="p-4 flex items-center justify-between text-xs text-zinc-400 border-t border-zinc-800/80">
-                <span>Completed September 2026</span>
-                <span className="font-bold text-white group-hover:text-[#EE1D45] flex items-center gap-1">
-                  View Case →
-                </span>
-              </div>
-            </div>
-
-            {/* Project 2 */}
-            <div
-              onClick={() => onNavigate('work')}
-              className="group cursor-pointer rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 overflow-hidden transition-all"
-            >
-              <div className="h-48 bg-gradient-to-tr from-purple-950 via-zinc-900 to-zinc-800 p-6 flex flex-col justify-between">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#EE1D45]/20 text-[#EE1D45] w-max">
-                  Motion · Reel
-                </span>
-                <div>
-                  <h4 className="text-lg font-black text-white group-hover:text-[#EE1D45] transition-colors">
-                    Apex Realty Launch
-                  </h4>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    3D architectural animated walkthrough, social reels &amp; hoardings.
-                  </p>
-                </div>
-              </div>
-              <div className="p-4 flex items-center justify-between text-xs text-zinc-400 border-t border-zinc-800/80">
-                <span>Completed August 2026</span>
-                <span className="font-bold text-white group-hover:text-[#EE1D45] flex items-center gap-1">
-                  View Case →
-                </span>
-              </div>
-            </div>
-
-            {/* Project 3 */}
-            <div
-              onClick={() => onNavigate('work')}
-              className="group cursor-pointer rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 overflow-hidden transition-all"
-            >
-              <div className="h-48 bg-gradient-to-tr from-emerald-950 via-zinc-900 to-zinc-800 p-6 flex flex-col justify-between">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 w-max">
-                  Print · Large Format Flex
-                </span>
-                <div>
-                  <h4 className="text-lg font-black text-white group-hover:text-[#EE1D45] transition-colors">
-                    Highway Grand Hoarding
-                  </h4>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    40x20 ft high-resolution front-lit vinyl flex print with weather coating.
-                  </p>
-                </div>
-              </div>
-              <div className="p-4 flex items-center justify-between text-xs text-zinc-400 border-t border-zinc-800/80">
-                <span>Completed August 2026</span>
-                <span className="font-bold text-white group-hover:text-[#EE1D45] flex items-center gap-1">
-                  View Case →
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. BOTTOM DIRECT CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-gradient-to-br from-zinc-100 via-white to-rose-50/40 border border-zinc-200 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-          <div className="space-y-3 max-w-xl">
-            <h3 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
-              Ready to create something remarkable with Gizmo Design?
-            </h3>
-            <p className="text-sm text-zinc-600">
-              Direct communication with senior designers. Rapid delivery times. Transparent billing.
+            <p className="text-sm sm:text-base text-zinc-600">
+              From vector geometry to large format print installation, every phase is completed with high standards.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+
+          {/* 4 Disciplines Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {disciplines.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  className="bg-white rounded-2xl p-6 border border-zinc-200/90 shadow-2xs hover:shadow-md hover:border-[#EE1D45]/40 hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group"
+                >
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-900 group-hover:bg-[#EE1D45] group-hover:text-white transition-colors">
+                      <Icon className="w-6 h-6" />
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-bold text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-zinc-600 mt-2 leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center justify-between">
+                    <button
+                      onClick={() => onOpenStartProject(item.serviceKey)}
+                      className="text-xs font-bold text-[#EE1D45] hover:text-[#D8143C] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform cursor-pointer"
+                    >
+                      <span>Request Scope</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 4. CURATED WORK (Dark Section from Reference)                             */}
+      {/* ========================================================================= */}
+      <section className="py-20 sm:py-24 bg-zinc-950 text-white border-b border-zinc-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EE1D45]/20 text-[#EE1D45] text-xs font-bold uppercase tracking-wider">
+                <span>CURATED WORK</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Recent Studio Production Highlights
+              </h2>
+              <p className="text-sm sm:text-base text-zinc-400 max-w-xl">
+                Real-world identity rollouts, 3D motion teasers, and in-house large format flex hoardings.
+              </p>
+            </div>
+
             <button
-              onClick={onOpenStartProject}
-              className="px-6 py-3 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-black transition shadow-xs flex items-center gap-2"
+              onClick={() => onNavigate('work')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white text-xs sm:text-sm font-bold border border-zinc-700 hover:border-zinc-600 transition-all self-start sm:self-auto cursor-pointer"
             >
-              <span>Start a Project</span>
+              <span>View Full Portfolio</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-            <a
-              href="https://wa.me/919845879017?text=Hello%20Gizmo%20Design%2C%20I%20would%20like%20to%20consult%20on%20a%20new%20creative%20brief"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition flex items-center gap-2"
-            >
-              <MessageCircle className="w-4 h-4 fill-emerald-600 text-emerald-600" />
-              <span>WhatsApp Consultation</span>
-            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Highlight 1: Darul Hasaniyyah */}
+            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between">
+              <div className="aspect-[16/10] bg-gradient-to-br from-zinc-800 to-zinc-950 p-6 flex flex-col justify-between relative">
+                <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/10 backdrop-blur-md text-zinc-300">
+                  Brand &amp; Identity
+                </span>
+                <div>
+                  <div className="text-xs text-[#EE1D45] font-bold">Darul Hasaniyyah Academy</div>
+                  <h3 className="text-xl font-bold text-white mt-1">Institutional Visual Identity</h3>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                  Comprehensive bilingual identity system, publication grids, ceremonial stationery, and campus signage.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
+                  <span className="text-zinc-500 font-medium">Gizmo Production · 2026</span>
+                  <button
+                    onClick={() => onOpenStartProject('Brand Identity')}
+                    className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
+                  >
+                    Request Similar →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Highlight 2: Apex Realty Launch */}
+            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between">
+              <div className="aspect-[16/10] bg-gradient-to-br from-zinc-800 to-zinc-950 p-6 flex flex-col justify-between relative">
+                <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-[#EE1D45]/80 backdrop-blur-md text-white">
+                  Large Format Flex
+                </span>
+                <div>
+                  <div className="text-xs text-[#EE1D45] font-bold">Apex Realty Launch</div>
+                  <h3 className="text-xl font-bold text-white mt-1">Highway Grand Hoarding</h3>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                  50ft roadside front-lit flex hoarding with UV weather-shielding produced in-house on solvent presses.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
+                  <span className="text-zinc-500 font-medium">In-House Flex · 2026</span>
+                  <button
+                    onClick={() => onOpenStartProject('Large Format Flex Print')}
+                    className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
+                  >
+                    Request Similar →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Highlight 3: 3D Kinetic Launch Teaser */}
+            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between">
+              <div className="aspect-[16/10] bg-gradient-to-br from-zinc-800 to-zinc-950 p-6 flex flex-col justify-between relative">
+                <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/10 backdrop-blur-md text-zinc-300">
+                  Motion &amp; Video
+                </span>
+                <div>
+                  <div className="text-xs text-[#EE1D45] font-bold">TechNova Global</div>
+                  <h3 className="text-xl font-bold text-white mt-1">3D Kinetic Launch Teaser</h3>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                  60 FPS 3D animated logo reveal, dynamic typography, and high-energy social campaign video reel.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
+                  <span className="text-zinc-500 font-medium">Motion Studio · 2026</span>
+                  <button
+                    onClick={() => onOpenStartProject('Motion Graphics')}
+                    className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
+                  >
+                    Request Similar →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. CTA SECTION (Reference CTA Card)                                       */}
+      {/* ========================================================================= */}
+      <section className="py-20 sm:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-zinc-950 rounded-3xl p-8 sm:p-14 text-white text-center relative overflow-hidden border border-zinc-800">
+            {/* Ambient glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#EE1D45]/15 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative max-w-3xl mx-auto space-y-6">
+              <GizmoLogo size="lg" className="mx-auto" />
+
+              <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+                Ready to create something remarkable with Gizmo Design?
+              </h2>
+
+              <p className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto leading-relaxed">
+                Direct communication with senior designers. Rapid delivery times. Transparent billing.
+              </p>
+
+              <div className="pt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                <button
+                  onClick={() => onOpenStartProject()}
+                  className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] active:bg-[#B80D30] text-white text-sm sm:text-base font-bold shadow-lg shadow-[#EE1D45]/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
+                >
+                  <span>Start a Project</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+                </button>
+
+                <a
+                  href="https://wa.me/919845879017"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white border border-emerald-500 hover:border-emerald-600 text-emerald-600 hover:text-emerald-700 font-bold text-sm sm:text-base hover:-translate-y-0.5 transition-all duration-150 shadow-xs cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 fill-emerald-500/20 text-emerald-600" />
+                  <span>WhatsApp Consultation</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>

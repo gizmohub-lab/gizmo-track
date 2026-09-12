@@ -1,550 +1,282 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
-  ChevronDown,
-  Layers,
-  Sparkles,
   ArrowRight,
   Menu,
   X,
+  Shield,
   MessageCircle,
-  ExternalLink,
-  Flame,
-  Palette,
-  Video,
-  Printer,
-  Globe,
-  Briefcase,
-  UserCheck,
-  Clock,
-  ShieldCheck,
 } from 'lucide-react';
 import { AppRoute } from '../../types';
-import { GizmoLogoBadge } from '../common/GizmoLogoBadge';
 import { GizmoLogo } from '../common/GizmoLogo';
 
 interface NavbarProps {
   currentRoute: AppRoute;
   onNavigate: (route: AppRoute) => void;
   activeProjectsCount?: number;
-  onOpenStartProject?: () => void;
+  onOpenStartProject: () => void;
   unreadNotificationsCount?: number;
   onOpenNotifications?: () => void;
+  isAdminAuthenticated?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentRoute,
   onNavigate,
-  activeProjectsCount = 3,
+  activeProjectsCount = 5,
+  unreadNotificationsCount = 4,
   onOpenStartProject,
-  unreadNotificationsCount = 0,
-  onOpenNotifications,
+  isAdminAuthenticated = false,
 }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Dynamic scroll listener: shrinks padding, adds bottom border #E4E4E7 and subtle shadow when scrolled past 20px
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleMouseEnterServices = () => {
-    if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current);
-    setMegaMenuOpen(true);
-  };
-
-  const handleMouseLeaveServices = () => {
-    megaMenuTimeoutRef.current = setTimeout(() => {
-      setMegaMenuOpen(false);
-    }, 180);
-  };
-
-  const handleNavigate = (route: AppRoute) => {
-    onNavigate(route);
-    setMegaMenuOpen(false);
-    setMobileMenuOpen(false);
-  };
-
-  // Service categories for the MegaMenu
-  const serviceCategories = [
-    {
-      id: 'brand',
-      icon: Palette,
-      title: 'Brand & Visual Identity',
-      desc: 'Logo systems, typography rules, brand book guidelines & vector visual assets.',
-      badge: 'Core Specialty',
-    },
-    {
-      id: 'motion',
-      icon: Video,
-      title: 'Motion & Video Graphics',
-      desc: 'Dynamic promo reels, kinetic motion posters, title sequences & social clips.',
-      badge: 'Trending',
-    },
-    {
-      id: 'print',
-      icon: Printer,
-      title: 'Print & Flex Production',
-      desc: 'Large hoardings, backlit signages, offset packaging & vinyl printing specs.',
-      badge: 'In-House Flex',
-    },
-    {
-      id: 'digital',
-      icon: Globe,
-      title: 'Digital & Product UI',
-      desc: 'Interactive UI/UX prototypes, bespoke studio websites & responsive design systems.',
-      badge: 'Modern Web',
-    },
+  const navLinks: { label: string; route: AppRoute }[] = [
+    { label: 'Services', route: 'services' },
+    { label: 'Work', route: 'work' },
+    { label: 'About', route: 'about' },
   ];
 
+  const handleDirectorCrmClick = () => {
+    setMobileMenuOpen(false);
+    if (isAdminAuthenticated) {
+      onNavigate('admin-dashboard');
+    } else {
+      onNavigate('admin-login');
+    }
+  };
+
   return (
-    <>
-      <header
-        id="public-client-navbar"
-        className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 backdrop-blur-md ${
-          isScrolled
-            ? 'bg-white/90 border-b border-[#E4E4E7] shadow-xs py-2.5 sm:py-3'
-            : 'bg-white/70 border-b border-transparent py-4 sm:py-5'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Brand Identity */}
-          <button
-            id="brand-logo-btn"
-            onClick={() => handleNavigate('home')}
-            className="group flex items-center gap-2.5 text-left transition-all duration-200"
-          >
-            <GizmoLogoBadge
-              unreadCount={unreadNotificationsCount}
-              onBadgeClick={() => {
-                if (onOpenNotifications) {
-                  onOpenNotifications();
-                } else {
-                  handleNavigate('admin-dashboard');
-                }
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-zinc-200/80 transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Brand Logo & Name */}
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => {
+                onNavigate('home');
+                setMobileMenuOpen(false);
               }}
-              size="md"
+              className="flex items-center gap-3 text-left group focus:outline-none cursor-pointer relative"
             >
-              <GizmoLogo size="md" className="group-hover:scale-105 transition-transform" />
-            </GizmoLogoBadge>
-            <div>
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
-                GIZMO DESIGN <sup className="text-[10px] font-mono">®</sup>
-              </span>
-              <span className="hidden sm:block text-[10px] uppercase font-bold tracking-wider text-zinc-400">
-                Design &amp; Production Studio
-              </span>
-            </div>
-          </button>
-
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-            {/* Services with MegaMenu */}
-            <div
-              className="relative"
-              onMouseEnter={handleMouseEnterServices}
-              onMouseLeave={handleMouseLeaveServices}
-            >
-              <button
-                id="nav-link-services"
-                onClick={() => handleNavigate('services')}
-                className={`relative px-3.5 py-2 text-sm font-semibold transition-colors flex items-center gap-1.5 rounded-lg ${
-                  currentRoute === 'services'
-                    ? 'text-zinc-950 font-bold'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/60'
-                }`}
-              >
-                <span>Services</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    megaMenuOpen ? 'rotate-180 text-[#EE1D45]' : 'text-zinc-400'
-                  }`}
-                />
-                {currentRoute === 'services' && (
-                  <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
+              <div className="relative">
+                <GizmoLogo size="md" className="group-hover:scale-105 transition-transform duration-200" />
+                {unreadNotificationsCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-[#EE1D45] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs border-2 border-white">
+                    {unreadNotificationsCount}
+                  </span>
                 )}
-              </button>
-
-              {/* MegaMenu Dropdown */}
-              {megaMenuOpen && (
-                <div
-                  id="navbar-megamenu"
-                  className="absolute top-full left-1/2 -translate-x-1/2 w-[660px] pt-3 animate-in fade-in slide-in-from-top-2 duration-150"
-                >
-                  <div className="bg-white/98 backdrop-blur-xl border border-zinc-200 rounded-2xl p-5 shadow-2xl ring-1 ring-black/5">
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-100">
-                      <div>
-                        <div className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                          Creative Capabilities
-                        </div>
-                        <div className="text-sm font-bold text-zinc-900">
-                          Full-Stack Graphic, Motion &amp; Print Execution
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleNavigate('services')}
-                        className="text-xs font-bold text-[#EE1D45] hover:underline flex items-center gap-1"
-                      >
-                        <span>View All Services</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      {serviceCategories.map((cat) => {
-                        const Icon = cat.icon;
-                        return (
-                          <div
-                            key={cat.id}
-                            onClick={() => handleNavigate('services')}
-                            className="group p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50/80 transition-all cursor-pointer flex gap-3"
-                          >
-                            <div className="w-9 h-9 rounded-xl bg-zinc-100 group-hover:bg-[#EE1D45]/10 group-hover:text-[#EE1D45] text-zinc-700 flex items-center justify-center shrink-0 transition-colors">
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-zinc-950 group-hover:text-[#EE1D45] transition-colors">
-                                  {cat.title}
-                                </span>
-                                <span className="text-[9px] font-semibold px-1.5 py-0.2 bg-zinc-100 text-zinc-600 rounded">
-                                  {cat.badge}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-zinc-500 line-clamp-2 mt-0.5 leading-snug">
-                                {cat.desc}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Spotlight strip */}
-                    <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between bg-zinc-50/90 -mx-5 -mb-5 p-3 px-5 rounded-b-2xl">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-xs text-zinc-600 font-medium">
-                          Accepting new production cycles for September 2026
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setMegaMenuOpen(false);
-                          if (onOpenStartProject) onOpenStartProject();
-                          else handleNavigate('work');
-                        }}
-                        className="text-xs font-bold text-zinc-950 hover:text-[#EE1D45] flex items-center gap-1 transition-colors"
-                      >
-                        <span>Schedule Briefing</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-extrabold text-lg sm:text-xl tracking-tight text-zinc-950 leading-none group-hover:text-[#EE1D45] transition-colors">
+                    GIZMO
+                  </span>
+                  <span className="font-light text-lg sm:text-xl tracking-tight text-zinc-500 leading-none">
+                    DESIGN
+                  </span>
                 </div>
-              )}
-            </div>
-
-            {/* Work */}
-            <button
-              id="nav-link-work"
-              onClick={() => handleNavigate('work')}
-              className={`relative px-3.5 py-2 text-sm font-semibold transition-colors rounded-lg ${
-                currentRoute === 'work'
-                  ? 'text-zinc-950 font-bold'
-                  : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/60'
-              }`}
-            >
-              <span>Work</span>
-              {currentRoute === 'work' && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
-              )}
+                <div className="text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-none mt-1">
+                  DESIGN &amp; PRODUCTION STUDIO
+                </div>
+              </div>
             </button>
+          </div>
 
-            {/* About */}
-            <button
-              id="nav-link-about"
-              onClick={() => handleNavigate('about')}
-              className={`relative px-3.5 py-2 text-sm font-semibold transition-colors rounded-lg ${
-                currentRoute === 'about'
-                  ? 'text-zinc-950 font-bold'
-                  : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/60'
-              }`}
-            >
-              <span>About</span>
-              {currentRoute === 'about' && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
-              )}
-            </button>
+          {/* Desktop Navigation Links (Clean Minimal Center) */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {navLinks.map((link) => {
+              const isActive = currentRoute === link.route;
+              return (
+                <button
+                  key={link.route}
+                  onClick={() => onNavigate(link.route)}
+                  className={`px-3.5 py-2 rounded-full text-sm font-semibold transition-all duration-150 relative cursor-pointer ${
+                    isActive
+                      ? 'text-zinc-950 font-bold bg-zinc-100/90'
+                      : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/60'
+                  }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#EE1D45] rounded-full" />
+                  )}
+                </button>
+              );
+            })}
 
-            {/* My Projects with real-time active badge */}
+            {/* My Projects Link with Badge */}
             <button
-              id="nav-link-my-projects"
-              onClick={() => handleNavigate('my-projects')}
-              className={`relative px-3.5 py-2 text-sm font-semibold transition-colors rounded-lg flex items-center gap-2 ${
+              onClick={() => onNavigate('my-projects')}
+              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition-all duration-150 flex items-center gap-2 cursor-pointer relative ${
                 currentRoute === 'my-projects'
-                  ? 'text-zinc-950 font-bold'
+                  ? 'text-zinc-950 font-bold bg-zinc-100/90'
                   : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/60'
               }`}
             >
               <span>My Projects</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black font-mono bg-[#EE1D45] text-white shadow-xs">
-                {activeProjectsCount}
-              </span>
+              {activeProjectsCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-zinc-100 text-zinc-700 border border-zinc-300/80">
+                  {activeProjectsCount}
+                </span>
+              )}
               {currentRoute === 'my-projects' && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#EE1D45] rounded-full" />
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#EE1D45] rounded-full" />
               )}
             </button>
           </nav>
 
-          {/* Action CTAs */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* WhatsApp Direct Action */}
+          {/* Desktop Actions Group: [ WhatsApp ] [ Director CRM ] [ Start a Project → ] */}
+          <div className="hidden md:flex items-center gap-2.5 sm:gap-3">
+            {/* WhatsApp Button */}
             <a
-              id="navbar-whatsapp-cta"
-              href="https://wa.me/919845879017?text=Hello%20Gizmo%20Design%2C%20I%20would%20like%20to%20inquire%20about%20a%20new%20project"
+              href="https://wa.me/919845879017"
               target="_blank"
               rel="noopener noreferrer"
-              title="Chat on WhatsApp (+91 98458 79017)"
-              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors flex items-center gap-1.5 text-xs font-bold"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-white border border-emerald-500 hover:border-emerald-600 hover:bg-emerald-50/60 text-emerald-600 hover:text-emerald-700 text-xs sm:text-sm font-bold shadow-xs hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
+              title="Official Gizmo WhatsApp: +91 9845879017"
             >
-              <MessageCircle className="w-4 h-4 fill-emerald-600 text-emerald-600" />
-              <span className="hidden lg:inline">WhatsApp</span>
+              <MessageCircle className="w-4 h-4 fill-emerald-500/20 text-emerald-600 shrink-0" />
+              <span>WhatsApp</span>
             </a>
 
-            {/* Switch to Director CRM or Start a Project */}
+            {/* Director CRM Button */}
             <button
-              id="navbar-admin-switch-btn"
-              onClick={() => {
-                const isAuthed =
-                  (typeof window !== 'undefined' && sessionStorage.getItem('gizmo_admin_auth') === 'true') ||
-                  (typeof window !== 'undefined' && localStorage.getItem('gizmo_admin_auth_persistent') === 'true');
-                if (isAuthed) {
-                  handleNavigate('admin-dashboard');
-                } else {
-                  handleNavigate('admin-login');
-                }
-              }}
-              className="px-3.5 py-2 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1.5"
+              onClick={handleDirectorCrmClick}
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
+              title="Director & Admin CRM Access"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#EE1D45]" />
-              <span className="hidden sm:inline">Director CRM</span>
-              <span className="sm:hidden">CRM</span>
+              <Shield className="w-4 h-4 text-white shrink-0" />
+              <span>Director CRM</span>
             </button>
 
-            {/* High-Contrast Primary CTA Button */}
+            {/* Start a Project Primary CTA */}
             <button
-              id="navbar-start-project-btn"
-              onClick={() => {
-                if (onOpenStartProject) onOpenStartProject();
-                else handleNavigate('work');
-              }}
-              className="px-4 py-2 bg-[#EE1D45] hover:bg-[#D8143C] text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-1.5"
+              id="nav-start-project-btn"
+              onClick={onOpenStartProject}
+              className="group inline-flex items-center gap-2 h-10 px-5 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] active:bg-[#B80D30] text-white text-xs sm:text-sm font-bold shadow-sm shadow-[#EE1D45]/20 hover:shadow-md hover:shadow-[#EE1D45]/30 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
             >
               <span>Start a Project</span>
-              <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
+              <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+            </button>
+          </div>
+
+          {/* Mobile Menu Trigger & Fast CTA */}
+          <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={onOpenStartProject}
+              className="h-9 px-3.5 rounded-full bg-[#EE1D45] text-white text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
+            >
+              <span>Start</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
-            {/* Mobile Hamburger Toggle */}
             <button
-              id="navbar-mobile-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-zinc-700 hover:text-black rounded-lg hover:bg-zinc-100 transition"
-              aria-label="Toggle Navigation"
+              className="p-2 rounded-xl text-zinc-700 hover:bg-zinc-100 focus:outline-none cursor-pointer"
+              aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden animate-in fade-in duration-200">
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+        <div className="md:hidden bg-white border-b border-zinc-200 px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-150">
+          <nav className="flex flex-col space-y-1">
+            <button
+              onClick={() => {
+                onNavigate('home');
+                setMobileMenuOpen(false);
+              }}
+              className={`px-4 py-2.5 rounded-xl text-left text-sm font-semibold flex items-center justify-between cursor-pointer ${
+                currentRoute === 'home'
+                  ? 'text-zinc-950 font-bold bg-zinc-100'
+                  : 'text-zinc-700 hover:bg-zinc-50'
+              }`}
+            >
+              <span>Home</span>
+              {currentRoute === 'home' && <span className="w-1.5 h-1.5 rounded-full bg-[#EE1D45]" />}
+            </button>
 
-          {/* Drawer content */}
-          <div className="fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
-                <div className="flex items-center gap-2">
-                  <GizmoLogoBadge
-                    unreadCount={unreadNotificationsCount}
-                    onBadgeClick={() => {
-                      setMobileMenuOpen(false);
-                      if (onOpenNotifications) {
-                        onOpenNotifications();
-                      } else {
-                        handleNavigate('admin-dashboard');
-                      }
-                    }}
-                    size="sm"
-                  >
-                    <GizmoLogo size="sm" />
-                  </GizmoLogoBadge>
-                  <span className="font-black text-base text-zinc-950">GIZMO DESIGN</span>
-                </div>
+            {navLinks.map((link) => {
+              const isActive = currentRoute === link.route;
+              return (
                 <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-1.5 text-zinc-400 hover:text-black rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Navigation Items */}
-              <nav className="space-y-1.5">
-                <button
-                  onClick={() => handleNavigate('home')}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-between ${
-                    currentRoute === 'home'
-                      ? 'bg-zinc-950 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100'
+                  key={link.route}
+                  onClick={() => {
+                    onNavigate(link.route);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`px-4 py-2.5 rounded-xl text-left text-sm font-semibold flex items-center justify-between cursor-pointer ${
+                    isActive
+                      ? 'text-zinc-950 font-bold bg-zinc-100'
+                      : 'text-zinc-700 hover:bg-zinc-50'
                   }`}
                 >
-                  <span>Home</span>
-                  <ArrowRight className="w-4 h-4 opacity-60" />
+                  <span>{link.label}</span>
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#EE1D45]" />}
                 </button>
+              );
+            })}
 
-                <button
-                  onClick={() => handleNavigate('services')}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-between ${
-                    currentRoute === 'services'
-                      ? 'bg-zinc-950 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100'
-                  }`}
-                >
-                  <span>Services &amp; Capabilities</span>
-                  <ArrowRight className="w-4 h-4 opacity-60" />
-                </button>
+            <button
+              onClick={() => {
+                onNavigate('my-projects');
+                setMobileMenuOpen(false);
+              }}
+              className={`px-4 py-2.5 rounded-xl text-left text-sm font-semibold flex items-center justify-between cursor-pointer ${
+                currentRoute === 'my-projects'
+                  ? 'text-zinc-950 font-bold bg-zinc-100'
+                  : 'text-zinc-700 hover:bg-zinc-50'
+              }`}
+            >
+              <span>My Projects</span>
+              {activeProjectsCount > 0 && (
+                <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200">
+                  {activeProjectsCount}
+                </span>
+              )}
+            </button>
+          </nav>
 
-                <button
-                  onClick={() => handleNavigate('work')}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-between ${
-                    currentRoute === 'work'
-                      ? 'bg-zinc-950 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100'
-                  }`}
-                >
-                  <span>Work &amp; Showcase</span>
-                  <ArrowRight className="w-4 h-4 opacity-60" />
-                </button>
+          {/* Mobile Action Buttons Group */}
+          <div className="pt-3 border-t border-zinc-100 flex flex-col gap-2.5">
+            <button
+              onClick={() => {
+                onOpenStartProject();
+                setMobileMenuOpen(false);
+              }}
+              className="group w-full h-11 rounded-full bg-[#EE1D45] text-white text-center font-bold text-sm shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Start a Project</span>
+              <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+            </button>
 
-                <button
-                  onClick={() => handleNavigate('about')}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-between ${
-                    currentRoute === 'about'
-                      ? 'bg-zinc-950 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100'
-                  }`}
-                >
-                  <span>About Studio</span>
-                  <ArrowRight className="w-4 h-4 opacity-60" />
-                </button>
-
-                <button
-                  onClick={() => handleNavigate('my-projects')}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-between ${
-                    currentRoute === 'my-projects'
-                      ? 'bg-zinc-950 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>My Projects</span>
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[#EE1D45] text-white">
-                      {activeProjectsCount}
-                    </span>
-                  </div>
-                  <ArrowRight className="w-4 h-4 opacity-60" />
-                </button>
-              </nav>
-
-              {/* Services quick pills in drawer */}
-              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200/80 space-y-2">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                  Quick Service Links
-                </div>
-                <div className="grid grid-cols-2 gap-1.5 text-xs font-semibold text-zinc-700">
-                  <div
-                    onClick={() => handleNavigate('services')}
-                    className="p-1.5 rounded hover:bg-white cursor-pointer"
-                  >
-                    • Brand Identity
-                  </div>
-                  <div
-                    onClick={() => handleNavigate('services')}
-                    className="p-1.5 rounded hover:bg-white cursor-pointer"
-                  >
-                    • Motion Graphics
-                  </div>
-                  <div
-                    onClick={() => handleNavigate('services')}
-                    className="p-1.5 rounded hover:bg-white cursor-pointer"
-                  >
-                    • Flex &amp; Print
-                  </div>
-                  <div
-                    onClick={() => handleNavigate('services')}
-                    className="p-1.5 rounded hover:bg-white cursor-pointer"
-                  >
-                    • Digital UI/UX
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile Footer CTAs */}
-            <div className="space-y-2.5 pt-6 border-t border-zinc-100">
+            <div className="grid grid-cols-2 gap-2">
               <a
-                href="https://wa.me/919845879017?text=Hello%20Gizmo%20Design%2C%20I%20would%20like%20to%20inquire%20about%20a%20new%20project"
+                href="https://wa.me/919845879017"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-xs flex items-center justify-center gap-2 shadow-xs"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full h-10 rounded-full bg-white border border-emerald-500 text-emerald-600 text-center font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <MessageCircle className="w-4 h-4 fill-emerald-600 text-emerald-600" />
-                <span>Chat on WhatsApp Support</span>
+                <MessageCircle className="w-3.5 h-3.5 fill-emerald-500/20 text-emerald-600" />
+                <span>WhatsApp</span>
               </a>
 
               <button
-                onClick={() => handleNavigate('admin-dashboard')}
-                className="w-full py-2.5 rounded-xl bg-zinc-950 text-white font-bold text-xs flex items-center justify-center gap-2"
+                onClick={handleDirectorCrmClick}
+                className="w-full h-10 rounded-full bg-zinc-950 text-white text-center font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <ShieldCheck className="w-4 h-4 text-[#EE1D45]" />
-                <span>Director Studio CRM</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onOpenStartProject) onOpenStartProject();
-                  else handleNavigate('work');
-                }}
-                className="w-full py-2.5 rounded-xl bg-[#EE1D45] text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm"
-              >
-                <span>Start a Project</span>
-                <ArrowRight className="w-4 h-4" />
+                <Shield className="w-3.5 h-3.5 text-white" />
+                <span>Director CRM</span>
               </button>
             </div>
           </div>
         </div>
       )}
-    </>
+    </header>
   );
 };
+

@@ -1,175 +1,186 @@
 import React, { useState } from 'react';
 import {
   Sparkles,
-  ExternalLink,
-  Tag,
   ArrowRight,
+  ArrowUpRight,
   Filter,
-  CheckCircle2,
-  Calendar,
   Layers,
-  Video,
   Printer,
+  Video,
   Palette,
+  ExternalLink,
 } from 'lucide-react';
-import { AppRoute } from '../../types';
+import { AppRoute, Project } from '../../types';
 
 interface WorkViewProps {
   onNavigate: (route: AppRoute) => void;
-  onOpenStartProject: () => void;
+  onOpenStartProject: (initialService?: string) => void;
+  projects?: Project[];
 }
 
 export const WorkView: React.FC<WorkViewProps> = ({
   onNavigate,
   onOpenStartProject,
+  projects = [],
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
 
   const portfolioItems = [
     {
       id: 'w-1',
-      title: 'Darul Hasaniyyah Visual Identity',
+      title: 'Darul Hasaniyyah SNEC Visual Identity',
       category: 'Branding',
       client: 'Darul Hasaniyyah Islamic Academy',
-      date: 'Aug 2026',
-      description: 'Comprehensive brand identity system including typography, publication standards, signage guidelines and event stationery.',
-      tags: ['Identity', 'Logo', 'Stationery', 'Guidelines'],
-      gradient: 'from-violet-900 to-indigo-950',
+      year: '2026',
+      description:
+        'Comprehensive institutional brand identity system including bilingual Arabic/English typography rules, publication standards, ceremonial stationery, and campus signage guidelines.',
+      tags: ['Identity', 'Logo System', 'Stationery', 'Guidelines', 'Bilingual'],
+      gradient: 'from-zinc-900 to-black',
     },
     {
       id: 'w-2',
       title: 'Apex Prime Commercial Hoarding',
       category: 'Print & Flex',
-      client: 'Apex Developers Group',
-      date: 'Sep 2026',
-      description: 'Massive 50x20 ft high-definition backlit roadside hoarding print with weather-shield lamination.',
-      tags: ['Flex Print', 'Outdoor', 'Hoarding', 'Large Format'],
-      gradient: 'from-emerald-900 to-zinc-950',
+      client: 'Apex Commercial Infrastructure',
+      year: '2026',
+      description:
+        'Massive 50x20 ft high-definition backlit roadside flex hoarding print with weather-shield UV lamination produced in-house on solvent presses.',
+      tags: ['Flex Print', 'Outdoor', 'Hoarding', 'Large Format', 'Solvent RIP'],
+      gradient: 'from-slate-900 to-zinc-950',
     },
     {
       id: 'w-3',
       title: '3D Kinetic Launch Teaser Reel',
       category: 'Motion',
-      client: 'TechNova Solutions',
-      date: 'Aug 2026',
-      description: '60 FPS 3D logo reveal and kinetic Instagram promotional reel campaign garnering 150k+ views.',
-      tags: ['Motion Graphics', 'Reel', '3D Animation', 'Social'],
-      gradient: 'from-purple-950 to-pink-950',
+      client: 'TechNova Global',
+      year: '2026',
+      description:
+        '60 FPS 3D logo reveal and kinetic Instagram promotional reel campaign garnering 150k+ views across digital channels.',
+      tags: ['Motion Graphics', 'Reel', '3D Animation', 'Social', 'Kinetic'],
+      gradient: 'from-neutral-900 to-zinc-900',
     },
     {
       id: 'w-4',
       title: 'Kerala Design Conclave 2026',
       category: 'Motion',
       client: 'Kerala Creative Guild',
-      date: 'Jul 2026',
-      description: 'Event visual package: Animated speaker introduction loops, LED stage backdrops, and physical badges.',
-      tags: ['Motion', 'Event Graphics', 'Stage Backdrop'],
-      gradient: 'from-amber-950 to-orange-950',
+      year: '2026',
+      description:
+        'Event visual package: Animated speaker introduction loops, LED stage backdrop animations, and physical credential badges.',
+      tags: ['Motion', 'Event Graphics', 'Stage Backdrop', 'Key Visual'],
+      gradient: 'from-zinc-900 to-stone-900',
     },
     {
       id: 'w-5',
       title: 'Malabar Heritage Gold Packaging',
       category: 'Branding',
       client: 'Malabar Heritage Jewellers',
-      date: 'Jul 2026',
-      description: 'Luxury gold-foiled rigid gift box packaging, certificate sleeves, and premium offset bag printing.',
-      tags: ['Packaging', 'Gold Foil', 'Offset Print'],
-      gradient: 'from-yellow-950 to-zinc-950',
+      year: '2026',
+      description:
+        'Luxury gold-foiled rigid gift box packaging, certificate sleeves, and premium offset retail bag printing.',
+      tags: ['Packaging', 'Gold Foil', 'Offset Print', 'Rigid Box'],
+      gradient: 'from-stone-900 to-neutral-950',
     },
     {
       id: 'w-6',
       title: 'Metro Star Backlit Signboard',
       category: 'Print & Flex',
       client: 'Metro Super Specialty Hospital',
-      date: 'Jun 2026',
-      description: 'High-translucency backlit vinyl signboards with uniform LED light transmission and aluminum extrusion framing.',
-      tags: ['Backlit Star Flex', 'Signage', 'Architectural'],
-      gradient: 'from-blue-950 to-slate-950',
+      year: '2026',
+      description:
+        'High-translucency backlit star flex signboards with uniform LED light transmission and aluminum extrusion framing.',
+      tags: ['Backlit Star Flex', 'Signage', 'Architectural', 'Outdoor'],
+      gradient: 'from-zinc-950 to-neutral-900',
     },
   ];
 
   const categories = [
-    { id: 'ALL', label: 'All Projects' },
+    { id: 'ALL', label: 'All Works' },
     { id: 'Branding', label: 'Brand & Identity' },
-    { id: 'Motion', label: 'Motion & Video' },
-    { id: 'Print & Flex', label: 'Large Format Flex & Print' },
+    { id: 'Motion', label: 'Motion Graphics' },
+    { id: 'Print & Flex', label: 'Flex & Large Print' },
   ];
 
   const filteredItems = portfolioItems.filter((item) => {
     if (activeCategory === 'ALL') return true;
-    return item.category === activeCategory;
+    return item.category.toLowerCase().includes(activeCategory.toLowerCase());
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-xs font-bold text-zinc-700">
-          <Sparkles className="w-3.5 h-3.5 text-[#EE1D45]" />
-          <span>Selected Studio Archive</span>
+    <div className="bg-slate-50 text-zinc-900 min-h-screen py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Top Header */}
+      <div className="max-w-3xl space-y-4 mb-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EE1D45]/10 text-[#EE1D45] text-xs font-bold">
+          <span>PORTFOLIO ARCHIVE</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-zinc-950 tracking-tight">
-          Visual Precision in Every Detail
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-zinc-900 tracking-tight">
+          Selected Creative Works
         </h1>
-        <p className="text-sm sm:text-base text-zinc-600">
-          Browse through our curated catalog of brand identities, kinetic motion sequences, and in-house flex production projects.
+        <p className="text-base sm:text-lg text-zinc-600">
+          Explore recent brand identity systems, kinetic motion sequences, and in-house flex production rollouts crafted for ambitious clients.
         </p>
       </div>
 
-      {/* Filter Category Tabs */}
-      <div className="flex items-center justify-center gap-2 flex-wrap">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeCategory === cat.id
-                ? 'bg-zinc-950 text-white shadow-xs'
-                : 'bg-white text-zinc-600 border border-zinc-200 hover:bg-zinc-100'
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+      {/* Category Filter Pills */}
+      <div className="flex items-center gap-2 flex-wrap mb-10 border-b border-zinc-200 pb-4">
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                isActive
+                  ? 'bg-zinc-900 text-white shadow-sm'
+                  : 'bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200 hover:border-zinc-300'
+              }`}
+            >
+              {cat.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredItems.map((item) => (
           <div
             key={item.id}
-            className="group rounded-3xl bg-white border border-zinc-200 overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between"
+            className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group"
           >
             <div>
-              {/* Graphic Banner */}
+              {/* Thumbnail Gradient Area */}
               <div
-                className={`h-56 bg-gradient-to-br ${item.gradient} p-6 flex flex-col justify-between text-white relative overflow-hidden`}
+                className={`aspect-[16/10] bg-gradient-to-br ${item.gradient} p-6 flex flex-col justify-between text-white relative`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-white/15 backdrop-blur-xs text-white">
+                  <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/20 backdrop-blur-md">
                     {item.category}
                   </span>
-                  <span className="text-[10px] font-mono opacity-60">{item.date}</span>
+                  <span className="text-xs font-mono text-zinc-300">{item.year}</span>
                 </div>
 
                 <div>
-                  <span className="text-xs font-semibold text-white/70">{item.client}</span>
-                  <h3 className="text-xl font-black tracking-tight text-white mt-0.5 group-hover:text-[#EE1D45] transition-colors">
+                  <div className="text-xs text-[#EE1D45] font-bold">{item.client}</div>
+                  <h3 className="text-xl font-bold text-white mt-1 group-hover:text-zinc-100 transition-colors">
                     {item.title}
                   </h3>
                 </div>
               </div>
 
-              {/* Description & Tags */}
-              <div className="p-6 space-y-4">
-                <p className="text-xs text-zinc-600 leading-relaxed">{item.description}</p>
-                <div className="flex flex-wrap gap-1.5">
+              {/* Body details */}
+              <div className="p-5 space-y-4">
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                  {item.description}
+                </p>
+
+                <div className="flex flex-wrap gap-1.5 pt-1">
                   {item.tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-0.5 rounded-md bg-zinc-100 text-[10px] font-bold text-zinc-600"
+                      className="px-2 py-0.5 rounded bg-zinc-100 text-[11px] font-medium text-zinc-600"
                     >
-                      #{tag}
+                      {tag}
                     </span>
                   ))}
                 </div>
@@ -177,31 +188,38 @@ export const WorkView: React.FC<WorkViewProps> = ({
             </div>
 
             {/* Card Footer */}
-            <div className="p-6 pt-0 flex items-center justify-between border-t border-zinc-100 mt-2">
-              <span className="text-xs font-bold text-zinc-400">Gizmo Production</span>
-              <button
-                onClick={onOpenStartProject}
-                className="text-xs font-bold text-[#EE1D45] hover:underline flex items-center gap-1"
-              >
-                <span>Request Similar</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+            <div className="p-5 pt-0">
+              <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500">
+                  Ready to produce
+                </span>
+                <button
+                  onClick={() => onOpenStartProject(item.category)}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#EE1D45] hover:text-[#D8143C]"
+                >
+                  <span>Start Similar Project</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Bottom Consultation Banner */}
-      <div className="p-8 rounded-3xl bg-zinc-100 border border-zinc-200 text-center space-y-4 max-w-3xl mx-auto">
-        <h3 className="text-xl font-black text-zinc-950">Have a custom vision in mind?</h3>
-        <p className="text-xs text-zinc-600 max-w-md mx-auto">
-          We handle custom dimensions, complex motion storyboards, and special media printing with turnkey installation.
+      {/* Bottom CTA */}
+      <div className="mt-20 p-8 sm:p-12 rounded-3xl bg-white border border-zinc-200 text-center space-y-4">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900">
+          Have a Custom Brief in Mind?
+        </h2>
+        <p className="text-sm sm:text-base text-zinc-600 max-w-xl mx-auto">
+          We handle everything from rapid single-day poster prints to full multi-channel brand launch campaigns.
         </p>
         <button
-          onClick={onOpenStartProject}
-          className="px-6 py-2.5 bg-zinc-950 hover:bg-[#EE1D45] text-white rounded-xl text-xs font-black transition"
+          onClick={() => onOpenStartProject()}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#EE1D45] hover:bg-[#D8143C] text-white text-sm font-bold shadow-md shadow-[#EE1D45]/20 hover:shadow-lg transition-all"
         >
-          Start Your Project Consultation
+          <Sparkles className="w-4 h-4" />
+          <span>Commission a Project</span>
         </button>
       </div>
     </div>

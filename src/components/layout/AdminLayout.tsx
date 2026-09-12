@@ -49,6 +49,7 @@ interface AdminLayoutProps {
   onOpenQuickNote?: () => void;
   searchTerm?: string;
   onSearchChange?: (val: string) => void;
+  onNotificationClick?: (notif: AdminNotification) => void;
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({
@@ -68,6 +69,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onOpenQuickNote,
   searchTerm = '',
   onSearchChange,
+  onNotificationClick,
 }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -180,11 +182,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const handleNotificationClick = (notif: AdminNotification) => {
     handleMarkAsRead(notif.id);
-    if (notif.targetRoute) {
+    if (onNotificationClick) {
+      onNotificationClick(notif);
+    } else if (notif.targetRoute) {
       onNavigate(notif.targetRoute);
-      setNotificationsOpen(false);
-      setMobileDrawerOpen(false);
     }
+    setNotificationsOpen(false);
+    setMobileDrawerOpen(false);
   };
 
   // Human-readable page titles

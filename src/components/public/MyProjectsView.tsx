@@ -19,6 +19,7 @@ import {
   FileCheck,
 } from 'lucide-react';
 import { AppRoute, Project, ProjectRequest } from '../../types';
+import { normalizeRequestStatus } from '../../services/projectRequestsService';
 
 interface MyProjectsViewProps {
   projects: Project[];
@@ -123,29 +124,30 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
   };
 
   const getRequestStatusBadge = (status: ProjectRequest['requestStatus']) => {
-    switch (status) {
-      case 'Pending Review':
+    const norm = normalizeRequestStatus(status);
+    switch (norm) {
+      case 'pending_review':
         return (
           <span className="px-2.5 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
             <span>Pending Review</span>
           </span>
         );
-      case 'Under Review':
+      case 'under_review':
         return (
           <span className="px-2.5 py-1 rounded-full text-xs font-black bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-blue-600 animate-spin" />
             <span>Under Review</span>
           </span>
         );
-      case 'Accepted':
+      case 'accepted':
         return (
           <span className="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Accepted · Active Project</span>
           </span>
         );
-      case 'Rejected':
+      case 'rejected':
         return (
           <span className="px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 text-rose-800 border border-rose-200 flex items-center gap-1.5">
             <XCircle className="w-3.5 h-3.5 text-rose-600" />
@@ -411,28 +413,30 @@ export const MyProjectsView: React.FC<MyProjectsViewProps> = ({
                     )}
                   </div>
 
-                  {req.requestStatus === 'Accepted' && req.convertedProjectId && (
-                    <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs flex items-center justify-between gap-3 text-emerald-900 mt-2">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>
-                          This request has been accepted into studio production as project{' '}
-                          <strong className="font-mono font-bold">
-                            {req.convertedProjectCode || req.convertedProjectId}
-                          </strong>
-                          !
-                        </span>
+                  {normalizeRequestStatus(req.requestStatus) === 'accepted' && (req.convertedProjectId || req.projectId) && (
+                    <div className="p-4 bg-emerald-50/90 rounded-xl border border-emerald-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-emerald-900 mt-2">
+                      <div className="flex items-start sm:items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5 sm:mt-0" />
+                        <div>
+                          <div className="font-extrabold text-emerald-950 text-sm">🎉 Your project request has been accepted!</div>
+                          <div className="text-xs text-emerald-800 mt-0.5">
+                            Gizmo has accepted your project request for <strong>{req.projectTitle}</strong>. Studio Project Code:{' '}
+                            <strong className="font-mono font-bold">
+                              {req.convertedProjectCode || req.projectCode || req.convertedProjectId || req.projectId}
+                            </strong>
+                          </div>
+                        </div>
                       </div>
                       <button
                         onClick={() => setActiveTab('projects')}
-                        className="text-xs font-bold text-emerald-700 hover:text-emerald-900 underline whitespace-nowrap"
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition shadow-2xs whitespace-nowrap self-start sm:self-auto"
                       >
                         View in Projects →
                       </button>
                     </div>
                   )}
 
-                  {req.requestStatus === 'Rejected' && req.rejectionReason && (
+                  {normalizeRequestStatus(req.requestStatus) === 'rejected' && req.rejectionReason && (
                     <div className="p-3 bg-rose-50 rounded-xl border border-rose-200 text-xs text-rose-900 mt-2">
                       <div className="font-bold flex items-center gap-1.5 text-rose-700">
                         <XCircle className="w-3.5 h-3.5" />

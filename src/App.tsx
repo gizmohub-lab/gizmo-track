@@ -299,7 +299,7 @@ export default function App() {
 
   const pendingProjectRequestsCount = projectRequests.filter((r) => {
     const norm = normalizeRequestStatus(r.requestStatus || (r as any).status);
-    return norm === 'pending_review' || norm === 'under_review';
+    return norm === 'pending_review';
   }).length;
 
   // Notes System States
@@ -379,6 +379,7 @@ export default function App() {
   const [paymentInvoice, setPaymentInvoice] = useState<Invoice | null>(null);
   const [shareInvoice, setShareInvoice] = useState<Invoice | null>(null);
   const [activeProjectIdForWorkspace, setActiveProjectIdForWorkspace] = useState<string | null>(null);
+  const [activeProjectRequestId, setActiveProjectRequestId] = useState<string | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showProjectSettingsModal, setShowProjectSettingsModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
@@ -1570,6 +1571,17 @@ export default function App() {
           onOpenQuickNote={() => setIsQuickNoteOpen(true)}
           searchTerm={invoiceSearchTerm}
           onSearchChange={setInvoiceSearchTerm}
+          onNotificationClick={(notif) => {
+            if (notif.relatedEntityType === 'project_request' || notif.targetRoute === 'admin-project-requests') {
+              setActiveProjectRequestId(notif.relatedEntityId || notif.targetId || null);
+              navigate('admin-project-requests');
+            } else if (notif.relatedEntityType === 'project' || notif.targetRoute === 'admin-projects') {
+              setActiveProjectIdForWorkspace(notif.relatedEntityId || notif.targetId || null);
+              navigate('admin-projects');
+            } else if (notif.targetRoute) {
+              navigate(notif.targetRoute as AppRoute);
+            }
+          }}
         >
           {/* Global Notification Permission Banner for Browser Notifications */}
           <NotificationPermissionBanner />
@@ -1680,6 +1692,8 @@ export default function App() {
                 setActiveProjectIdForWorkspace(projId);
                 navigate('admin-projects');
               }}
+              initialSelectedRequestId={activeProjectRequestId}
+              onClearSelectedRequest={() => setActiveProjectRequestId(null)}
             />
           )}
 

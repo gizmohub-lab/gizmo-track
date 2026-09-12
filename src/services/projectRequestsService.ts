@@ -433,16 +433,21 @@ export function subscribeToProjectRequests(
             };
           });
 
+          // Merge with any existing local requests not yet in Firestore so existing data is preserved
+          const remoteIds = new Set(remoteRequests.map((r) => r.id));
+          const localOnlyRequests = loadProjectRequests().filter((r) => !remoteIds.has(r.id));
+          const combinedRequests = [...remoteRequests, ...localOnlyRequests];
+
           // Sort descending by submittedAt so newest appears at top
-          remoteRequests.sort((a, b) => {
+          combinedRequests.sort((a, b) => {
             const timeA = new Date(a.submittedAt || a.createdAt || 0).getTime();
             const timeB = new Date(b.submittedAt || b.createdAt || 0).getTime();
             return timeB - timeA;
           });
 
           // Cache in local storage
-          saveProjectRequests(remoteRequests);
-          callback(remoteRequests);
+          saveProjectRequests(combinedRequests);
+          callback(combinedRequests);
         } else {
           // If Firestore collection is empty, load existing cached/initial requests
           const local = loadProjectRequests();
@@ -488,7 +493,7 @@ export async function updateProjectRequestInFirestore(
       cleanUpdates.status = norm;
       cleanUpdates.displayStatus = getRequestStatusDisplayLabel(norm);
     }
-    await updateDoc(docRef, cleanUpdates);
+    await setDoc(docRef, cleanUpdates, { merge: true });
   } catch (err) {
     console.error(`Failed to update projectRequest ${requestId} in Firestore:`, err);
   }

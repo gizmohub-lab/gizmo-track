@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   LayoutDashboard,
   FolderKanban,
+  Inbox,
   Users,
   Briefcase,
   Receipt,
@@ -34,6 +35,7 @@ interface AdminLayoutProps {
   currentRoute: AppRoute;
   onNavigate: (route: AppRoute) => void;
   children: React.ReactNode;
+  pendingProjectRequestsCount?: number;
   pendingLocalWorksCount?: number;
   pendingInvoicesCount?: number;
   notesCount?: number;
@@ -53,6 +55,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   currentRoute,
   onNavigate,
   children,
+  pendingProjectRequestsCount = 0,
   pendingLocalWorksCount = 0,
   pendingInvoicesCount = 0,
   onLogout,
@@ -190,6 +193,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       case 'admin-dashboard':
       case 'admin':
         return 'Dashboard';
+      case 'admin-project-requests':
+        return 'Project Requests';
       case 'admin-projects':
         return 'Projects';
       case 'admin-clients':
@@ -209,13 +214,21 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     }
   };
 
-  // Navigation Items matching section 3 requirements
+  // Navigation Items matching section 3 & 4 requirements
   const navItems = [
     {
       id: 'admin-dashboard' as AppRoute,
       label: 'Dashboard',
       icon: LayoutDashboard,
       matchRoutes: ['admin-dashboard', 'admin'],
+    },
+    {
+      id: 'admin-project-requests' as AppRoute,
+      label: 'Project Requests',
+      icon: Inbox,
+      badge: pendingProjectRequestsCount > 0 ? pendingProjectRequestsCount : undefined,
+      isHighlightedBadge: true,
+      matchRoutes: ['admin-project-requests'],
     },
     {
       id: 'admin-projects' as AppRoute,
@@ -324,7 +337,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     </div>
 
                     {!isCollapsed && item.badge !== undefined && (
-                      <span className="px-1.5 py-0.2 text-[10px] font-mono font-bold rounded-full bg-zinc-200 text-zinc-800">
+                      <span
+                        className={`px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-full ${
+                          item.isHighlightedBadge
+                            ? 'bg-[#FF5738] text-white shadow-xs'
+                            : 'bg-zinc-200 text-zinc-800'
+                        }`}
+                      >
                         {item.badge}
                       </span>
                     )}
@@ -666,7 +685,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                         <span>{item.label}</span>
                       </div>
                       {item.badge !== undefined && (
-                        <span className="px-1.5 py-0.2 text-[10px] font-mono rounded-full bg-zinc-200 text-zinc-800">
+                        <span
+                          className={`px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-full ${
+                            item.isHighlightedBadge
+                              ? 'bg-[#FF5738] text-white shadow-xs'
+                              : 'bg-zinc-200 text-zinc-800'
+                          }`}
+                        >
                           {item.badge}
                         </span>
                       )}

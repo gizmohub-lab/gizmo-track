@@ -23,16 +23,26 @@ import {
   FileCheck,
   AlertCircle,
 } from 'lucide-react';
-import { Client, Project, ProjectDeliverable, ProjectFileAttachment, AdminNotification } from '../../types';
+import {
+  Client,
+  Project,
+  ProjectDeliverable,
+  ProjectFileAttachment,
+  AdminNotification,
+  ProjectRequest,
+} from '../../types';
+import { formatExactDateTimeString } from '../../utils/dateTimeUtils';
 
 interface StartProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   clients: Client[];
   projects: Project[];
-  onAddProject: (project: Project) => void;
+  onAddProject?: (project: Project) => void;
+  onAddProjectRequest?: (request: ProjectRequest) => void;
   onAddClient: (client: Client) => void;
   onAddNotification: (notification: AdminNotification) => void;
+  onNavigateToClientPortal?: () => void;
 }
 
 const SERVICE_OPTIONS = [
@@ -102,8 +112,10 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
   clients,
   projects,
   onAddProject,
+  onAddProjectRequest,
   onAddClient,
   onAddNotification,
+  onNavigateToClientPortal,
 }) => {
   const [step, setStep] = useState<number>(1); // 1 to 8 (8 is review/submit)
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -234,68 +246,17 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
   const handleSubmitProject = () => {
     if (!validateStep(7)) return;
 
-    // 1. Check or create client
-    let matchedClient = clients.find(
-      (c) =>
-        c.email?.toLowerCase() === emailAddress.trim().toLowerCase() ||
-        c.phone === whatsappPhone.trim() ||
-        c.name.toLowerCase() === clientName.trim().toLowerCase()
-    );
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const submissionDateFormatted = formatExactDateTimeString(nowIso);
 
-    let clientId = matchedClient?.id;
-    if (!matchedClient) {
-      clientId = `client-${Date.now()}`;
-      const newClient: Client = {
-        id: clientId,
-        name: clientName.trim(),
-        company: companyName.trim() || undefined,
-        phone: whatsappPhone.trim(),
-        whatsapp: whatsappPhone.trim(),
-        email: emailAddress.trim(),
-        country: 'India',
-        createdAt: new Date().toISOString(),
-      };
-      onAddClient(newClient);
-    }
+    // 1. Generate unique request identifiers
+    const requestId = `req-${Date.now()}`;
+    const reqNum = `REQ-2026-${String(Math.floor(100 + Math.random() * 900))}`;
 
-    // 2. Generate unique project code
-    const projCodeNum = projects.length + 101;
-    const projectCode = `GZ-PRJ-2026-${projCodeNum}`;
-
-    // 3. Convert selected services into deliverables
-    const deliverables: ProjectDeliverable[] = selectedServices.map((srv, idx) => ({
-      id: `del-${Date.now()}-${idx}`,
-      title: srv === 'Other' && otherServiceText ? otherServiceText : `${srv} Deliverable`,
-      type: 'Deliverable',
-      description: `Client requested service: ${srv}`,
-      isRequired: true,
-      isCompleted: false,
-      orderIndex: idx + 1,
-    }));
-
-    if (customRequirements.trim()) {
-      deliverables.push({
-        id: `del-${Date.now()}-custom`,
-        title: 'Custom Requirements Handover',
-        type: 'Milestone',
-        description: customRequirements.trim(),
-        isRequired: false,
-        isCompleted: false,
-        orderIndex: deliverables.length + 1,
-      });
-    }
-
-    const nowIso = new Date().toISOString();
-    const submissionDateFormatted = new Date().toLocaleString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
+    // 2. Format comprehensive project brief
     const fullDescription = [
-      `Core Intent: ${projectDescription}`,
+      projectDescription.trim(),
       industry === 'Other' ? `Industry: ${otherIndustry}` : `Industry: ${industry}`,
       selectedGoals.length > 0 ? `Goals: ${selectedGoals.join(', ')}` : '',
       targetAudience ? `Target Audience: ${targetAudience}` : '',
@@ -305,57 +266,58 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
       .filter(Boolean)
       .join('\n\n');
 
-    const newProject: Project = {
-      id: `proj-${Date.now()}`,
-      projectCode,
-      title: projectTitle.trim(),
-      clientId: clientId || 'client-unknown',
+    // 3. Create ProjectRequest object with status: 'Pending Review'
+    // Strict requirement: DO NOT immediately create it as an active project.
+    const newProjectRequest: ProjectRequest = {
+      id: requestId,
+      requestNumber: reqNum,
       clientName: clientName.trim(),
-      clientBrand: companyName.trim() || undefined,
-      clientPhone: whatsappPhone.trim(),
-      projectType: selectedServices[0] || 'Branding',
-      category: 'Design',
-      priority: timelineOption === 'today' || timelineOption === 'tomorrow' ? 'Urgent' : 'Normal',
-      hasDeadline: timelineOption !== 'flexible',
-      deadlineDate: customDate || new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      deadlineTime: '18:00',
-      dueDate: customDate || new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      budget: 0,
-      totalAmount: 0,
-      amountGot: 0,
-      amountToGet: 0,
-      paymentStatus: 'Not Paid',
-      payments: [],
-      status: 'New',
+      companyName: companyName.trim() || undefined,
+      email: emailAddress.trim(),
+      whatsapp: whatsappPhone.trim(),
+      services: selectedServices,
+      projectTitle: projectTitle.trim(),
       description: fullDescription,
-      deliverables,
-      revisions: [],
-      files,
+      industry: industry === 'Other' ? otherIndustry : industry,
+      goals: selectedGoals,
+      targetAudience: targetAudience.trim() || undefined,
+      referenceLinks: referenceLinks.trim() || undefined,
+      customRequirements: customRequirements.trim() || undefined,
+      timelineOption,
+      requestedDeadline: customDate || undefined,
+      budgetRange: budgetOption,
+      attachments: files,
+      submittedAt: nowIso,
+      requestStatus: 'Pending Review',
       history: [
         {
-          id: `hist-${Date.now()}`,
+          id: `act-${Date.now()}`,
           timestamp: submissionDateFormatted,
-          action: 'Project brief submitted by client via Start a Project portal',
+          action: 'Client submitted project request via Start a Project portal',
+          actor: 'Client',
         },
       ],
       createdAt: nowIso,
       updatedAt: nowIso,
     };
 
-    onAddProject(newProject);
+    if (onAddProjectRequest) {
+      onAddProjectRequest(newProjectRequest);
+    }
 
-    // 4. Add Admin Notification
+    // 4. Send Admin Notification
     onAddNotification({
       id: `notif-${Date.now()}`,
-      title: 'New Project Request',
-      message: `${clientName} submitted project "${projectTitle}" (${selectedServices.join(', ')})`,
+      title: '🔔 New Project Request',
+      description: `New project request from ${companyName.trim() || clientName.trim()}: "${projectTitle.trim()}" (${selectedServices.join(', ')}) • Budget: ${budgetOption}`,
       timestamp: 'Just now',
       read: false,
-      type: 'success',
-      route: 'admin-projects',
+      type: 'project',
+      targetRoute: 'admin-project-requests',
+      targetId: newProjectRequest.id,
     });
 
-    setCreatedProjectRef(projectCode);
+    setCreatedProjectRef(reqNum);
     setSubmittedTimeStr(submissionDateFormatted);
     setSubmitted(true);
   };
@@ -1098,52 +1060,71 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
           ) : (
             /* SUCCESS CONFIRMATION VIEW */
             <div className="py-8 text-center space-y-6 animate-in zoom-in-95 duration-300">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
-                <CheckCircle className="w-10 h-10" />
+              <div className="w-20 h-20 rounded-3xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto shadow-sm">
+                <CheckCircle className="w-10 h-10 text-amber-600" />
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs font-black uppercase tracking-widest text-[#FF5738] bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
-                  Project Brief Received
-                </span>
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  <span>Request Status: Pending Review</span>
+                </div>
                 <h3 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
-                  Thank you. Your project brief has been received by Gizmo Design.
+                  Project Request Submitted Successfully
                 </h3>
                 <p className="text-xs sm:text-sm text-zinc-600 max-w-md mx-auto">
-                  Our Senior Creative Director has received your commission and assigned unique project reference code{' '}
-                  <span className="font-extrabold text-zinc-950">{createdProjectRef}</span>.
+                  Your brief has been registered with reference code{' '}
+                  <span className="font-extrabold text-zinc-950 font-mono">{createdProjectRef}</span>.
+                  The Gizmo Senior Creative Team is currently reviewing your scope and requirements.
                 </p>
               </div>
 
-              <div className="max-w-md mx-auto p-4 rounded-2xl bg-zinc-50 border border-zinc-200 text-left space-y-2.5 text-xs">
+              <div className="max-w-md mx-auto p-5 rounded-2xl bg-zinc-50 border border-zinc-200 text-left space-y-2.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-zinc-500 font-medium">Reference Code:</span>
-                  <span className="font-extrabold text-zinc-950">{createdProjectRef}</span>
+                  <span className="text-zinc-500 font-medium">Request Number:</span>
+                  <span className="font-extrabold text-zinc-950 font-mono">{createdProjectRef}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500 font-medium">Submitted On:</span>
+                  <span className="text-zinc-500 font-medium">Status:</span>
+                  <span className="font-bold text-amber-700">Pending Review</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500 font-medium">Submitted At:</span>
                   <span className="font-bold text-zinc-800">{submittedTimeStr}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500 font-medium">Contact Confirmation:</span>
-                  <span className="font-bold text-zinc-800">{whatsappPhone}</span>
+                  <span className="text-zinc-500 font-medium">Notification Channel:</span>
+                  <span className="font-bold text-zinc-800">{whatsappPhone} · In-App</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500 font-medium">Next Steps:</span>
-                  <span className="font-bold text-emerald-700">Assigned to Studio Production Queue</span>
+                <div className="flex justify-between border-t border-zinc-200/80 pt-2">
+                  <span className="text-zinc-500 font-medium">Next Milestone:</span>
+                  <span className="font-bold text-emerald-700">Creative Director Acceptance</span>
                 </div>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                {onNavigateToClientPortal && (
+                  <button
+                    onClick={() => {
+                      setSubmitted(false);
+                      setStep(1);
+                      onClose();
+                      onNavigateToClientPortal();
+                    }}
+                    className="w-full sm:w-auto px-6 py-3 bg-[#FF5738] hover:bg-orange-600 text-white rounded-xl text-xs font-extrabold transition shadow-sm"
+                  >
+                    View in Client Workspace →
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     setSubmitted(false);
                     setStep(1);
                     onClose();
                   }}
-                  className="px-8 py-3 bg-zinc-950 hover:bg-[#FF5738] text-white rounded-xl text-xs font-extrabold transition shadow-sm"
+                  className="w-full sm:w-auto px-6 py-3 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-extrabold transition shadow-sm"
                 >
-                  Return to Portal
+                  Done
                 </button>
               </div>
             </div>

@@ -19,6 +19,7 @@ import { PaymentModal } from './components/invoice/PaymentModal';
 import { ShareModal } from './components/invoice/ShareModal';
 import { ProductionDashboard } from './components/portal/ProductionDashboard';
 import { ProjectsView } from './components/portal/ProjectsView';
+import { ProjectRequestsView } from './components/portal/requests/ProjectRequestsView';
 import { PeopleView } from './components/portal/PeopleView';
 import { LocalWorksView } from './components/portal/LocalWorksView';
 import { DeadlinesManagerModal } from './components/portal/DeadlinesManagerModal';
@@ -28,6 +29,13 @@ import { NotificationPermissionBanner } from './components/notifications/Notific
 import { NotificationSettingsSection } from './components/notifications/NotificationSettingsSection';
 import { NotesView } from './components/portal/notes/NotesView';
 import { QuickNoteModal } from './components/portal/notes/QuickNoteModal';
+import {
+  loadProjectRequests,
+  saveProjectRequests,
+  acceptProjectRequestWorkflow,
+  rejectProjectRequestWorkflow,
+  markProjectRequestUnderReviewWorkflow,
+} from './services/projectRequestsService';
 import {
   sumReceivedPayments,
   calculateAmountToGet,
@@ -64,6 +72,7 @@ import {
   ProjectTemplate,
   ResetOptions,
   Note,
+  ProjectRequest,
 } from './types';
 import {
   loadInvoices,
@@ -267,6 +276,19 @@ export default function App() {
   const [projectTemplates, setProjectTemplates] = useState<ProjectTemplate[]>(() =>
     loadProjectTemplates()
   );
+
+  // Project Requests Workflow States
+  const [projectRequests, setProjectRequests] = useState<ProjectRequest[]>(() =>
+    loadProjectRequests()
+  );
+
+  useEffect(() => {
+    saveProjectRequests(projectRequests);
+  }, [projectRequests]);
+
+  const pendingProjectRequestsCount = projectRequests.filter(
+    (r) => r.requestStatus === 'Pending Review' || r.requestStatus === 'Under Review'
+  ).length;
 
   // Notes System States
   const [notes, setNotes] = useState<Note[]>(() => loadNotes());
@@ -676,6 +698,105 @@ export default function App() {
 
   const handleUpdateClient = (updatedClient: Client) => {
     setClients((prev) => prev.map((c) => (c.id === updatedClient.id ? updatedClient : c)));
+  };
+
+  // Project Requests Workflow Handlers
+  const handleAcceptProjectRequest = (
+    requestId: string,
+    approvalOptions: {
+      designerId?: string;
+      designerName?: string;
+      priority?: any;
+      category?: string;
+      customDeadline?: string;
+      initialStatus?: any;
+    }
+  ) => {
+    const targetReq = projectRequests.find((r) => r.id === requestId);
+    if (!targetReq) return;
+
+    const result = acceptProjectRequestWorkflow({
+      request: targetReq,
+      existingProjects: projects,
+      existingClients: clients,
+      approvalOptions,
+      adminActorName: 'Creative Director (Admin)',
+    });
+
+    setProjectRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? result.updatedRequest : r))
+    );
+
+    if (result.createdProject) {
+      setProjects((prev) => [result.createdProject!, ...prev]);
+    }
+
+    if (result.createdClient) {
+      setClients((prev) => [result.createdClient!, ...prev]);
+    }
+
+    dispatchGizmoNotification(
+      {
+        recipientId: 'admin',
+        recipientRole: 'admin',
+        category: 'new_projects',
+        type: 'project',
+        title: 'Project Request Accepted',
+        message: `Accepted request for "${result.updatedRequest.projectTitle}". Production code: ${
+          result.createdProject?.projectCode || ''
+        }`,
+        description: `Commission request ${result.updatedRequest.requestNumber} for ${result.updatedRequest.clientName} converted into active project.`,
+        relatedEntityType: 'project',
+        relatedEntityId: result.createdProject?.id,
+        targetRoute: 'admin-projects',
+      },
+      notificationSettings,
+      gizmoNotifications,
+      setGizmoNotifications
+    );
+  };
+
+  const handleRejectProjectRequest = (requestId: string, reason?: string) => {
+    const targetReq = projectRequests.find((r) => r.id === requestId);
+    if (!targetReq) return;
+
+    const updated = rejectProjectRequestWorkflow({
+      request: targetReq,
+      reason,
+      adminActorName: 'Creative Director (Admin)',
+    });
+
+    setProjectRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? updated : r))
+    );
+
+    dispatchGizmoNotification(
+      {
+        recipientId: 'admin',
+        recipientRole: 'admin',
+        category: 'project_updates',
+        type: 'urgent',
+        title: 'Project Request Declined',
+        message: `Request ${targetReq.requestNumber} from ${targetReq.clientName} was declined.`,
+        description: reason || 'Declined by Creative Director',
+        relatedEntityType: 'project',
+        relatedEntityId: targetReq.id,
+        targetRoute: 'admin-project-requests',
+      },
+      notificationSettings,
+      gizmoNotifications,
+      setGizmoNotifications
+    );
+  };
+
+  const handleMarkProjectRequestUnderReview = (requestId: string) => {
+    const targetReq = projectRequests.find((r) => r.id === requestId);
+    if (!targetReq) return;
+
+    const updated = markProjectRequestUnderReviewWorkflow(targetReq, 'Creative Director (Admin)');
+    setProjectRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? updated : r))
+    );
   };
 
   // Local Works CRUD Handlers
@@ -1417,6 +1538,7 @@ export default function App() {
         <AdminLayout
           currentRoute={currentRoute}
           onNavigate={navigate}
+          pendingProjectRequestsCount={pendingProjectRequestsCount}
           pendingLocalWorksCount={pendingLocalWorksCount}
           pendingInvoicesCount={
             invoices.filter((i) => i.status === 'Pending' || i.status === 'Draft').length
@@ -1530,6 +1652,22 @@ export default function App() {
               onDeleteClient={handleDeleteClient}
               initialActiveProjectId={activeProjectIdForWorkspace}
               onClearInitialActiveProject={() => setActiveProjectIdForWorkspace(null)}
+            />
+          )}
+
+          {/* TAB 2.5: PROJECT REQUESTS INBOX & REVIEW */}
+          {currentRoute === 'admin-project-requests' && (
+            <ProjectRequestsView
+              requests={projectRequests}
+              projects={projects}
+              clients={clients}
+              onAcceptRequest={(req) => handleAcceptProjectRequest(req.id, {})}
+              onRejectRequest={(req, reason) => handleRejectProjectRequest(req.id, reason)}
+              onMarkUnderReview={(req) => handleMarkProjectRequestUnderReview(req.id)}
+              onOpenProjectWorkspace={(projId) => {
+                setActiveProjectIdForWorkspace(projId);
+                navigate('admin-projects');
+              }}
             />
           )}
 
@@ -1793,6 +1931,7 @@ export default function App() {
             {currentRoute === 'my-projects' && (
               <MyProjectsView
                 projects={projects}
+                requests={projectRequests}
                 onNavigate={navigate}
                 onOpenStartProject={() => setShowStartProjectModal(true)}
               />
@@ -1887,8 +2026,11 @@ export default function App() {
         onClose={() => setShowStartProjectModal(false)}
         clients={clients}
         projects={projects}
-        onAddProject={handleAddProject}
+        onAddProjectRequest={(req) => {
+          setProjectRequests((prev) => [req, ...prev]);
+        }}
         onAddClient={(newClient) => setClients([newClient, ...clients])}
+        onNavigateToClientPortal={() => navigate('my-projects')}
         onAddNotification={(notif) => {
           const gizmoNotif: GizmoNotification = {
             id: notif.id || `notif-${Date.now()}`,
@@ -1903,7 +2045,7 @@ export default function App() {
             createdAt: new Date().toISOString(),
             isRead: false,
             read: false,
-            targetRoute: (notif.route || notif.targetRoute || 'admin-projects') as AppRoute,
+            targetRoute: (notif.route || notif.targetRoute || 'admin-project-requests') as AppRoute,
           };
           setGizmoNotifications((prev) => [gizmoNotif, ...prev]);
         }}

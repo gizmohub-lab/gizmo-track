@@ -232,6 +232,9 @@ export interface Project {
   revisions: ProjectDeliverableRevision[];
   files: ProjectFileAttachment[];
 
+  // Originating Client Request Linkage (if accepted from Start a Project)
+  requestId?: string;
+
   // Custom Fields (Admin controlled)
   customFieldValues?: Record<string, any>;
 
@@ -505,6 +508,7 @@ export type AppRoute =
   | 'admin'
   | 'admin-login'
   | 'admin-dashboard'
+  | 'admin-project-requests'
   | 'admin-projects'
   | 'admin-clients'
   | 'admin-local-works'
@@ -591,4 +595,73 @@ export interface DeadlineItem {
   description?: string;
   assignedTo?: string;
   isCompleted?: boolean;
+}
+
+export type ProjectRequestStatus =
+  | 'Pending Review'
+  | 'Under Review'
+  | 'Accepted'
+  | 'Rejected'
+  | 'Cancelled';
+
+export interface ProjectRequestActivity {
+  id: string;
+  timestamp: string;
+  action: string;
+  actor?: string; // 'Client' | 'Admin' | string
+  note?: string;
+}
+
+export interface ProjectRequest {
+  id: string; // actual ID e.g. "req-1726130000000"
+  requestNumber: string; // e.g. "REQ-2026-001"
+  clientId?: string;
+  clientName: string;
+  companyName?: string;
+  email: string;
+  whatsapp: string;
+  services: string[];
+  projectTitle: string;
+  description: string;
+  industry?: string;
+  goals?: string[];
+  targetAudience?: string;
+  referenceLinks?: string;
+  customRequirements?: string;
+  timelineOption: string;
+  requestedDeadline?: string;
+  budgetRange: string;
+  attachments: ProjectFileAttachment[];
+  submittedAt: string;
+  requestStatus: ProjectRequestStatus;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  acceptedAt?: string;
+  acceptedBy?: string;
+  rejectionReason?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
+  projectId?: string; // linked project ID once accepted
+  projectCode?: string; // linked project code once accepted
+  convertedProjectId?: string; // alias for linked project ID
+  convertedProjectCode?: string; // alias for linked project code
+  history: ProjectRequestActivity[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClientNotification {
+  id: string;
+  clientId?: string;
+  clientEmail?: string;
+  clientPhone?: string;
+  title: string;
+  message: string;
+  type: 'request_submitted' | 'under_review' | 'accepted' | 'rejected' | 'project_update';
+  requestId?: string;
+  projectId?: string;
+  projectCode?: string;
+  timestamp: string;
+  createdAt: string;
+  isRead: boolean;
 }

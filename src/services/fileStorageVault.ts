@@ -23,7 +23,7 @@
 
 import { safeLoadItem, safeSaveItem, PORTAL_STORAGE_KEYS } from './safeStorage';
 
-export type FileEntityType = 'project' | 'local-work' | 'invoice' | 'note';
+export type FileEntityType = 'project' | 'local-work' | 'invoice' | 'note' | 'project-request';
 
 export interface VaultFileAsset {
   /** Canonical stable storage path e.g. /projects/proj-1/files/file-12345 */

@@ -25,6 +25,8 @@ export const PORTAL_STORAGE_KEYS = {
   NOTES: 'gizmo_portal_notes_v1',
   NOTE_CATEGORIES: 'gizmo_portal_note_categories_v1',
   FILE_VAULT: 'gizmo_portal_file_vault_v1',
+  PROJECT_REQUESTS: 'gizmo_portal_project_requests_v1',
+  CLIENT_NOTIFICATIONS: 'gizmo_portal_client_notifications_v1',
   NOTIFICATIONS: 'gizmo_portal_notifications_v1',
   NOTIFICATION_SETTINGS: 'gizmo_portal_notification_settings_v1',
   BACKUP_METADATA: 'gizmo_portal_backup_meta_v1',

@@ -68,7 +68,7 @@ export default defineConfig(() => {
   const base =
     process.env.VITE_BASE_PATH ||
     process.env.BASE_PATH ||
-    '/GIZMO-ADMIN/';
+    '/';
 
   return {
     base,

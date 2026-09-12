@@ -1,6 +1,203 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="110" fill="#09090b"/>
-  <rect x="32" y="32" width="448" height="448" rx="80" fill="none" stroke="#FF5738" stroke-width="8" opacity="0.3"/>
-  <circle cx="256" cy="256" r="160" fill="#FF5738"/>
-  <path d="M 322 195 A 86 86 0 1 0 322 317 L 322 250 L 244 250 L 244 282 L 284 282 A 46 46 0 1 1 284 230 Z" fill="#ffffff"/>
+  <defs>
+    <!-- Stipple / Halftone pattern for facial stubble -->
+    <pattern id="stipple" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="0.75" fill="#0A3C23" opacity="0.32"/>
+    </pattern>
+    <!-- Iris gradient -->
+    <radialGradient id="irisGrad" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#145A34"/>
+      <stop offset="65%" stop-color="#072F1A"/>
+      <stop offset="100%" stop-color="#02140A"/>
+    </radialGradient>
+    <filter id="softGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <g id="mascot-root" transform="translate(256, 258) scale(0.82) translate(-256, -280)">
+    
+    <!-- 1. DIE-CUT OUTER STICKER BORDER (White / Cream outline) -->
+    <path d="
+      M 256, 12
+      C 305, 12 345, 26 382, 54
+      C 418, 82 444, 118 458, 160
+      C 472, 202 468, 245 464, 278
+      C 485, 295 504, 325 504, 362
+      C 504, 400 482, 430 454, 448
+      C 448, 480 432, 518 396, 548
+      C 362, 574 322, 592 256, 592
+      C 190, 592 150, 574 116, 548
+      C 80, 518 64, 480 58, 448
+      C 30, 430 8, 400 8, 362
+      C 8, 325 27, 295 48, 278
+      C 44, 245 40, 202 54, 160
+      C 68, 118 94, 82 130, 54
+      C 167, 26 207, 12 256, 12 Z"
+      fill="#FFFFFF"
+      stroke="#FAF6ED"
+      stroke-width="12"
+      stroke-linejoin="round"
+      filter="url(#softGlow)"
+    />
+
+    <!-- 2. THICK DARK GREEN PERIMETER STROKE (#07361E) -->
+    <path d="
+      M 256, 22
+      C 300, 22 336, 35 370, 60
+      C 402, 85 426, 118 438, 156
+      C 450, 194 446, 232 442, 264
+      C 462, 280 480, 308 480, 342
+      C 480, 376 460, 404 434, 420
+      C 428, 450 414, 484 382, 512
+      C 350, 536 314, 552 256, 552
+      C 198, 552 162, 536 130, 512
+      C 98, 484 84, 450 78, 420
+      C 52, 404 32, 376 32, 342
+      C 32, 308 50, 280 70, 264
+      C 66, 232 62, 194 74, 156
+      C 86, 118 110, 85 142, 60
+      C 176, 35 212, 22 256, 22 Z"
+      fill="#0A4D2E"
+      stroke="#052816"
+      stroke-width="16"
+      stroke-linejoin="round"
+    />
+
+    <!-- 3. INNER HAIR SHADOW & CURL SILHOUETTES -->
+    <!-- Left outer curls -->
+    <path d="M 100, 150 C 65, 195 55, 255 80, 310 C 95, 285 112, 258 125, 248 C 108, 212 112, 178 132, 146 Z" fill="#042213" />
+    <!-- Right outer curls -->
+    <path d="M 412, 150 C 447, 195 457, 255 432, 310 C 417, 285 400, 258 387, 248 C 404, 212 400, 178 380, 146 Z" fill="#042213" />
+
+    <!-- 4. EARS -->
+    <!-- Left Ear -->
+    <path d="M 98, 335 C 58, 345 40, 380 46, 420 C 52, 455 80, 478 112, 470 C 104, 425 100, 380 98, 335 Z"
+      fill="#FDF3DE" stroke="#052816" stroke-width="11" stroke-linejoin="round" />
+    <path d="M 72, 385 C 68, 402 72, 428 90, 442 C 96, 428 94, 410 86, 398"
+      fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+
+    <!-- Right Ear -->
+    <path d="M 414, 335 C 454, 345 472, 380 466, 420 C 460, 455 432, 478 400, 470 C 408, 425 412, 380 414, 335 Z"
+      fill="#FDF3DE" stroke="#052816" stroke-width="11" stroke-linejoin="round" />
+    <path d="M 440, 385 C 444, 402 440, 428 422, 442 C 416, 428 418, 410 426, 398"
+      fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+
+    <!-- 5. FACE CANVAS (Warm Cream/Ivory #FDF3DE) -->
+    <path d="
+      M 112, 290
+      C 104, 340 108, 400 118, 435
+      C 130, 482 165, 532 216, 550
+      C 242, 558 270, 558 296, 550
+      C 347, 532 382, 482 394, 435
+      C 404, 400 408, 340 400, 290
+      C 375, 305 340, 298 315, 272
+      C 290, 298 222, 298 197, 272
+      C 172, 298 138, 305 112, 290 Z"
+      fill="#FDF3DE" stroke="#052816" stroke-width="12" stroke-linejoin="round"
+    />
+
+    <!-- 6. RETRO STIPPLE SHADING ON JAW & CHIN -->
+    <path d="
+      M 125, 420
+      C 134, 470 165, 520 216, 538
+      C 242, 546 270, 546 296, 538
+      C 347, 520 378, 470 387, 420
+      C 378, 455 340, 498 296, 502
+      C 270, 506 242, 506 216, 502
+      C 172, 498 134, 455 125, 420 Z"
+      fill="url(#stipple)"
+    />
+
+    <!-- 7. FOREHEAD CURLS & BANGS (The iconic Gizmo hair locks) -->
+    <path d="
+      M 108, 294
+      C 120, 240 160, 204 206, 196
+      C 248, 188 282, 204 312, 230
+      C 334, 196 368, 204 404, 294
+      C 380, 270 350, 256 324, 278
+      C 308, 292 290, 300 278, 282
+      C 266, 264 256, 242 244, 256
+      C 232, 268 222, 296 200, 300
+      C 174, 304 148, 282 108, 294 Z"
+      fill="#0A4D2E" stroke="#052816" stroke-width="11" stroke-linejoin="round"
+    />
+
+    <!-- Top & Crown Curly Locks (Distinct shapes with #052816 outline) -->
+    <!-- Top Left lock -->
+    <path d="M 140, 100 C 160, 60 210, 50 240, 75 C 210, 85 170, 95 140, 100 Z"
+      fill="#1B7846" stroke="#052816" stroke-width="5" />
+    <!-- Top Center lock -->
+    <path d="M 235, 60 C 265, 40 315, 42 345, 65 C 315, 75 265, 75 235, 60 Z"
+      fill="#1B7846" stroke="#052816" stroke-width="5" />
+    <!-- Top Right lock -->
+    <path d="M 330, 85 C 365, 65 410, 75 425, 110 C 395, 110 360, 100 330, 85 Z"
+      fill="#1B7846" stroke="#052816" stroke-width="5" />
+
+    <!-- Forehead curl highlight swoosh -->
+    <path d="M 345, 175 C 365, 150 395, 155 405, 185 C 385, 185 365, 180 345, 175 Z" fill="#248F53" />
+    <path d="M 240, 140 C 270, 120 305, 125 325, 150 C 298, 152 265, 148 240, 140 Z" fill="#248F53" />
+
+    <!-- 8. EYEBROWS -->
+    <!-- Left eyebrow (viewer's left) -->
+    <path d="M 145, 320 C 168, 292 212, 292 238, 314 C 220, 310 180, 306 145, 320 Z"
+      fill="#052816" />
+    <!-- Right eyebrow (viewer's right, arched inquisitively) -->
+    <path d="M 298, 310 C 324, 282 368, 282 390, 304 C 372, 300 332, 296 298, 310 Z"
+      fill="#052816" />
+
+    <!-- 9. EYES (Large, expressive, cartoon anime style) -->
+    <!-- Left Eye -->
+    <g id="eye-left">
+      <!-- Sclera -->
+      <ellipse cx="194" cy="372" rx="36" ry="45" fill="#FFFFFF" stroke="#052816" stroke-width="9" />
+      <!-- Iris / Pupil -->
+      <ellipse cx="198" cy="372" rx="26" ry="33" fill="url(#irisGrad)" />
+      <!-- Upper specular highlight (Big circle) -->
+      <circle cx="188" cy="358" r="9" fill="#FFFFFF" />
+      <!-- Lower specular highlight (Small circle) -->
+      <circle cx="205" cy="386" r="4.5" fill="#FFFFFF" />
+      <!-- Upper eyelid lash line -->
+      <path d="M 155, 362 C 176, 336 212, 336 234, 362" fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+    </g>
+
+    <!-- Right Eye -->
+    <g id="eye-right">
+      <!-- Sclera -->
+      <ellipse cx="324" cy="368" rx="36" ry="45" fill="#FFFFFF" stroke="#052816" stroke-width="9" />
+      <!-- Iris / Pupil -->
+      <ellipse cx="320" cy="368" rx="26" ry="33" fill="url(#irisGrad)" />
+      <!-- Upper specular highlight (Big circle) -->
+      <circle cx="310" cy="354" r="9" fill="#FFFFFF" />
+      <!-- Lower specular highlight (Small circle) -->
+      <circle cx="327" cy="382" r="4.5" fill="#FFFFFF" />
+      <!-- Upper eyelid lash line -->
+      <path d="M 285, 358 C 306, 332 342, 332 364, 358" fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+    </g>
+
+    <!-- 10. NOSE (Minimalist stylish single line) -->
+    <path d="M 252, 345 C 257, 385 242, 420 234, 432 C 247, 435 260, 430 264, 420"
+      fill="none" stroke="#052816" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="284" cy="428" r="3" fill="#052816" />
+
+    <!-- 11. MUSTACHE STUBBLE (Angled hatch strokes above upper lip) -->
+    <g id="mustache-stubble" stroke="#052816" stroke-width="2.5" stroke-linecap="round" opacity="0.8">
+      <line x1="216" y1="460" x2="221" y2="455" />
+      <line x1="226" y1="459" x2="233" y2="453" />
+      <line x1="237" y1="458" x2="244" y2="453" />
+      <line x1="247" y1="457" x2="254" y2="453" />
+      <line x1="258" y1="458" x2="265" y2="454" />
+      <line x1="268" y1="459" x2="275" y2="455" />
+      <line x1="278" y1="461" x2="285" y2="457" />
+      <line x1="288" y1="464" x2="295" y2="460" />
+    </g>
+
+    <!-- 12. MOUTH (Friendly smirk curved slightly up to the right) -->
+    <path d="M 225, 474 C 246, 481 276, 480 306, 464"
+      fill="none" stroke="#052816" stroke-width="8" stroke-linecap="round" />
+
+    <!-- 13. CHIN SOUL PATCH / GOATEE -->
+    <path d="M 255, 496 C 251, 507 267, 507 263, 496 Z" fill="#0A4D2E" stroke="#052816" stroke-width="1.5" />
+
+  </g>
 </svg>

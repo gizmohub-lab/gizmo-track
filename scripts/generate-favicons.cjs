@@ -1,139 +1,240 @@
 const fs = require('fs');
 const path = require('path');
-const { PNG } = require('pngjs');
+const { Resvg } = require('@resvg/resvg-js');
 
-// Math SDF for squircle rounded rectangle
-function sdRoundBox(x, y, cx, cy, halfW, halfH, r) {
-  const dx = Math.abs(x - cx) - (halfW - r);
-  const dy = Math.abs(y - cy) - (halfH - r);
-  const ax = Math.max(dx, 0);
-  const ay = Math.max(dy, 0);
-  const outsideDist = Math.sqrt(ax * ax + ay * ay);
-  const insideDist = Math.min(Math.max(dx, dy), 0);
-  return outsideDist + insideDist - r;
+// High-fidelity SVG of the Official Gizmo Mascot Logo
+const mascotSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Stipple / Halftone pattern for facial stubble -->
+    <pattern id="stipple" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="0.75" fill="#0A3C23" opacity="0.32"/>
+    </pattern>
+    <!-- Iris gradient -->
+    <radialGradient id="irisGrad" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#145A34"/>
+      <stop offset="65%" stop-color="#072F1A"/>
+      <stop offset="100%" stop-color="#02140A"/>
+    </radialGradient>
+    <filter id="softGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <g id="mascot-root" transform="translate(256, 258) scale(0.82) translate(-256, -280)">
+    
+    <!-- 1. DIE-CUT OUTER STICKER BORDER (White / Cream outline) -->
+    <path d="
+      M 256, 12
+      C 305, 12 345, 26 382, 54
+      C 418, 82 444, 118 458, 160
+      C 472, 202 468, 245 464, 278
+      C 485, 295 504, 325 504, 362
+      C 504, 400 482, 430 454, 448
+      C 448, 480 432, 518 396, 548
+      C 362, 574 322, 592 256, 592
+      C 190, 592 150, 574 116, 548
+      C 80, 518 64, 480 58, 448
+      C 30, 430 8, 400 8, 362
+      C 8, 325 27, 295 48, 278
+      C 44, 245 40, 202 54, 160
+      C 68, 118 94, 82 130, 54
+      C 167, 26 207, 12 256, 12 Z"
+      fill="#FFFFFF"
+      stroke="#FAF6ED"
+      stroke-width="12"
+      stroke-linejoin="round"
+      filter="url(#softGlow)"
+    />
+
+    <!-- 2. THICK DARK GREEN PERIMETER STROKE (#07361E) -->
+    <path d="
+      M 256, 22
+      C 300, 22 336, 35 370, 60
+      C 402, 85 426, 118 438, 156
+      C 450, 194 446, 232 442, 264
+      C 462, 280 480, 308 480, 342
+      C 480, 376 460, 404 434, 420
+      C 428, 450 414, 484 382, 512
+      C 350, 536 314, 552 256, 552
+      C 198, 552 162, 536 130, 512
+      C 98, 484 84, 450 78, 420
+      C 52, 404 32, 376 32, 342
+      C 32, 308 50, 280 70, 264
+      C 66, 232 62, 194 74, 156
+      C 86, 118 110, 85 142, 60
+      C 176, 35 212, 22 256, 22 Z"
+      fill="#0A4D2E"
+      stroke="#052816"
+      stroke-width="16"
+      stroke-linejoin="round"
+    />
+
+    <!-- 3. INNER HAIR SHADOW & CURL SILHOUETTES -->
+    <!-- Left outer curls -->
+    <path d="M 100, 150 C 65, 195 55, 255 80, 310 C 95, 285 112, 258 125, 248 C 108, 212 112, 178 132, 146 Z" fill="#042213" />
+    <!-- Right outer curls -->
+    <path d="M 412, 150 C 447, 195 457, 255 432, 310 C 417, 285 400, 258 387, 248 C 404, 212 400, 178 380, 146 Z" fill="#042213" />
+
+    <!-- 4. EARS -->
+    <!-- Left Ear -->
+    <path d="M 98, 335 C 58, 345 40, 380 46, 420 C 52, 455 80, 478 112, 470 C 104, 425 100, 380 98, 335 Z"
+      fill="#FDF3DE" stroke="#052816" stroke-width="11" stroke-linejoin="round" />
+    <path d="M 72, 385 C 68, 402 72, 428 90, 442 C 96, 428 94, 410 86, 398"
+      fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+
+    <!-- Right Ear -->
+    <path d="M 414, 335 C 454, 345 472, 380 466, 420 C 460, 455 432, 478 400, 470 C 408, 425 412, 380 414, 335 Z"
+      fill="#FDF3DE" stroke="#052816" stroke-width="11" stroke-linejoin="round" />
+    <path d="M 440, 385 C 444, 402 440, 428 422, 442 C 416, 428 418, 410 426, 398"
+      fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+
+    <!-- 5. FACE CANVAS (Warm Cream/Ivory #FDF3DE) -->
+    <path d="
+      M 112, 290
+      C 104, 340 108, 400 118, 435
+      C 130, 482 165, 532 216, 550
+      C 242, 558 270, 558 296, 550
+      C 347, 532 382, 482 394, 435
+      C 404, 400 408, 340 400, 290
+      C 375, 305 340, 298 315, 272
+      C 290, 298 222, 298 197, 272
+      C 172, 298 138, 305 112, 290 Z"
+      fill="#FDF3DE" stroke="#052816" stroke-width="12" stroke-linejoin="round"
+    />
+
+    <!-- 6. RETRO STIPPLE SHADING ON JAW & CHIN -->
+    <path d="
+      M 125, 420
+      C 134, 470 165, 520 216, 538
+      C 242, 546 270, 546 296, 538
+      C 347, 520 378, 470 387, 420
+      C 378, 455 340, 498 296, 502
+      C 270, 506 242, 506 216, 502
+      C 172, 498 134, 455 125, 420 Z"
+      fill="url(#stipple)"
+    />
+
+    <!-- 7. FOREHEAD CURLS & BANGS (The iconic Gizmo hair locks) -->
+    <path d="
+      M 108, 294
+      C 120, 240 160, 204 206, 196
+      C 248, 188 282, 204 312, 230
+      C 334, 196 368, 204 404, 294
+      C 380, 270 350, 256 324, 278
+      C 308, 292 290, 300 278, 282
+      C 266, 264 256, 242 244, 256
+      C 232, 268 222, 296 200, 300
+      C 174, 304 148, 282 108, 294 Z"
+      fill="#0A4D2E" stroke="#052816" stroke-width="11" stroke-linejoin="round"
+    />
+
+    <!-- Top & Crown Curly Locks (Distinct shapes with #052816 outline) -->
+    <!-- Top Left lock -->
+    <path d="M 140, 100 C 160, 60 210, 50 240, 75 C 210, 85 170, 95 140, 100 Z"
+      fill="#1B7846" stroke="#052816" stroke-width="5" />
+    <!-- Top Center lock -->
+    <path d="M 235, 60 C 265, 40 315, 42 345, 65 C 315, 75 265, 75 235, 60 Z"
+      fill="#1B7846" stroke="#052816" stroke-width="5" />
+    <!-- Top Right lock -->
+    <path d="M 330, 85 C 365, 65 410, 75 425, 110 C 395, 110 360, 100 330, 85 Z"
+      fill="#1B7846" stroke="#052816" stroke-width="5" />
+
+    <!-- Forehead curl highlight swoosh -->
+    <path d="M 345, 175 C 365, 150 395, 155 405, 185 C 385, 185 365, 180 345, 175 Z" fill="#248F53" />
+    <path d="M 240, 140 C 270, 120 305, 125 325, 150 C 298, 152 265, 148 240, 140 Z" fill="#248F53" />
+
+    <!-- 8. EYEBROWS -->
+    <!-- Left eyebrow (viewer's left) -->
+    <path d="M 145, 320 C 168, 292 212, 292 238, 314 C 220, 310 180, 306 145, 320 Z"
+      fill="#052816" />
+    <!-- Right eyebrow (viewer's right, arched inquisitively) -->
+    <path d="M 298, 310 C 324, 282 368, 282 390, 304 C 372, 300 332, 296 298, 310 Z"
+      fill="#052816" />
+
+    <!-- 9. EYES (Large, expressive, cartoon anime style) -->
+    <!-- Left Eye -->
+    <g id="eye-left">
+      <!-- Sclera -->
+      <ellipse cx="194" cy="372" rx="36" ry="45" fill="#FFFFFF" stroke="#052816" stroke-width="9" />
+      <!-- Iris / Pupil -->
+      <ellipse cx="198" cy="372" rx="26" ry="33" fill="url(#irisGrad)" />
+      <!-- Upper specular highlight (Big circle) -->
+      <circle cx="188" cy="358" r="9" fill="#FFFFFF" />
+      <!-- Lower specular highlight (Small circle) -->
+      <circle cx="205" cy="386" r="4.5" fill="#FFFFFF" />
+      <!-- Upper eyelid lash line -->
+      <path d="M 155, 362 C 176, 336 212, 336 234, 362" fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+    </g>
+
+    <!-- Right Eye -->
+    <g id="eye-right">
+      <!-- Sclera -->
+      <ellipse cx="324" cy="368" rx="36" ry="45" fill="#FFFFFF" stroke="#052816" stroke-width="9" />
+      <!-- Iris / Pupil -->
+      <ellipse cx="320" cy="368" rx="26" ry="33" fill="url(#irisGrad)" />
+      <!-- Upper specular highlight (Big circle) -->
+      <circle cx="310" cy="354" r="9" fill="#FFFFFF" />
+      <!-- Lower specular highlight (Small circle) -->
+      <circle cx="327" cy="382" r="4.5" fill="#FFFFFF" />
+      <!-- Upper eyelid lash line -->
+      <path d="M 285, 358 C 306, 332 342, 332 364, 358" fill="none" stroke="#052816" stroke-width="7" stroke-linecap="round" />
+    </g>
+
+    <!-- 10. NOSE (Minimalist stylish single line) -->
+    <path d="M 252, 345 C 257, 385 242, 420 234, 432 C 247, 435 260, 430 264, 420"
+      fill="none" stroke="#052816" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="284" cy="428" r="3" fill="#052816" />
+
+    <!-- 11. MUSTACHE STUBBLE (Angled hatch strokes above upper lip) -->
+    <g id="mustache-stubble" stroke="#052816" stroke-width="2.5" stroke-linecap="round" opacity="0.8">
+      <line x1="216" y1="460" x2="221" y2="455" />
+      <line x1="226" y1="459" x2="233" y2="453" />
+      <line x1="237" y1="458" x2="244" y2="453" />
+      <line x1="247" y1="457" x2="254" y2="453" />
+      <line x1="258" y1="458" x2="265" y2="454" />
+      <line x1="268" y1="459" x2="275" y2="455" />
+      <line x1="278" y1="461" x2="285" y2="457" />
+      <line x1="288" y1="464" x2="295" y2="460" />
+    </g>
+
+    <!-- 12. MOUTH (Friendly smirk curved slightly up to the right) -->
+    <path d="M 225, 474 C 246, 481 276, 480 306, 464"
+      fill="none" stroke="#052816" stroke-width="8" stroke-linecap="round" />
+
+    <!-- 13. CHIN SOUL PATCH / GOATEE -->
+    <path d="M 255, 496 C 251, 507 267, 507 263, 496 Z" fill="#0A4D2E" stroke="#052816" stroke-width="1.5" />
+
+  </g>
+</svg>`;
+
+console.log('Writing mascot SVG & rendering all favicon sizes...');
+
+const publicDir = path.join(__dirname, '..', 'public');
+const distDir = path.join(__dirname, '..', 'dist');
+
+// Save master SVG
+fs.writeFileSync(path.join(publicDir, 'icon.svg'), mascotSvg);
+if (fs.existsSync(distDir)) {
+  fs.writeFileSync(path.join(distDir, 'icon.svg'), mascotSvg);
 }
 
-// Check if (x, y) is inside the bold geometric 'G' in normalized coordinates [0, 512]
-function insideG(x, y) {
-  const cx = 256;
-  const cy = 256;
-  const dx = x - cx;
-  const dy = y - cy;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-
-  // Outer radius 86, inner radius 46 (thickness = 40)
-  const angle = Math.atan2(dy, dx); // -PI to +PI
-
-  // Opening on the right side: angle between -0.75 rad and +0.70 rad
-  const isRightOpening = (angle > -0.75 && angle < 0.70);
-
-  // Crossbar & right vertical stem
-  const inStem = (x >= 278 && x <= 322 && y >= 250 && y <= 320);
-  const inBar = (x >= 240 && x <= 320 && y >= 244 && y <= 282);
-
-  if (inStem || inBar) return true;
-
-  if (dist <= 88 && dist >= 46) {
-    if (!isRightOpening) return true;
-  }
-  return false;
+// Function to render PNG using resvg-js
+function renderPng(size) {
+  const resvg = new Resvg(mascotSvg, {
+    fitTo: { mode: 'width', value: size }
+  });
+  return resvg.render().asPng();
 }
 
-function renderIcon(size, isMaskable = false) {
-  const png = new PNG({ width: size, height: size });
-  const scale = 512 / size;
+const buf16 = renderPng(16);
+const buf32 = renderPng(32);
+const buf48 = renderPng(48);
+const buf180 = renderPng(180);
+const buf192 = renderPng(192);
+const buf512 = renderPng(512);
 
-  // Maskable icons require extra padding (safe area is 80% circle in center)
-  const contentScale = isMaskable ? 0.75 : 0.94;
-  const offset = (1 - contentScale) * 256;
-
-  // Supersampling 4x4 (16 samples per pixel)
-  const SAMPLES = 4;
-  const step = 1 / SAMPLES;
-
-  for (let py = 0; py < size; py++) {
-    for (let px = 0; px < size; px++) {
-      let rSum = 0, gSum = 0, bSum = 0, aSum = 0;
-
-      for (let sy = 0; sy < SAMPLES; sy++) {
-        for (let sx = 0; sx < SAMPLES; sx++) {
-          const rawX = (px + (sx + 0.5) * step) * scale;
-          const rawY = (py + (sy + 0.5) * step) * scale;
-
-          // Normalized centered coords
-          const normX = (rawX - offset) / contentScale;
-          const normY = (rawY - offset) / contentScale;
-
-          // Outer squircle boundary
-          let bgAlpha = 0;
-          if (isMaskable) {
-            // Fill entire canvas for maskable icon
-            bgAlpha = 1;
-          } else {
-            const dBox = sdRoundBox(rawX, rawY, 256, 256, 246, 246, size <= 32 ? 50 : 80);
-            bgAlpha = Math.max(0, Math.min(1, 0.5 - dBox / scale));
-          }
-
-          if (bgAlpha <= 0) {
-            continue;
-          }
-
-          // Default background: Obsidian black #09090b
-          let pixR = 9, pixG = 9, pixB = 11;
-
-          // Subtle coral border ring around squircle (opacity 0.25)
-          const dBorder = Math.abs(sdRoundBox(rawX, rawY, 256, 256, 220, 220, 60)) - 4;
-          if (dBorder < 0) {
-            const ringMix = Math.max(0, Math.min(0.25, 0.25 * (1 - dBorder / -4)));
-            pixR = Math.round(pixR * (1 - ringMix) + 255 * ringMix);
-            pixG = Math.round(pixG * (1 - ringMix) + 87 * ringMix);
-            pixB = Math.round(pixB * (1 - ringMix) + 56 * ringMix);
-          }
-
-          // Center circle: Coral Red #FF5738 (radius ~ 160 in 512 canvas)
-          const dCircle = Math.sqrt((normX - 256) ** 2 + (normY - 256) ** 2) - 160;
-          const circleAlpha = Math.max(0, Math.min(1, 0.5 - dCircle / (scale / contentScale)));
-
-          if (circleAlpha > 0) {
-            // Coral Red: #FF5738 -> rgb(255, 87, 56)
-            pixR = Math.round(pixR * (1 - circleAlpha) + 255 * circleAlpha);
-            pixG = Math.round(pixG * (1 - circleAlpha) + 87 * circleAlpha);
-            pixB = Math.round(pixB * (1 - circleAlpha) + 56 * circleAlpha);
-
-            // Bold 'G' glyph in white: #FFFFFF
-            if (insideG(normX, normY)) {
-              pixR = 255;
-              pixG = 255;
-              pixB = 255;
-            }
-          }
-
-          rSum += pixR * bgAlpha;
-          gSum += pixG * bgAlpha;
-          bSum += pixB * bgAlpha;
-          aSum += bgAlpha;
-        }
-      }
-
-      const totalSamples = SAMPLES * SAMPLES;
-      const finalA = Math.round((aSum / totalSamples) * 255);
-      const finalR = finalA > 0 ? Math.round(rSum / aSum) : 0;
-      const finalG = finalA > 0 ? Math.round(gSum / aSum) : 0;
-      const finalB = finalA > 0 ? Math.round(bSum / aSum) : 0;
-
-      const pIdx = (py * size + px) * 4;
-      png.data[pIdx] = finalR;
-      png.data[pIdx + 1] = finalG;
-      png.data[pIdx + 2] = finalB;
-      png.data[pIdx + 3] = finalA;
-    }
-  }
-
-  return PNG.sync.write(png);
-}
-
+// Function to create standard multi-size ICO
 function createIco(images) {
-  // images: array of { width, height, buffer }
   const count = images.length;
   const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0); // reserved
@@ -147,7 +248,7 @@ function createIco(images) {
     const entry = Buffer.alloc(16);
     entry.writeUInt8(img.width === 256 ? 0 : img.width, 0);
     entry.writeUInt8(img.height === 256 ? 0 : img.height, 1);
-    entry.writeUInt8(0, 2); // color palette count (0 = no palette)
+    entry.writeUInt8(0, 2); // color palette count
     entry.writeUInt8(0, 3); // reserved
     entry.writeUInt16LE(1, 4); // color planes
     entry.writeUInt16LE(32, 6); // bits per pixel
@@ -160,30 +261,32 @@ function createIco(images) {
   return Buffer.concat([header, ...dirEntries, ...images.map((img) => img.buffer)]);
 }
 
-console.log('Generating high-fidelity Gizmo favicons & icons...');
-
-const buf16 = renderIcon(16);
-const buf32 = renderIcon(32);
-const buf48 = renderIcon(48);
-const buf180 = renderIcon(180);
-const buf192 = renderIcon(192);
-const buf512 = renderIcon(512);
-const bufMaskable512 = renderIcon(512, true);
-
 const icoBuf = createIco([
   { width: 16, height: 16, buffer: buf16 },
   { width: 32, height: 32, buffer: buf32 },
   { width: 48, height: 48, buffer: buf48 },
 ]);
 
-const publicDir = path.join(__dirname, '..', 'public');
+// Write to public
 fs.writeFileSync(path.join(publicDir, 'favicon-16x16.png'), buf16);
 fs.writeFileSync(path.join(publicDir, 'favicon-32x32.png'), buf32);
 fs.writeFileSync(path.join(publicDir, 'favicon.png'), buf32);
+fs.writeFileSync(path.join(publicDir, 'favicon.ico'), icoBuf);
 fs.writeFileSync(path.join(publicDir, 'apple-touch-icon.png'), buf180);
 fs.writeFileSync(path.join(publicDir, 'pwa-192x192.png'), buf192);
 fs.writeFileSync(path.join(publicDir, 'pwa-512x512.png'), buf512);
-fs.writeFileSync(path.join(publicDir, 'pwa-maskable-512x512.png'), bufMaskable512);
-fs.writeFileSync(path.join(publicDir, 'favicon.ico'), icoBuf);
+fs.writeFileSync(path.join(publicDir, 'pwa-maskable-512x512.png'), buf512);
 
-console.log('Favicons and touch icons generated successfully!');
+// Also copy to dist if dist exists
+if (fs.existsSync(distDir)) {
+  fs.writeFileSync(path.join(distDir, 'favicon-16x16.png'), buf16);
+  fs.writeFileSync(path.join(distDir, 'favicon-32x32.png'), buf32);
+  fs.writeFileSync(path.join(distDir, 'favicon.png'), buf32);
+  fs.writeFileSync(path.join(distDir, 'favicon.ico'), icoBuf);
+  fs.writeFileSync(path.join(distDir, 'apple-touch-icon.png'), buf180);
+  fs.writeFileSync(path.join(distDir, 'pwa-192x192.png'), buf192);
+  fs.writeFileSync(path.join(distDir, 'pwa-512x512.png'), buf512);
+  fs.writeFileSync(path.join(distDir, 'pwa-maskable-512x512.png'), buf512);
+}
+
+console.log('Official Gizmo Mascot Favicons successfully generated!');

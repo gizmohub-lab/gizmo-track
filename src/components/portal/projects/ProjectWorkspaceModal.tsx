@@ -95,12 +95,15 @@ interface ProjectWorkspaceModalProps {
   onSaveInvoiceDirectly?: (invoice: Invoice, openPreview?: boolean) => void;
   onOpenInFullEditor?: (invoice: Invoice) => void;
   onRecordInvoicePayment?: (invoice: Invoice) => void;
-  deliverableTypes: DeliverableTypeItem[];
-  onAddDeliverableType: (name: string, desc?: string) => void;
-  customFields: ProjectCustomFieldDef[];
-  designers: CustomDesigner[];
+  deliverableTypes?: DeliverableTypeItem[];
+  onAddDeliverableType?: (name: string, desc?: string) => void;
+  customFields?: ProjectCustomFieldDef[];
+  designers?: CustomDesigner[];
   onUpdateDesigners?: (designers: CustomDesigner[]) => void;
   onDeleteProject?: (projectId: string) => void;
+  allProjects?: Project[];
+  onCreateInvoiceForProject?: any;
+  onEditProjectSettings?: (proj: Project) => void;
 }
 
 type WorkspaceTab =
@@ -137,10 +140,10 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
   onSaveInvoiceDirectly,
   onOpenInFullEditor,
   onRecordInvoicePayment,
-  deliverableTypes,
+  deliverableTypes = [],
   onAddDeliverableType,
-  customFields,
-  designers,
+  customFields = [],
+  designers = [],
   onUpdateDesigners,
   onDeleteProject,
 }) => {

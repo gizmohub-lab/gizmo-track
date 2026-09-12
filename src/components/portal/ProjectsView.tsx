@@ -1393,6 +1393,14 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
           clients={clients}
           designers={designers}
           onUpdateDesigners={onUpdateDesigners}
+          deliverableTypes={deliverableTypes}
+          onAddDeliverableType={(name, desc) => {
+            onSaveDeliverableTypes([
+              ...deliverableTypes,
+              { id: `dt-${Date.now()}`, name, description: desc, isActive: true },
+            ]);
+          }}
+          customFields={customFields}
           settings={settings}
           notes={notes}
           noteCategories={noteCategories}
@@ -1404,6 +1412,46 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
           onUpdateProject={(updated) => {
             onUpdateProject(updated);
             setActiveWorkspaceProject(updated);
+          }}
+          onDuplicateProject={(proj) => {
+            const duplicated: Project = {
+              ...proj,
+              id: `proj-${Date.now()}`,
+              projectCode: `PRJ-${Math.floor(1000 + Math.random() * 9000)}`,
+              name: `${proj.name} (Copy)`,
+              title: `${proj.title} (Copy)`,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            onAddProject(duplicated);
+            setActiveWorkspaceProject(duplicated);
+            setToastMessage('Project duplicated successfully!');
+            setTimeout(() => setToastMessage(null), 3000);
+          }}
+          onSaveAsTemplate={(proj) => {
+            const newTpl: ProjectTemplate = {
+              id: `tpl-${Date.now()}`,
+              name: `${proj.name} Template`,
+              description: `Template generated from project ${proj.name}`,
+              projectType: proj.projectType || 'General',
+              deliverables: (proj.deliverables || []).map((d, index) => ({
+                title: d.title,
+                type: d.type || 'Deliverable',
+                description: d.description,
+                isRequired: d.isRequired ?? false,
+                orderIndex: index + 1,
+              })),
+            };
+            onSaveTemplates([...templates, newTpl]);
+            setToastMessage('Project saved as template!');
+            setTimeout(() => setToastMessage(null), 3000);
+          }}
+          onEditProjectDetails={(proj) => {
+            setProjectToEdit(proj);
+            setShowCreateModal(true);
+          }}
+          onGenerateInvoice={(proj) => {
+            onCreateInvoiceForProject?.(proj);
           }}
           onCreateInvoiceForProject={onCreateInvoiceForProject}
           onViewInvoice={onViewInvoice}

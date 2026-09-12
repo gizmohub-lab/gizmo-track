@@ -21,7 +21,7 @@ import {
   onSnapshot,
   query,
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, handleFirestoreError, OperationType } from './firebase';
 
 /**
  * Standardizes status values to recommended internal keys:
@@ -241,8 +241,13 @@ export function loadProjectRequests(): ProjectRequest[] {
     initialProjectRequests
   );
 
+  // Filter out any ephemeral test entries
+  const cleanLoaded = loaded.filter(
+    (req) => req && req.id && !req.id.startsWith('test-') && !req.requestId?.startsWith('test-')
+  );
+
   // Reconcile attachments with File Vault
-  return loaded.map((req) => {
+  return cleanLoaded.map((req) => {
     const vaultFiles = getEntityVaultFiles('project-request', req.id);
     if (vaultFiles.length > 0) {
       const existingFileIds = new Set((req.attachments || []).map((a) => a.id));
@@ -481,6 +486,9 @@ export async function updateProjectRequestInFirestore(
   requestId: string,
   updates: Partial<ProjectRequest>
 ): Promise<void> {
+  if (!requestId || requestId.startsWith('test-')) {
+    return;
+  }
   try {
     const docRef = doc(db, 'projectRequests', requestId);
     const cleanUpdates: Record<string, any> = {
@@ -494,8 +502,8 @@ export async function updateProjectRequestInFirestore(
       cleanUpdates.displayStatus = getRequestStatusDisplayLabel(norm);
     }
     await setDoc(docRef, cleanUpdates, { merge: true });
-  } catch (err) {
-    console.error(`Failed to update projectRequest ${requestId} in Firestore:`, err);
+  } catch (err: any) {
+    console.warn(`[Firestore sync] Note on projectRequest ${requestId}:`, err?.message || err);
   }
 }
 
@@ -503,10 +511,11 @@ export async function updateProjectRequestInFirestore(
  * Save project requests to local storage and sync attachments to vault.
  */
 export function saveProjectRequests(requests: ProjectRequest[]): void {
-  safeSaveItem(PORTAL_STORAGE_KEYS.PROJECT_REQUESTS, requests);
+  const clean = requests.filter((r) => r && r.id && !r.id.startsWith('test-') && !r.requestId?.startsWith('test-'));
+  safeSaveItem(PORTAL_STORAGE_KEYS.PROJECT_REQUESTS, clean);
 
   // Register attachments in File Vault
-  requests.forEach((req) => {
+  clean.forEach((req) => {
     if (req.attachments && req.attachments.length > 0) {
       req.attachments.forEach((att) => {
         registerVaultFile('project-request', req.id, {

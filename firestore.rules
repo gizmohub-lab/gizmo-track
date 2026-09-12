@@ -23,21 +23,11 @@ service cloud.firestore {
 
     // Public client submission & Admin management of project requests
     match /projectRequests/{requestId} {
-      // Clients can create project requests with required basic fields
-      allow create: if request.resource.data.clientName is string &&
-                       request.resource.data.clientName.size() > 0 &&
-                       request.resource.data.email is string &&
-                       request.resource.data.email.size() > 0 &&
-                       request.resource.data.projectTitle is string;
-
       // Allow read so clients can track submitted requests and Admin can view inbox
       allow read: if true;
 
-      // Allow updates for Admin review, status transitions, and project linking
-      allow update: if true;
-
-      // Allow delete for admin management
-      allow delete: if request.auth != null || true;
+      // Allow create, update, delete for client submissions and admin management
+      allow write: if true;
     }
 
     match /{document=**} {

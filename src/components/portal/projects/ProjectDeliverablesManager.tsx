@@ -53,9 +53,9 @@ interface ProjectDeliverablesManagerProps {
   onUpdateProject: (updatedProject: Project) => void;
   onOpenCreateInvoice?: (deliverables: ProjectDeliverable[]) => void;
   onSaveAsTemplate?: (project: Project) => void;
-  deliverableTypes: DeliverableTypeItem[];
+  deliverableTypes?: DeliverableTypeItem[];
   onAddDeliverableType?: (name: string, desc?: string) => void;
-  designers: CustomDesigner[];
+  designers?: CustomDesigner[];
   onUpdateDesigners?: (designers: CustomDesigner[]) => void;
 }
 
@@ -64,9 +64,9 @@ export const ProjectDeliverablesManager: React.FC<ProjectDeliverablesManagerProp
   onUpdateProject,
   onOpenCreateInvoice,
   onSaveAsTemplate,
-  deliverableTypes,
+  deliverableTypes = [],
   onAddDeliverableType,
-  designers,
+  designers = [],
   onUpdateDesigners,
 }) => {
   // Form visibility
@@ -1881,8 +1881,8 @@ const AssignDeliverableDesignerModal: React.FC<AssignDeliverableDesignerModalPro
 // ============================================================================
 interface EditDeliverableModalProps {
   deliverable: ProjectDeliverable;
-  deliverableTypes: DeliverableTypeItem[];
-  designers: CustomDesigner[];
+  deliverableTypes?: DeliverableTypeItem[];
+  designers?: CustomDesigner[];
   onUpdateDesigners?: (designers: CustomDesigner[]) => void;
   onClose: () => void;
   onSave: (updated: ProjectDeliverable) => void;
@@ -1890,8 +1890,8 @@ interface EditDeliverableModalProps {
 
 const EditDeliverableModal: React.FC<EditDeliverableModalProps> = ({
   deliverable,
-  deliverableTypes,
-  designers,
+  deliverableTypes = [],
+  designers = [],
   onUpdateDesigners,
   onClose,
   onSave,

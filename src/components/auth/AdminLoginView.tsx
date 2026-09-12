@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { AppRoute } from '../../types';
+import { GizmoLogo } from '../common/GizmoLogo';
 
 interface AdminLoginViewProps {
   onLoginSuccess: (redirectRoute?: AppRoute) => void;
@@ -56,10 +57,8 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
 
       <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mx-auto shadow-inner text-[#FF5738]">
-            <ShieldCheck className="w-7 h-7" />
-          </div>
+        <div className="text-center space-y-3">
+          <GizmoLogo size="xl" className="mx-auto shadow-md" />
           <h1 className="text-xl font-black text-white tracking-tight">Admin Login</h1>
           <p className="text-xs text-zinc-400">Sign in to access Gizmo Admin Portal.</p>
         </div>

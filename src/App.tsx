@@ -293,6 +293,21 @@ export default function App() {
     };
   }, []);
 
+  // Guarantee official Gizmo logo favicon is applied to browser tab
+  useEffect(() => {
+    const updateFavicon = () => {
+      const link: HTMLLinkElement =
+        document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/svg+xml';
+      link.rel = 'shortcut icon';
+      link.href = `/icon.svg?v=gizmo-icon-official`;
+      if (!document.head.contains(link)) {
+        document.head.appendChild(link);
+      }
+    };
+    updateFavicon();
+  }, []);
+
   useEffect(() => {
     saveProjectRequests(projectRequests);
   }, [projectRequests]);

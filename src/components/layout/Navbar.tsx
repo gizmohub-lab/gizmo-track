@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { AppRoute } from '../../types';
 import { GizmoLogoBadge } from '../common/GizmoLogoBadge';
+import { GizmoLogo } from '../common/GizmoLogo';
 
 interface NavbarProps {
   currentRoute: AppRoute;
@@ -135,9 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               size="md"
             >
-              <div className="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center font-black text-lg tracking-tighter group-hover:bg-[#FF5738] transition-colors shadow-xs">
-                G
-              </div>
+              <GizmoLogo size="md" className="group-hover:scale-105 transition-transform" />
             </GizmoLogoBadge>
             <div>
               <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-950 group-hover:text-[#FF5738] transition-colors">
@@ -397,9 +396,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     size="sm"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-black text-sm">
-                      G
-                    </div>
+                    <GizmoLogo size="sm" />
                   </GizmoLogoBadge>
                   <span className="font-black text-base text-zinc-950">GIZMO DESIGN</span>
                 </div>

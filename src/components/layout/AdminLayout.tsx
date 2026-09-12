@@ -31,6 +31,7 @@ import {
 import { AppRoute, AdminNotification } from '../../types';
 import { PWAInstallButton } from '../common/PWAInstallButton';
 import { GizmoLogoBadge } from '../common/GizmoLogoBadge';
+import { GizmoLogo } from '../common/GizmoLogo';
 
 interface AdminLayoutProps {
   currentRoute: AppRoute;
@@ -291,9 +292,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 onBadgeClick={() => setNotificationsOpen(true)}
                 size="md"
               >
-                <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs group-hover:bg-zinc-800 transition-colors">
-                  G
-                </div>
+                <GizmoLogo size="sm" className="group-hover:scale-105 transition-transform" />
               </GizmoLogoBadge>
               {!isCollapsed && (
                 <span className="font-bold text-base tracking-tight text-zinc-950 whitespace-nowrap">
@@ -681,9 +680,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     }}
                     size="sm"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
-                      G
-                    </div>
+                    <GizmoLogo size="sm" />
                   </GizmoLogoBadge>
                   <span className="font-bold text-base text-zinc-950">GIZMO</span>
                 </div>

@@ -11,6 +11,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { AppRoute } from '../../types';
+import { GizmoLogo } from '../common/GizmoLogo';
 
 interface PublicFooterProps {
   onNavigate: (route: AppRoute) => void;
@@ -28,9 +29,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({
           {/* Col 1: Studio Brand */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-black text-sm">
-                G
-              </div>
+              <GizmoLogo size="sm" />
               <span className="font-extrabold text-base tracking-tight text-white">
                 GIZMO DESIGN <sup className="text-[9px]">®</sup>
               </span>

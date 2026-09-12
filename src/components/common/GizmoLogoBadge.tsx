@@ -88,9 +88,10 @@ export const GizmoLogoBadge: React.FC<GizmoLogoBadgeProps> = ({
 
       <AnimatePresence>
         {displayCount !== null && (
-          <motion.button
+          <motion.span
             key={`gizmo-badge-${displayCount}`}
-            type="button"
+            role={onBadgeClick ? 'button' : 'status'}
+            tabIndex={onBadgeClick ? 0 : undefined}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -106,6 +107,13 @@ export const GizmoLogoBadge: React.FC<GizmoLogoBadgeProps> = ({
                 onBadgeClick(e);
               }
             }}
+            onKeyDown={(e) => {
+              if (onBadgeClick && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                e.stopPropagation();
+                onBadgeClick(e as unknown as React.MouseEvent);
+              }
+            }}
             title={accessibleLabel}
             aria-label={accessibleLabel}
             className={`absolute ${badgePositionClassName} ${sizeClasses} z-20 rounded-full bg-[#FF5738] text-white font-mono font-black leading-none flex items-center justify-center border-2 border-white shadow-md select-none pointer-events-auto transition-transform active:scale-95 ${
@@ -113,7 +121,7 @@ export const GizmoLogoBadge: React.FC<GizmoLogoBadgeProps> = ({
             }`}
           >
             <span>{displayCount}</span>
-          </motion.button>
+          </motion.span>
         )}
       </AnimatePresence>
     </div>

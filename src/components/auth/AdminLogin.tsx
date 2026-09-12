@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { AppRoute } from '../../types';
+import { GizmoLogo } from '../common/GizmoLogo';
 
 interface AdminLoginProps {
   onLoginSuccess: (redirectTo?: AppRoute) => void;
@@ -55,10 +56,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
         {/* Card Container */}
         <div className="bg-white rounded-3xl p-8 shadow-2xl border border-zinc-800 space-y-6">
           {/* Logo & Header */}
-          <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center mx-auto shadow-md">
-              <ShieldCheck className="w-6 h-6 text-[#FF5738]" />
-            </div>
+          <div className="text-center space-y-3">
+            <GizmoLogo size="xl" className="mx-auto shadow-md" />
             <div>
               <h1 className="text-xl font-black text-zinc-950 tracking-tight">Admin Login</h1>
               <p className="text-xs text-zinc-500 font-medium mt-1">

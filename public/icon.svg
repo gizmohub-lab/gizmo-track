@@ -2,5 +2,5 @@
   <rect width="512" height="512" rx="110" fill="#09090b"/>
   <rect x="32" y="32" width="448" height="448" rx="80" fill="none" stroke="#FF5738" stroke-width="8" opacity="0.3"/>
   <circle cx="256" cy="256" r="160" fill="#FF5738"/>
-  <text x="256" y="320" font-family="Arial, sans-serif" font-weight="900" font-size="200" fill="#ffffff" text-anchor="middle">G</text>
+  <path d="M 322 195 A 86 86 0 1 0 322 317 L 322 250 L 244 250 L 244 282 L 284 282 A 46 46 0 1 1 284 230 Z" fill="#ffffff"/>
 </svg>

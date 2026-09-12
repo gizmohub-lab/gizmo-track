@@ -13,6 +13,9 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Serve public assets explicitly (favicons, manifests, robots)
+  app.use(express.static(path.join(process.cwd(), "public")));
+
   // Vite middleware for development, static for production
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

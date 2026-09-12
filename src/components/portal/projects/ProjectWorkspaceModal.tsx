@@ -70,6 +70,7 @@ import { ProjectDeliverablesManager } from './ProjectDeliverablesManager';
 import { DeleteProjectModal } from './DeleteProjectModal';
 import { EmbeddedNotesSection } from '../notes/EmbeddedNotesSection';
 import { Note, AppRoute } from '../../../types';
+import { useSubSectionTitle } from '../../../utils/pageTitle';
 
 interface ProjectWorkspaceModalProps {
   isOpen: boolean;
@@ -143,6 +144,9 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
   onUpdateDesigners,
   onDeleteProject,
 }) => {
+  // Centralized dynamic browser tab title for Project Details
+  useSubSectionTitle(isOpen && project ? project.name : null);
+
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('deliverables');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 

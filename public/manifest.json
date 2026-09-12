@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Gizmo Portal — Invoicing & Operations",
-  "short_name": "Gizmo",
+  "name": "Gizmo Design",
+  "short_name": "Gizmo Design",
   "description": "Professional operations and project management portal for Gizmo Design with real-time deadline alerts and outside-the-app browser notifications.",
   "start_url": "/",
   "scope": "/",

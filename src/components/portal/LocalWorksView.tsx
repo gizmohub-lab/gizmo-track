@@ -47,6 +47,7 @@ import {
   WorkTypeItem,
 } from '../../types';
 import { formatINR } from '../../utils/formatters';
+import { useSubSectionTitle } from '../../utils/pageTitle';
 import {
   getStatusConfig,
   calculateWorkDeadline,
@@ -194,6 +195,9 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
   const [activeTab, setActiveTab] = useState<
     'works' | 'calendar' | 'categories' | 'designers' | 'settings'
   >('works');
+
+  // Dynamic centralized browser tab title for Designers section
+  useSubSectionTitle(activeTab === 'designers' ? 'Designers' : null);
 
   // Work Type quick filter: 'ALL' | 'Poster' | 'Motion' | 'Other'
   const [workTypeQuickFilter, setWorkTypeQuickFilter] = useState<string>('ALL');

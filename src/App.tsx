@@ -118,6 +118,7 @@ import {
   defaultProjectTemplates,
 } from './utils/projectUtils';
 import { ResetPortalModal } from './components/portal/projects/ResetPortalModal';
+import { resolvePageTitle, setDocumentTitle } from './utils/pageTitle';
 
 function getAppBasePath(): string {
   if (typeof window === 'undefined') return '';
@@ -778,6 +779,20 @@ export default function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  // Centralized dynamic browser tab title management
+  useEffect(() => {
+    const activeProject = activeProjectIdForWorkspace
+      ? projects.find((p) => p.id === activeProjectIdForWorkspace)
+      : null;
+
+    const title = resolvePageTitle({
+      route: currentRoute,
+      projectName: activeProject?.name || null,
+      isStartProjectOpen: showStartProjectModal,
+    });
+    setDocumentTitle(title);
+  }, [currentRoute, showStartProjectModal, activeProjectIdForWorkspace, projects]);
 
   const handleMarkNotificationAsRead = (id: string) => {
     setGizmoNotifications((prev) =>

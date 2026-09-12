@@ -8,6 +8,7 @@ import {
   CustomDesigner,
   DesignCategory,
   WorkTypeItem,
+  Note,
 } from '../types';
 import { normalizeProject } from '../utils/projectUtils';
 
@@ -1530,6 +1531,8 @@ const STORAGE_KEYS = {
   DESIGNERS: 'gizmo_portal_designers_v1',
   WORK_TYPES: 'gizmo_portal_work_types_v1',
   SMART_DEFAULTS: 'gizmo_portal_smart_defaults_v1',
+  NOTES: 'gizmo_portal_notes_v1',
+  NOTE_CATEGORIES: 'gizmo_portal_note_categories_v1',
 };
 
 export function loadWorkTypes(): WorkTypeItem[] {
@@ -1800,6 +1803,122 @@ export function saveDeadlines(deadlines: DeadlineItem[]): void {
     localStorage.setItem(STORAGE_KEYS.DEADLINES, JSON.stringify(deadlines));
   } catch (e) {
     console.warn('Error saving deadlines', e);
+  }
+}
+
+export const initialNoteCategories: string[] = [
+  'Personal',
+  'Project',
+  'Client',
+  'Ideas',
+  'Reminder',
+  'Other',
+];
+
+export const initialNotes: Note[] = [
+  {
+    id: 'note-1',
+    title: 'Client Branding Standards & Color Palette',
+    content: 'Primary Brand Color: #FF5738 (Gizmo Coral Red).\nSecondary Neutral: #09090B (Obsidian Black).\nAlways request vector logo (.AI or .SVG) from clients before starting printing or motion deliverables.',
+    isPinned: true,
+    color: 'warm',
+    category: 'Client',
+    clientId: 'c1',
+    clientName: 'Darul Hasaniyyah',
+    createdAt: '2026-09-08 10:00 AM',
+    updatedAt: '2026-09-11 09:30 AM',
+  },
+  {
+    id: 'note-2',
+    title: 'Pre-Print Production Checklist',
+    content: 'Essential quality assurance steps before sending flex/banner files to wide-format printers.',
+    isChecklist: true,
+    checklistItems: [
+      { id: 'c1', text: 'Convert all text layers to outlines / curves', completed: true },
+      { id: 'c2', text: 'Verify CMYK color mode (not RGB)', completed: true },
+      { id: 'c3', text: 'Check resolution is at least 300 DPI at full scale', completed: true },
+      { id: 'c4', text: 'Add 1-inch bleed margin on all edges', completed: false },
+      { id: 'c5', text: 'Confirm eyelet spacing with print shop operator', completed: false },
+    ],
+    isPinned: true,
+    color: 'accent',
+    category: 'Project',
+    projectId: 'p1',
+    projectTitle: 'Brand Identity — Darul Hasaniyyah',
+    createdAt: '2026-09-09 02:00 PM',
+    updatedAt: '2026-09-10 04:15 PM',
+  },
+  {
+    id: 'note-3',
+    title: 'Client Requested 3 Logo Revisions',
+    content: 'Client requested minor adjustments on the typography thickness and tagline alignment. Designer assigned: Ahmed. Priority revision required for social media handles.',
+    isPinned: false,
+    color: 'default',
+    category: 'Client',
+    clientId: 'c1',
+    clientName: 'Darul Hasaniyyah',
+    projectId: 'p1',
+    projectTitle: 'Brand Identity — Darul Hasaniyyah',
+    createdAt: '2026-09-09 11:20 AM',
+    updatedAt: '2026-09-09 02:20 PM',
+  },
+  {
+    id: 'note-4',
+    title: 'Flex Printing Machine Maintenance Schedule',
+    content: 'Scheduled head cleaning and alignment for Roland TrueVIS VG3 printer. Replace magenta ink cartridge and check media feed sensor calibration.',
+    isPinned: false,
+    color: 'soft',
+    category: 'Reminder',
+    reminderDate: '2026-09-12',
+    reminderTime: '10:00',
+    createdAt: '2026-09-08 11:00 AM',
+    updatedAt: '2026-09-08 11:00 AM',
+  },
+];
+
+export function loadNotes(): Note[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading notes from localStorage', e);
+  }
+  return initialNotes;
+}
+
+export function saveNotes(notes: Note[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+  } catch (e) {
+    console.warn('Error saving notes', e);
+  }
+}
+
+export function loadNoteCategories(): string[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTE_CATEGORIES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading note categories from localStorage', e);
+  }
+  return initialNoteCategories;
+}
+
+export function saveNoteCategories(categories: string[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.NOTE_CATEGORIES, JSON.stringify(categories));
+  } catch (e) {
+    console.warn('Error saving note categories', e);
   }
 }
 

@@ -49,6 +49,8 @@ import {
   ProjectTemplate,
   InvoiceSettings,
   DesignerPaymentRecord,
+  Note,
+  AppRoute,
 } from '../../types';
 import { formatINR, formatDate } from '../../utils/formatters';
 import {
@@ -123,6 +125,13 @@ interface ProjectsViewProps {
   onEditDesignerProfile?: (designer: CustomDesigner) => void;
   initialActiveProjectId?: string | null;
   onClearInitialActiveProject?: () => void;
+  notes?: Note[];
+  noteCategories?: string[];
+  onSaveNote?: (note: Partial<Note> & { id: string }) => void;
+  onDeleteNote?: (note: Note) => void;
+  onTogglePinNote?: (id: string, e?: React.MouseEvent) => void;
+  onToggleCheckItemNote?: (noteId: string, itemId: string, completed: boolean) => void;
+  onNavigateRoute?: (route: AppRoute, targetId?: string) => void;
 }
 
 export const ProjectsView: React.FC<ProjectsViewProps> = ({
@@ -141,6 +150,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
   onSavePriorities,
   projectStatuses,
   onSaveProjectStatuses,
+  notes = [],
+  noteCategories = [],
+  onSaveNote,
+  onDeleteNote,
+  onTogglePinNote,
+  onToggleCheckItemNote,
+  onNavigateRoute,
   deliverableTypes,
   onSaveDeliverableTypes,
   customFields,
@@ -1378,6 +1394,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
           designers={designers}
           onUpdateDesigners={onUpdateDesigners}
           settings={settings}
+          notes={notes}
+          noteCategories={noteCategories}
+          onSaveNote={onSaveNote}
+          onDeleteNote={onDeleteNote}
+          onTogglePinNote={onTogglePinNote}
+          onToggleCheckItemNote={onToggleCheckItemNote}
+          onNavigateRoute={onNavigateRoute}
           onUpdateProject={(updated) => {
             onUpdateProject(updated);
             setActiveWorkspaceProject(updated);
@@ -1500,6 +1523,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
           client={selectedClientForWorkspace}
           projects={projects}
           invoices={invoices}
+          notes={notes}
+          noteCategories={noteCategories}
+          onSaveNote={onSaveNote}
+          onDeleteNote={onDeleteNote}
+          onTogglePinNote={onTogglePinNote}
+          onToggleCheckItemNote={onToggleCheckItemNote}
+          onNavigateRoute={onNavigateRoute}
           onOpenProjectWorkspace={(pId) => {
             const match = projects.find((p) => p.id === pId);
             if (match) {

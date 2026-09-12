@@ -32,6 +32,7 @@ import {
   Info,
   BookmarkCheck,
   MessageSquare,
+  NotebookPen,
 } from 'lucide-react';
 import {
   Project,
@@ -66,6 +67,8 @@ import { QuickAddCustomModal } from './QuickAddCustomModal';
 import { ProjectCreateInvoiceModal, InvoiceCreationMode } from './ProjectCreateInvoiceModal';
 import { ProjectDeliverablesManager } from './ProjectDeliverablesManager';
 import { DeleteProjectModal } from './DeleteProjectModal';
+import { EmbeddedNotesSection } from '../notes/EmbeddedNotesSection';
+import { Note, AppRoute } from '../../../types';
 
 interface ProjectWorkspaceModalProps {
   isOpen: boolean;
@@ -74,6 +77,13 @@ interface ProjectWorkspaceModalProps {
   invoices?: Invoice[];
   clients?: Client[];
   settings?: InvoiceSettings;
+  notes?: Note[];
+  noteCategories?: string[];
+  onSaveNote?: (note: Partial<Note> & { id: string }) => void;
+  onDeleteNote?: (note: Note) => void;
+  onTogglePinNote?: (id: string, e?: React.MouseEvent) => void;
+  onToggleCheckItemNote?: (noteId: string, itemId: string, completed: boolean) => void;
+  onNavigateRoute?: (route: AppRoute, targetId?: string) => void;
   onUpdateProject: (updatedProject: Project) => void;
   onDuplicateProject: (project: Project) => void;
   onSaveAsTemplate: (project: Project) => void;
@@ -99,6 +109,7 @@ type WorkspaceTab =
   | 'revisions'
   | 'payment'
   | 'invoices'
+  | 'notes'
   | 'activity';
 
 export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
@@ -108,6 +119,13 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
   invoices = [],
   clients = [],
   settings,
+  notes = [],
+  noteCategories = [],
+  onSaveNote,
+  onDeleteNote,
+  onTogglePinNote,
+  onToggleCheckItemNote,
+  onNavigateRoute,
   onUpdateProject,
   onDuplicateProject,
   onSaveAsTemplate,
@@ -812,6 +830,18 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Revisions ({project.revisions?.length || 0})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('notes')}
+            className={`px-3 py-1.5 font-extrabold rounded-xl flex items-center gap-1.5 transition whitespace-nowrap ${
+              activeTab === 'notes'
+                ? 'bg-violet-600 text-white shadow-xs'
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <NotebookPen className="w-3.5 h-3.5" />
+            <span>Notes ({notes.filter((n) => n.projectId === project.id).length})</span>
           </button>
 
           <button
@@ -1555,6 +1585,23 @@ export const ProjectWorkspaceModal: React.FC<ProjectWorkspaceModalProps> = ({
                 )}
               </div>
             </div>
+          )}
+
+          {/* TAB: NOTES */}
+          {activeTab === 'notes' && (
+            <EmbeddedNotesSection
+              notes={notes}
+              projectId={project.id}
+              projectTitle={project.title}
+              categories={noteCategories}
+              projects={[project]}
+              clients={clients}
+              onSaveNote={onSaveNote || (() => {})}
+              onDeleteNote={onDeleteNote || (() => {})}
+              onTogglePin={onTogglePinNote || (() => {})}
+              onToggleCheckItem={onToggleCheckItemNote}
+              onNavigateRoute={onNavigateRoute}
+            />
           )}
 
           {/* TAB: ACTIVITY LOG */}

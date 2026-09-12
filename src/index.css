@@ -61,6 +61,27 @@
   animation: skeleton-glow 1.5s ease-in-out infinite;
 }
 
+/* Continuous Hanging Bell Swing Animation for Permission Banner Icon Only */
+@keyframes bell-swing {
+  0% { transform: rotate(-18deg); }
+  25% { transform: rotate(0deg); }
+  50% { transform: rotate(18deg); }
+  75% { transform: rotate(0deg); }
+  100% { transform: rotate(-18deg); }
+}
+
+.animate-bell-swing {
+  animation: bell-swing 1.4s ease-in-out infinite;
+  transform-origin: 50% 12%;
+  transform-box: fill-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bell-swing {
+    animation: none !important;
+  }
+}
+
 @media print {
   /* Hide all app chrome during print */
   .no-print {

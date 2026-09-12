@@ -16,6 +16,7 @@ import { formatINR, formatDate } from '../../utils/formatters';
 import { getWorkFinancials } from '../../utils/localWorkUtils';
 import { UpcomingDeadlinesCard } from './UpcomingDeadlinesCard';
 import { AnimatedCountUp } from '../common/MotionComponents';
+import { useLiveNow, getAllUnifiedDeadlines } from '../../utils/dateTimeUtils';
 
 interface ProductionDashboardProps {
   localWorks: LocalWork[];
@@ -44,6 +45,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
 }) => {
   const [filterStatus, setFilterStatus] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const now = useLiveNow(1000);
 
   // Financial & Stat Calculations
   const { totalValue, totalGot, totalToGet, activeCount, dueSoonCount, overdueCount } = useMemo(() => {
@@ -70,19 +72,9 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
       if (p.status !== 'Completed') active++;
     });
 
-    const activeDeadlines = deadlines.filter((d) => !d.isCompleted);
-    const dueSoon = activeDeadlines.filter((d) => {
-      if (!d.dueDate) return false;
-      const due = new Date(d.dueDate).getTime();
-      const now = new Date().getTime();
-      const diffHours = (due - now) / (1000 * 60 * 60);
-      return diffHours > 0 && diffHours <= 48;
-    }).length;
-
-    const overdue = activeDeadlines.filter((d) => {
-      if (!d.dueDate) return false;
-      return new Date(d.dueDate).getTime() < new Date().getTime();
-    }).length;
+    const unified = getAllUnifiedDeadlines(projects, localWorks, now).filter((d) => !d.isCompleted);
+    const dueSoon = unified.filter((d) => d.evaluation.statusType === 'DUE_SOON' || d.evaluation.statusType === 'DUE_NOW' || d.evaluation.statusType === 'DUE_TODAY').length;
+    const overdue = unified.filter((d) => d.evaluation.isOverdue).length;
 
     return {
       totalValue: biz,
@@ -92,7 +84,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
       dueSoonCount: dueSoon,
       overdueCount: overdue,
     };
-  }, [localWorks, projects, deadlines]);
+  }, [localWorks, projects, deadlines, now]);
 
   const filteredWorks = useMemo(() => {
     return localWorks.filter((w) => {
@@ -260,6 +252,8 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
       {/* 6. UPCOMING DEADLINES CARD */}
       <UpcomingDeadlinesCard
         deadlines={deadlines}
+        projects={projects}
+        localWorks={localWorks}
         onNavigateTab={onNavigateTab}
         onOpenDeadlineDetails={onOpenDeadlineDetails}
         onOpenAddDeadlineModal={onOpenAddDeadlineModal}

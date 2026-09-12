@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Bell,
   Clock,
@@ -7,20 +7,19 @@ import {
   CheckCircle2,
   Plus,
   ArrowRight,
-  ExternalLink,
   Check,
-  MoreVertical,
-  Flame,
 } from 'lucide-react';
-import { DeadlineItem, ActiveTab } from '../../types';
+import { DeadlineItem, ActiveTab, Project, LocalWork } from '../../types';
 import {
-  evaluateDeadline,
-  sortEvaluatedDeadlines,
-  EvaluatedDeadline,
-} from '../../utils/deadlineUtils';
+  useLiveNow,
+  getAllUnifiedDeadlines,
+  UnifiedDeadlineRecord,
+} from '../../utils/dateTimeUtils';
 
 interface UpcomingDeadlinesCardProps {
   deadlines: DeadlineItem[];
+  projects?: Project[];
+  localWorks?: LocalWork[];
   onNavigateTab: (tab: ActiveTab) => void;
   onOpenDeadlineDetails?: (deadline: DeadlineItem) => void;
   onOpenAddDeadlineModal: () => void;
@@ -29,59 +28,36 @@ interface UpcomingDeadlinesCardProps {
 }
 
 export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
-  deadlines,
+  deadlines = [],
+  projects = [],
+  localWorks = [],
   onNavigateTab,
   onOpenDeadlineDetails,
   onOpenAddDeadlineModal,
   onOpenViewAllModal,
   onToggleCompleteDeadline,
 }) => {
-  // Live ticker that updates every second for real-time second/minute countdowns
-  const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
+  // Live current time hook that updates every second for live countdowns
+  const currentTime = useLiveNow(1000);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // Compile unified dynamic deadlines from projects, deliverables, local works, and standalone deadlines
+  const unifiedList: UnifiedDeadlineRecord[] = getAllUnifiedDeadlines(projects, localWorks, currentTime);
 
-  // Evaluate & sort all active deadlines
-  const evaluatedAll: EvaluatedDeadline[] = deadlines.map((d) =>
-    evaluateDeadline(d, currentTime)
-  );
+  // Exclude completed items for active view
+  const activeUnified = unifiedList.filter((item) => !item.isCompleted);
 
-  const sortedList = sortEvaluatedDeadlines(evaluatedAll);
-  // Separate active uncompleted items
-  const activeList = sortedList.filter((item) => !item.deadline.isCompleted);
-  const displayItems = activeList.slice(0, 5);
-  const hasMoreThan5 = activeList.length > 5;
+  // Top 5 items for card display
+  const displayItems = activeUnified.slice(0, 5);
+  const hasMoreThan5 = activeUnified.length > 5;
 
-  const overdueCount = activeList.filter((item) => item.urgency === 'OVERDUE').length;
-  const urgentCount = activeList.filter(
-    (item) => item.urgency === 'URGENT' || item.urgency === 'DUE_NOW'
+  const overdueCount = activeUnified.filter((item) => item.evaluation.isOverdue).length;
+  const urgentCount = activeUnified.filter(
+    (item) => item.evaluation.statusType === 'DUE_NOW' || item.evaluation.statusType === 'DUE_SOON'
   ).length;
 
-  const handleItemClick = (item: EvaluatedDeadline) => {
-    if (onOpenDeadlineDetails) {
-      onOpenDeadlineDetails(item.deadline);
-      return;
-    }
-
-    // Default cross-navigation based on item type
-    if (item.deadline.type === 'project' || item.deadline.referenceId?.startsWith('proj')) {
-      onNavigateTab('projects');
-    } else if (
-      item.deadline.type === 'local-work' ||
-      item.deadline.type === 'order' ||
-      item.deadline.referenceId?.startsWith('lw')
-    ) {
-      onNavigateTab('local-works');
-    } else if (
-      item.deadline.type === 'invoice' ||
-      item.deadline.referenceId?.startsWith('inv')
-    ) {
-      onNavigateTab('invoice');
+  const handleItemClick = (item: UnifiedDeadlineRecord) => {
+    if (item.targetRoute) {
+      onNavigateTab(item.targetRoute);
     } else {
       onOpenViewAllModal();
     }
@@ -138,7 +114,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
               )}
             </div>
             <p className="text-xs text-zinc-500 font-medium mt-0.5">
-              Don't miss your important deadlines
+              Live date & time driven task and project schedules
             </p>
           </div>
         </div>
@@ -154,13 +130,13 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
             <span>New Deadline</span>
           </button>
 
-          {activeList.length > 0 && (
+          {activeUnified.length > 0 && (
             <button
               type="button"
               onClick={onOpenViewAllModal}
               className="px-3 py-1.5 border border-zinc-200 hover:border-black hover:bg-zinc-50 text-black rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer"
             >
-              <span>View All ({activeList.length})</span>
+              <span>View All ({activeUnified.length})</span>
             </button>
           )}
         </div>
@@ -190,21 +166,14 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
         </div>
       ) : (
         <div className="divide-y divide-zinc-100">
-          {displayItems.map((item, idx) => {
-            const { deadline, urgency, relativeStatus, countdownText, exactDateTimeText } = item;
-
-            // Visual priority styling:
-            // OVERDUE: clear distinct warning style
-            // DUE NOW / URGENT: stronger pinkish-orange (#FF5738) emphasis + alarm indicator
-            // APPROACHING: pinkish-orange soft tints (#FFF1EE)
-            // NORMAL: clean minimalist black/white/slate
-            const isCritical = urgency === 'URGENT' || urgency === 'DUE_NOW';
-            const isOverdue = urgency === 'OVERDUE';
-            const isApproaching = urgency === 'APPROACHING';
+          {displayItems.map((item) => {
+            const { evaluation } = item;
+            const isOverdue = evaluation.isOverdue;
+            const isCritical = evaluation.statusType === 'DUE_NOW' || evaluation.statusType === 'DUE_SOON';
 
             return (
               <div
-                key={deadline.id || idx}
+                key={item.id}
                 onClick={() => handleItemClick(item)}
                 className={`p-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-zinc-50/80 cursor-pointer transition-colors group ${
                   isOverdue ? 'bg-rose-50/20' : isCritical ? 'bg-[#FFF1EE]/30' : ''
@@ -212,7 +181,6 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
               >
                 {/* Left: Alarm Icon + Title + Due Date */}
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  {/* Alarm Icon specific to state */}
                   <div className="mt-0.5 shrink-0">
                     {isOverdue ? (
                       <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center border border-rose-200">
@@ -222,10 +190,6 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                       <div className="w-8 h-8 rounded-lg bg-[#FFF1EE] text-[#FF5738] flex items-center justify-center border border-[#FFB2A1]">
                         <Clock className="w-4 h-4 animate-pulse" />
                       </div>
-                    ) : isApproaching ? (
-                      <div className="w-8 h-8 rounded-lg bg-[#FFF1EE] text-[#FF5738] flex items-center justify-center border border-[#FFB2A1]/70">
-                        <Clock className="w-4 h-4" />
-                      </div>
                     ) : (
                       <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center border border-zinc-200">
                         <Calendar className="w-4 h-4" />
@@ -233,35 +197,35 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                     )}
                   </div>
 
-                  {/* Task / Order Details */}
+                  {/* Details */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-display font-bold text-sm sm:text-base text-zinc-950 group-hover:text-[#FF5738] transition-colors truncate">
-                        {deadline.title}
+                        {item.title}
                       </span>
 
                       {/* Type Badge */}
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700 border border-zinc-200 shrink-0">
-                        {deadline.type.toUpperCase()}
+                        {item.sourceType}
                       </span>
 
-                      {deadline.clientName && (
+                      {item.clientName && (
                         <span className="text-xs text-zinc-500 font-medium truncate hidden md:inline">
-                          · {deadline.clientName}
+                          · {item.clientName}
                         </span>
                       )}
                     </div>
 
-                    {/* Exact Date & Time: Always visible! */}
+                    {/* Exact Date & Time: Always visible */}
                     <div className="mt-1 flex items-center gap-2 text-xs text-zinc-600 font-medium flex-wrap">
                       <span className="text-zinc-400 font-semibold">Due:</span>
                       <span className="font-mono text-zinc-900 font-semibold">
-                        {exactDateTimeText}
+                        {evaluation.exactDateTimeText}
                       </span>
 
-                      {deadline.assignedTo && (
+                      {item.assignedDesignerName && (
                         <span className="text-zinc-400 text-[11px] hidden sm:inline">
-                          (Assigned: {deadline.assignedTo})
+                          (Assigned: {item.assignedDesignerName})
                         </span>
                       )}
                     </div>
@@ -271,26 +235,10 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                 {/* Right: Relative Status / Live Countdown Badge */}
                 <div className="flex items-center gap-2 self-start sm:self-center shrink-0 pl-11 sm:pl-0">
                   <div
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono tracking-tight flex items-center gap-1.5 transition ${
-                      isOverdue
-                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                        : urgency === 'DUE_NOW'
-                        ? 'bg-[#FF5738] text-white border border-[#FF5738] shadow-xs'
-                        : urgency === 'URGENT'
-                        ? 'bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1] shadow-xs'
-                        : isApproaching
-                        ? 'bg-[#FFF1EE] text-[#FF5738] border border-[#FFB2A1]'
-                        : 'bg-zinc-100 text-zinc-800 border border-zinc-200'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono tracking-tight flex items-center gap-1.5 transition ${evaluation.badgeClass}`}
                   >
                     {isCritical && <span className="w-1.5 h-1.5 rounded-full bg-[#FF5738] animate-pulse" />}
-                    <span>
-                      {urgency === 'OVERDUE'
-                        ? '• Overdue'
-                        : urgency === 'DUE_NOW'
-                        ? '• Due now'
-                        : `• ${relativeStatus || countdownText}`}
-                    </span>
+                    <span>• {evaluation.countdownText}</span>
                   </div>
 
                   {/* Mark complete button */}
@@ -300,7 +248,7 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
                       title="Mark as completed"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onToggleCompleteDeadline(deadline.id);
+                        onToggleCompleteDeadline(item.sourceId);
                       }}
                       className="p-1.5 text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition"
                     >
@@ -318,11 +266,11 @@ export const UpcomingDeadlinesCard: React.FC<UpcomingDeadlinesCardProps> = ({
         </div>
       )}
 
-      {/* CARD FOOTER (When > 5 items or quick links) */}
+      {/* CARD FOOTER */}
       {hasMoreThan5 && (
         <div className="p-3 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between text-xs px-5">
           <span className="text-zinc-500 font-medium">
-            Showing top 5 priority deadlines of {activeList.length} total
+            Showing top 5 priority deadlines of {activeUnified.length} total
           </span>
           <button
             type="button"

@@ -20,11 +20,13 @@ import {
   Trash2,
   MoreVertical,
   ExternalLink,
+  NotebookPen,
 } from 'lucide-react';
-import { Client, Project, Invoice } from '../../../types';
+import { Client, Project, Invoice, Note, AppRoute } from '../../../types';
 import { formatINR } from '../../../utils/formatters';
 import { getProjectFinancials } from '../../../utils/projectUtils';
 import { DeleteProjectModal } from './DeleteProjectModal';
+import { EmbeddedNotesSection } from '../notes/EmbeddedNotesSection';
 
 interface ClientWorkspaceModalProps {
   isOpen: boolean;
@@ -32,6 +34,13 @@ interface ClientWorkspaceModalProps {
   client: Client | null;
   projects: Project[];
   invoices: Invoice[];
+  notes?: Note[];
+  noteCategories?: string[];
+  onSaveNote?: (note: Partial<Note> & { id: string }) => void;
+  onDeleteNote?: (note: Note) => void;
+  onTogglePinNote?: (id: string, e?: React.MouseEvent) => void;
+  onToggleCheckItemNote?: (noteId: string, itemId: string, completed: boolean) => void;
+  onNavigateRoute?: (route: AppRoute, targetId?: string) => void;
   onOpenProjectWorkspace?: (projectId: string) => void;
   onCreateProjectForClient?: (client: Client) => void;
   onCreateInvoiceForClient?: (client: Client) => void;
@@ -46,6 +55,13 @@ export const ClientWorkspaceModal: React.FC<ClientWorkspaceModalProps> = ({
   client,
   projects = [],
   invoices = [],
+  notes = [],
+  noteCategories = [],
+  onSaveNote,
+  onDeleteNote,
+  onTogglePinNote,
+  onToggleCheckItemNote,
+  onNavigateRoute,
   onOpenProjectWorkspace,
   onCreateProjectForClient,
   onCreateInvoiceForClient,
@@ -53,7 +69,7 @@ export const ClientWorkspaceModal: React.FC<ClientWorkspaceModalProps> = ({
   onDeleteProject,
   onEditProject,
 }) => {
-  const [activeTab, setActiveTab] = useState<'projects' | 'invoices' | 'payments'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'invoices' | 'payments' | 'notes'>('projects');
   const [activeMenuProjectId, setActiveMenuProjectId] = useState<string | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -293,12 +309,23 @@ export const ClientWorkspaceModal: React.FC<ClientWorkspaceModalProps> = ({
             >
               Invoices ({clientInvoices.length})
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('notes')}
+              className={`rounded-lg px-3.5 py-1.5 font-bold transition-colors ${
+                activeTab === 'notes'
+                  ? 'bg-zinc-900 text-white shadow-2xs'
+                  : 'text-zinc-600 hover:bg-zinc-100'
+              }`}
+            >
+              Notes ({notes.filter((n) => n.clientId === client.id).length})
+            </button>
           </div>
         </div>
 
         {/* 3. Main Body */}
         <div className="p-6 overflow-y-auto flex-1 space-y-4 text-xs">
-          {activeTab === 'projects' ? (
+          {activeTab === 'projects' && (
             clientProjects.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-zinc-200 rounded-xl text-zinc-400">
                 No projects created for this client yet.
@@ -426,8 +453,9 @@ export const ClientWorkspaceModal: React.FC<ClientWorkspaceModalProps> = ({
                 </table>
               </div>
             )
-          ) : (
-            /* INVOICES TAB */
+          )}
+
+          {activeTab === 'invoices' && (
             clientInvoices.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-zinc-200 rounded-xl text-zinc-400">
                 No invoices created for this client yet.
@@ -478,6 +506,22 @@ export const ClientWorkspaceModal: React.FC<ClientWorkspaceModalProps> = ({
                 </table>
               </div>
             )
+          )}
+
+          {activeTab === 'notes' && (
+            <EmbeddedNotesSection
+              notes={notes}
+              clientId={client.id}
+              clientName={client.name}
+              categories={noteCategories}
+              projects={projects}
+              clients={[client]}
+              onSaveNote={onSaveNote || (() => {})}
+              onDeleteNote={onDeleteNote || (() => {})}
+              onTogglePin={onTogglePinNote || (() => {})}
+              onToggleCheckItem={onToggleCheckItemNote}
+              onNavigateRoute={onNavigateRoute}
+            />
           )}
         </div>
 

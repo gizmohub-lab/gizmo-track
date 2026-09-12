@@ -26,6 +26,8 @@ import { DeadlineDetailModal } from './components/portal/DeadlineDetailModal';
 import { ProjectTypesSettingsModal } from './components/portal/projects/ProjectTypesSettingsModal';
 import { NotificationPermissionBanner } from './components/notifications/NotificationPermissionBanner';
 import { NotificationSettingsSection } from './components/notifications/NotificationSettingsSection';
+import { NotesView } from './components/portal/notes/NotesView';
+import { QuickNoteModal } from './components/portal/notes/QuickNoteModal';
 import {
   sumReceivedPayments,
   calculateAmountToGet,
@@ -61,6 +63,7 @@ import {
   ProjectCustomFieldDef,
   ProjectTemplate,
   ResetOptions,
+  Note,
 } from './types';
 import {
   loadInvoices,
@@ -79,6 +82,10 @@ import {
   saveCategories,
   loadDesigners,
   saveDesigners,
+  loadNotes,
+  saveNotes,
+  loadNoteCategories,
+  saveNoteCategories,
   initialClients,
   initialProjects,
   initialLocalWorks,
@@ -139,6 +146,7 @@ function pathToRoute(path: string): AppRoute {
   if (cleanPath.includes('/admin/projects') || cleanPath.includes('/admin/orders')) return 'admin-projects';
   if (cleanPath.includes('/admin/clients') || cleanPath.includes('/admin/people')) return 'admin-clients';
   if (cleanPath.includes('/admin/local-works') || cleanPath.includes('/admin/works')) return 'admin-local-works';
+  if (cleanPath.includes('/admin/notes') || cleanPath.includes('/admin/note')) return 'admin-notes';
   if (
     cleanPath.includes('/admin/invoices/create') ||
     cleanPath.includes('/admin/invoices/new') ||
@@ -191,6 +199,9 @@ function routeToPath(route: AppRoute): string {
       break;
     case 'admin-local-works':
       subPath = '/admin/local-works';
+      break;
+    case 'admin-notes':
+      subPath = '/admin/notes';
       break;
     case 'admin-invoices':
       subPath = '/admin/invoices';
@@ -255,6 +266,66 @@ export default function App() {
   const [projectTemplates, setProjectTemplates] = useState<ProjectTemplate[]>(() =>
     loadProjectTemplates()
   );
+
+  // Notes System States
+  const [notes, setNotes] = useState<Note[]>(() => loadNotes());
+  const [noteCategories, setNoteCategories] = useState<string[]>(() => loadNoteCategories());
+  const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
+
+  // Sync Notes to Local Storage
+  useEffect(() => {
+    saveNotes(notes);
+  }, [notes]);
+
+  // Sync Note Categories to Local Storage
+  useEffect(() => {
+    saveNoteCategories(noteCategories);
+  }, [noteCategories]);
+
+  // Notes Handlers
+  const handleSaveNote = (updatedNote: Partial<Note> & { id: string }) => {
+    setNotes((prev) => {
+      const idx = prev.findIndex((n) => n.id === updatedNote.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = { ...next[idx], ...updatedNote, updatedAt: new Date().toISOString() };
+        return next;
+      } else {
+        return [updatedNote as Note, ...prev];
+      }
+    });
+  };
+
+  const handleDeleteNote = (noteToDelete: Note) => {
+    setNotes((prev) => prev.filter((n) => n.id !== noteToDelete.id));
+  };
+
+  const handleTogglePinNote = (id: string) => {
+    setNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isPinned: !n.isPinned } : n))
+    );
+  };
+
+  const handleToggleCheckItemNote = (noteId: string, itemId: string, completed: boolean) => {
+    setNotes((prev) =>
+      prev.map((n) => {
+        if (n.id !== noteId || !n.checklistItems) return n;
+        const updatedChecklist = n.checklistItems.map((item) =>
+          item.id === itemId ? { ...item, completed } : item
+        );
+        return { ...n, checklistItems: updatedChecklist };
+      })
+    );
+  };
+
+  const handleAddNoteCategory = (categoryName: string) => {
+    if (!categoryName.trim() || noteCategories.includes(categoryName.trim())) return;
+    setNoteCategories((prev) => [...prev, categoryName.trim()]);
+  };
+
+  const handleDeleteNoteCategory = (categoryName: string) => {
+    setNoteCategories((prev) => prev.filter((c) => c !== categoryName));
+  };
 
   // Deadline Modals State
   const [showDeadlinesModal, setShowDeadlinesModal] = useState(false);
@@ -1347,6 +1418,7 @@ export default function App() {
           onOpenSettings={() => setShowSettingsModal(true)}
           onOpenResetModal={() => setShowResetModal(true)}
           onCreateInvoice={handleStartCreateInvoice}
+          onOpenQuickNote={() => setIsQuickNoteOpen(true)}
           searchTerm={invoiceSearchTerm}
           onSearchChange={setInvoiceSearchTerm}
         >
@@ -1402,6 +1474,13 @@ export default function App() {
               onSaveCustomFields={setProjectCustomFields}
               templates={projectTemplates}
               onSaveTemplates={setProjectTemplates}
+              notes={notes}
+              noteCategories={noteCategories}
+              onSaveNote={handleSaveNote}
+              onDeleteNote={handleDeleteNote}
+              onTogglePinNote={handleTogglePinNote}
+              onToggleCheckItemNote={handleToggleCheckItemNote}
+              onNavigateRoute={navigate}
               onAddProject={handleAddProject}
               onUpdateProject={handleUpdateProject}
               onDeleteProject={handleDeleteProject}
@@ -1472,6 +1551,26 @@ export default function App() {
               onImportWorks={handleImportWorks}
               onCreateInvoiceForWork={handleCreateInvoiceForLocalWork}
               onViewInvoice={(inv) => setPreviewInvoice(inv)}
+            />
+          )}
+
+          {/* TAB 4.5: NOTES */}
+          {currentRoute === 'admin-notes' && (
+            <NotesView
+              notes={notes}
+              categories={noteCategories}
+              projects={projects}
+              clients={clients}
+              localWorks={localWorks}
+              invoices={invoices}
+              onSaveNote={handleSaveNote}
+              onDeleteNote={handleDeleteNote}
+              onTogglePin={handleTogglePinNote}
+              onToggleCheckItem={handleToggleCheckItemNote}
+              onAddCategory={handleAddNoteCategory}
+              onDeleteCategory={handleDeleteNoteCategory}
+              onNavigateRoute={navigate}
+              onOpenQuickNote={() => setIsQuickNoteOpen(true)}
             />
           )}
 
@@ -1816,6 +1915,16 @@ export default function App() {
           onSaveTemplates={setProjectTemplates}
         />
       )}
+
+      {/* QUICK NOTE MODAL */}
+      <QuickNoteModal
+        isOpen={isQuickNoteOpen}
+        onClose={() => setIsQuickNoteOpen(false)}
+        categories={noteCategories}
+        projects={projects}
+        clients={clients}
+        onSaveQuickNote={handleSaveNote}
+      />
 
       {/* RESET PORTAL MODAL */}
       <ResetPortalModal

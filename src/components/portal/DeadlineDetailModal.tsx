@@ -90,7 +90,7 @@ export const DeadlineDetailModal: React.FC<DeadlineDetailModalProps> = ({
               {isOverdue ? (
                 <AlertTriangle className="w-5 h-5" />
               ) : isCritical ? (
-                <Bell className="w-5 h-5 animate-pulse" />
+                <Bell className="w-5 h-5 text-[#FF5738]" />
               ) : (
                 <Clock className="w-5 h-5" />
               )}

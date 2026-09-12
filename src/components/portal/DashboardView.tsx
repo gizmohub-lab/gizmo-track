@@ -93,6 +93,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* DASHBOARD DEADLINE HIGHLIGHT CARD */}
       <UpcomingDeadlinesCard
         deadlines={deadlines}
+        projects={projects}
+        localWorks={localWorks}
         onNavigateTab={onNavigateTab}
         onOpenDeadlineDetails={onOpenDeadlineDetails}
         onOpenAddDeadlineModal={onOpenAddDeadlineModal}

@@ -492,7 +492,7 @@ export interface InvoiceSettings {
   disclaimer: string;
 }
 
-export type ActiveTab = 'dashboard' | 'projects' | 'people' | 'local-works' | 'invoice';
+export type ActiveTab = 'dashboard' | 'projects' | 'people' | 'local-works' | 'notes' | 'invoice';
 
 export type AppRoute =
   | 'home'
@@ -506,9 +506,50 @@ export type AppRoute =
   | 'admin-projects'
   | 'admin-clients'
   | 'admin-local-works'
+  | 'admin-notes'
   | 'admin-invoices'
   | 'admin-invoices-create'
   | 'admin-settings';
+
+export type NoteColor = 'default' | 'warm' | 'soft' | 'accent';
+
+export interface NoteChecklistItem {
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  isChecklist?: boolean;
+  checklistItems?: NoteChecklistItem[];
+  isPinned?: boolean;
+  isArchived?: boolean;
+  color?: NoteColor;
+  category?: string; // 'Personal' | 'Project' | 'Client' | 'Ideas' | 'Reminder' | 'Other' | custom
+  
+  // Linkages
+  projectId?: string;
+  projectTitle?: string;
+  clientId?: string;
+  clientName?: string;
+  designerId?: string;
+  designerName?: string;
+  localWorkId?: string;
+  localWorkTitle?: string;
+  invoiceId?: string;
+  invoiceNumber?: string;
+
+  // Reminders
+  reminderDate?: string; // YYYY-MM-DD
+  reminderTime?: string; // HH:mm
+  reminderTriggered?: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface ResetOptions {
   projects: boolean;

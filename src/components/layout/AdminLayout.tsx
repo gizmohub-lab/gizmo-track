@@ -6,6 +6,7 @@ import {
   Users,
   Briefcase,
   Receipt,
+  NotebookPen,
   Settings,
   Bell,
   RotateCcw,
@@ -35,6 +36,7 @@ interface AdminLayoutProps {
   children: React.ReactNode;
   pendingLocalWorksCount?: number;
   pendingInvoicesCount?: number;
+  notesCount?: number;
   onLogout?: () => void;
   notifications?: AdminNotification[];
   onMarkNotificationAsRead?: (id: string) => void;
@@ -42,6 +44,7 @@ interface AdminLayoutProps {
   onOpenSettings?: () => void;
   onOpenResetModal?: () => void;
   onCreateInvoice?: () => void;
+  onOpenQuickNote?: () => void;
   searchTerm?: string;
   onSearchChange?: (val: string) => void;
 }
@@ -59,6 +62,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onOpenSettings,
   onOpenResetModal,
   onCreateInvoice,
+  onOpenQuickNote,
   searchTerm = '',
   onSearchChange,
 }) => {
@@ -101,6 +105,41 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const activeNotifications = propNotifications || localNotifications;
   const unreadCount = activeNotifications.filter((n) => !n.read && !n.isRead).length;
+
+  // Track known notification IDs to only animate on genuinely NEW notifications
+  const knownNotifIdsRef = useRef<Set<string>>(new Set());
+  const isMountedRef = useRef(false);
+  const [shouldAnimateBell, setShouldAnimateBell] = useState(false);
+
+  useEffect(() => {
+    const unreadNotifications = activeNotifications.filter((n) => !n.read && !n.isRead);
+
+    if (!isMountedRef.current) {
+      // First render / mount: record all initial notification IDs without animating
+      unreadNotifications.forEach((n) => knownNotifIdsRef.current.add(n.id));
+      isMountedRef.current = true;
+      return;
+    }
+
+    // Check for any genuinely NEW unread notification that hasn't been seen before
+    const hasNewUnreadNotif = unreadNotifications.some((n) => !knownNotifIdsRef.current.has(n.id));
+
+    // Update the set of known IDs
+    unreadNotifications.forEach((n) => knownNotifIdsRef.current.add(n.id));
+
+    // Check prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (hasNewUnreadNotif && !prefersReducedMotion) {
+      setShouldAnimateBell(true);
+      const timer = setTimeout(() => {
+        setShouldAnimateBell(false);
+      }, 500); // 500ms single pass animation
+      return () => clearTimeout(timer);
+    } else {
+      setShouldAnimateBell(false);
+    }
+  }, [activeNotifications]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -157,6 +196,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         return 'People';
       case 'admin-local-works':
         return 'Local Works';
+      case 'admin-notes':
+        return 'Notes';
       case 'admin-invoices':
         return 'Invoices';
       case 'admin-invoices-create':
@@ -194,6 +235,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       icon: Briefcase,
       badge: pendingLocalWorksCount > 0 ? pendingLocalWorksCount : undefined,
       matchRoutes: ['admin-local-works'],
+    },
+    {
+      id: 'admin-notes' as AppRoute,
+      label: 'Notes',
+      icon: NotebookPen,
+      matchRoutes: ['admin-notes'],
     },
     {
       id: 'admin-invoices' as AppRoute,
@@ -328,11 +375,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Bell
-                className={`w-4 h-4 shrink-0 transition-transform duration-150 group-hover:scale-105 ${
-                  unreadCount > 0 ? 'text-[#FF5738] animate-pulse' : 'text-zinc-400 group-hover:text-zinc-800'
-                }`}
-              />
+              <motion.div
+                animate={
+                  shouldAnimateBell
+                    ? { rotate: [0, -12, 12, -8, 8, 0], scale: [1, 1.15, 1] }
+                    : { rotate: 0, scale: 1 }
+                }
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+              >
+                <Bell
+                  className={`w-4 h-4 shrink-0 transition-colors duration-150 group-hover:scale-105 ${
+                    unreadCount > 0 ? 'text-[#FF5738]' : 'text-zinc-400 group-hover:text-zinc-800'
+                  }`}
+                />
+              </motion.div>
               {!isCollapsed && <span>Notifications</span>}
             </div>
             {!isCollapsed && unreadCount > 0 && (
@@ -447,9 +503,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 }`}
                 title="Notifications"
               >
-                <Bell className={`w-4 h-4 transition-transform duration-150 hover:scale-110 ${
-                  unreadCount > 0 ? 'text-[#FF5738] animate-pulse' : ''
-                }`} />
+                <motion.div
+                  animate={
+                    shouldAnimateBell
+                      ? { rotate: [0, -12, 12, -8, 8, 0], scale: [1, 1.15, 1] }
+                      : { rotate: 0, scale: 1 }
+                  }
+                  transition={{ duration: 0.4, ease: 'easeInOut' }}
+                >
+                  <Bell
+                    className={`w-4 h-4 transition-colors duration-150 hover:scale-110 ${
+                      unreadCount > 0 ? 'text-[#FF5738]' : ''
+                    }`}
+                  />
+                </motion.div>
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF5738] text-white text-[9px] font-mono font-bold flex items-center justify-center shadow-xs">
                     {unreadCount}

@@ -56,14 +56,14 @@ export const NotificationPermissionBanner: React.FC<NotificationPermissionBanner
   return (
     <div
       id="notification-permission-banner"
-      className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 text-white shadow-xl relative overflow-hidden my-4 animate-in fade-in slide-in-from-top-2 duration-200"
+      className="group p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 text-white shadow-xl relative overflow-hidden my-4 animate-in fade-in slide-in-from-top-2 duration-200"
     >
       <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#FF5738]/10 rounded-full blur-2xl pointer-events-none" />
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
         <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#FF5738] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0">
-            <Bell className="w-5 h-5 animate-bounce" />
+          <div className="w-10 h-10 rounded-xl bg-[#FF5738] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0 transition-transform duration-200 group-hover:scale-110">
+            <Bell className="w-5 h-5 text-white animate-bell-swing" />
           </div>
           <div>
             <div className="flex items-center gap-2">

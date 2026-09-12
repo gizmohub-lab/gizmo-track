@@ -32,6 +32,10 @@ import {
   ProjectRequest,
 } from '../../types';
 import { formatExactDateTimeString } from '../../utils/dateTimeUtils';
+import {
+  createProjectRequestInFirestore,
+  findOrCreateClientRecord,
+} from '../../services/projectRequestsService';
 
 interface StartProjectModalProps {
   isOpen: boolean;
@@ -154,6 +158,8 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
   const [websiteHandle, setWebsiteHandle] = useState<string>('');
 
   const [validationError, setValidationError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string>('');
 
   if (!isOpen) return null;
 
@@ -243,8 +249,12 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
     }
   };
 
-  const handleSubmitProject = () => {
+  const handleSubmitProject = async () => {
+    if (isSubmitting) return;
     if (!validateStep(7)) return;
+
+    setIsSubmitting(true);
+    setSubmitError('');
 
     const now = new Date();
     const nowIso = now.toISOString();
@@ -266,11 +276,40 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
       .filter(Boolean)
       .join('\n\n');
 
-    // 3. Create ProjectRequest object with status: 'Pending Review'
-    // Strict requirement: DO NOT immediately create it as an active project.
+    // 3. Client matching: check whether client already exists
+    let matchedClientId: string | undefined = undefined;
+    if (clients && clients.length > 0) {
+      const matchResult = findOrCreateClientRecord(
+        {
+          id: requestId,
+          requestNumber: reqNum,
+          clientName: clientName.trim(),
+          companyName: companyName.trim() || undefined,
+          email: emailAddress.trim(),
+          whatsapp: whatsappPhone.trim(),
+          services: selectedServices,
+          projectTitle: projectTitle.trim(),
+          description: fullDescription,
+          timelineOption,
+          budgetRange: budgetOption,
+          attachments: files,
+          submittedAt: nowIso,
+          requestStatus: 'pending_review',
+          history: [],
+          createdAt: nowIso,
+          updatedAt: nowIso,
+        },
+        clients
+      );
+      matchedClientId = matchResult.client.id;
+    }
+
+    // 4. Create ProjectRequest object with status: 'pending_review'
     const newProjectRequest: ProjectRequest = {
       id: requestId,
+      requestId,
       requestNumber: reqNum,
+      clientId: matchedClientId,
       clientName: clientName.trim(),
       companyName: companyName.trim() || undefined,
       email: emailAddress.trim(),
@@ -283,12 +322,16 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
       targetAudience: targetAudience.trim() || undefined,
       referenceLinks: referenceLinks.trim() || undefined,
       customRequirements: customRequirements.trim() || undefined,
+      requirements: customRequirements.trim() || undefined,
       timelineOption,
+      timeline: timelineOption,
       requestedDeadline: customDate || undefined,
       budgetRange: budgetOption,
+      budget: budgetOption,
       attachments: files,
       submittedAt: nowIso,
-      requestStatus: 'Pending Review',
+      requestStatus: 'pending_review',
+      status: 'pending_review',
       history: [
         {
           id: `act-${Date.now()}`,
@@ -301,25 +344,37 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
       updatedAt: nowIso,
     };
 
-    if (onAddProjectRequest) {
-      onAddProjectRequest(newProjectRequest);
+    try {
+      // 5. Persistent database write
+      const savedRequest = await createProjectRequestInFirestore(newProjectRequest);
+
+      if (onAddProjectRequest) {
+        onAddProjectRequest(savedRequest);
+      }
+
+      // 6. Send Admin Notification
+      onAddNotification({
+        id: `notif-${Date.now()}`,
+        title: '🔔 New Project Request',
+        description: `New project request from ${companyName.trim() || clientName.trim()}: "${projectTitle.trim()}" (${selectedServices.join(', ')}) • Budget: ${budgetOption}`,
+        timestamp: 'Just now',
+        read: false,
+        type: 'project',
+        relatedEntityType: 'project_request',
+        relatedEntityId: savedRequest.id,
+        targetRoute: 'admin-project-requests',
+        targetId: savedRequest.id,
+      });
+
+      setCreatedProjectRef(reqNum);
+      setSubmittedTimeStr(submissionDateFormatted);
+      setSubmitted(true);
+    } catch (saveError) {
+      console.error('Project request submission error:', saveError);
+      setSubmitError('Unable to submit your project request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // 4. Send Admin Notification
-    onAddNotification({
-      id: `notif-${Date.now()}`,
-      title: '🔔 New Project Request',
-      description: `New project request from ${companyName.trim() || clientName.trim()}: "${projectTitle.trim()}" (${selectedServices.join(', ')}) • Budget: ${budgetOption}`,
-      timestamp: 'Just now',
-      read: false,
-      type: 'project',
-      targetRoute: 'admin-project-requests',
-      targetId: newProjectRequest.id,
-    });
-
-    setCreatedProjectRef(reqNum);
-    setSubmittedTimeStr(submissionDateFormatted);
-    setSubmitted(true);
   };
 
   const stepsList = [
@@ -1131,14 +1186,23 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
           )}
         </div>
 
+        {/* Submit Error banner */}
+        {!submitted && submitError && (
+          <div className="mx-6 mt-3 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-xs font-bold text-red-700 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{submitError}</span>
+          </div>
+        )}
+
         {/* Footer Navigation */}
         {!submitted && (
           <div className="px-6 py-4 border-t border-zinc-100 bg-zinc-50 flex items-center justify-between shrink-0">
             {step > 1 ? (
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={handleBack}
-                className="px-5 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 text-xs font-bold hover:bg-zinc-100 transition flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 text-xs font-bold hover:bg-zinc-100 transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
@@ -1159,11 +1223,23 @@ export const StartProjectModal: React.FC<StartProjectModalProps> = ({
             ) : (
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={handleSubmitProject}
-                className="px-8 py-2.5 rounded-xl bg-[#FF5738] hover:bg-orange-600 text-white text-xs font-extrabold transition flex items-center gap-2 shadow-sm"
+                className={`px-8 py-2.5 rounded-xl bg-[#FF5738] hover:bg-orange-600 text-white text-xs font-extrabold transition flex items-center gap-2 shadow-sm ${
+                  isSubmitting ? 'opacity-60 cursor-not-allowed' : ''
+                }`}
               >
-                <CheckCircle className="w-4 h-4" />
-                <span>SUBMIT PROJECT</span>
+                {isSubmitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>SUBMITTING BRIEF...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    <span>SUBMIT PROJECT</span>
+                  </>
+                )}
               </button>
             )}
           </div>

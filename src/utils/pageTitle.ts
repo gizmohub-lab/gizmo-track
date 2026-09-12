@@ -45,6 +45,8 @@ export function resolvePageTitle(context: PageTitleContext): string {
       return `${BRAND_NAME} — Admin`;
     case 'admin-projects':
       return `${BRAND_NAME} — Projects`;
+    case 'admin-project-requests':
+      return `${BRAND_NAME} — Project Requests`;
     case 'admin-clients':
       return `${BRAND_NAME} — Clients`;
     case 'admin-local-works':

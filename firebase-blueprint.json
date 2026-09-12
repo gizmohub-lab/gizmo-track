@@ -24,6 +24,28 @@
         "status": { "type": "string" }
       },
       "required": ["id", "grandTotal"]
+    },
+    "ProjectRequest": {
+      "title": "ProjectRequest",
+      "description": "Client project brief and commission requests submitted via Start a Project",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "requestId": { "type": "string" },
+        "requestNumber": { "type": "string" },
+        "clientName": { "type": "string" },
+        "companyName": { "type": "string" },
+        "email": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "projectTitle": { "type": "string" },
+        "services": { "type": "array" },
+        "description": { "type": "string" },
+        "budgetRange": { "type": "string" },
+        "timelineOption": { "type": "string" },
+        "requestStatus": { "type": "string" },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["id", "clientName", "email", "projectTitle", "requestStatus"]
     }
   },
   "firestore": {
@@ -34,6 +56,10 @@
     "/invoices/{invoiceId}": {
       "schema": { "$ref": "#/entities/Invoice" },
       "description": "Invoices collection"
+    },
+    "/projectRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/ProjectRequest" },
+      "description": "Client commission requests collection"
     }
   }
 }

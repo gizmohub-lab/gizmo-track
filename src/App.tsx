@@ -32,6 +32,8 @@ import { QuickNoteModal } from './components/portal/notes/QuickNoteModal';
 import {
   loadProjectRequests,
   saveProjectRequests,
+  subscribeToProjectRequests,
+  normalizeRequestStatus,
   acceptProjectRequestWorkflow,
   rejectProjectRequestWorkflow,
   markProjectRequestUnderReviewWorkflow,
@@ -277,18 +279,28 @@ export default function App() {
     loadProjectTemplates()
   );
 
-  // Project Requests Workflow States
+  // Project Requests Workflow States (synced in real-time with Firestore)
   const [projectRequests, setProjectRequests] = useState<ProjectRequest[]>(() =>
     loadProjectRequests()
   );
 
   useEffect(() => {
+    const unsubscribe = subscribeToProjectRequests((remoteRequests) => {
+      setProjectRequests(remoteRequests);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     saveProjectRequests(projectRequests);
   }, [projectRequests]);
 
-  const pendingProjectRequestsCount = projectRequests.filter(
-    (r) => r.requestStatus === 'Pending Review' || r.requestStatus === 'Under Review'
-  ).length;
+  const pendingProjectRequestsCount = projectRequests.filter((r) => {
+    const norm = normalizeRequestStatus(r.requestStatus || (r as any).status);
+    return norm === 'pending_review' || norm === 'under_review';
+  }).length;
 
   // Notes System States
   const [notes, setNotes] = useState<Note[]>(() => loadNotes());

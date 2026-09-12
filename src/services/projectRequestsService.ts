@@ -1,6 +1,8 @@
 import {
   ProjectRequest,
   ProjectRequestStatus,
+  ProjectRequestInternalStatus,
+  ProjectRequestDisplayStatus,
   ProjectRequestActivity,
   Project,
   Client,
@@ -11,6 +13,50 @@ import {
 import { safeLoadItem, safeSaveItem, PORTAL_STORAGE_KEYS } from './safeStorage';
 import { registerVaultFile, getEntityVaultFiles } from './fileStorageVault';
 import { formatExactDateTimeString } from '../utils/dateTimeUtils';
+import {
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  onSnapshot,
+  query,
+} from 'firebase/firestore';
+import { db } from './firebase';
+
+/**
+ * Standardizes status values to recommended internal keys:
+ * pending_review | under_review | accepted | rejected | cancelled
+ */
+export function normalizeRequestStatus(status?: string): ProjectRequestInternalStatus {
+  if (!status) return 'pending_review';
+  const clean = String(status).toLowerCase().replace(/[\s-]+/g, '_').trim();
+  if (clean === 'pending' || clean === 'pending_review' || clean === 'new') return 'pending_review';
+  if (clean === 'under_review' || clean === 'in_review' || clean === 'reviewing') return 'under_review';
+  if (clean === 'accepted' || clean === 'approved') return 'accepted';
+  if (clean === 'rejected' || clean === 'declined') return 'rejected';
+  if (clean === 'cancelled' || clean === 'canceled') return 'cancelled';
+  return 'pending_review';
+}
+
+/**
+ * Maps internal keys to user-facing display labels:
+ * Pending Review | Under Review | Accepted | Rejected | Cancelled
+ */
+export function getRequestStatusDisplayLabel(status?: string): ProjectRequestDisplayStatus {
+  const norm = normalizeRequestStatus(status);
+  switch (norm) {
+    case 'pending_review':
+      return 'Pending Review';
+    case 'under_review':
+      return 'Under Review';
+    case 'accepted':
+      return 'Accepted';
+    case 'rejected':
+      return 'Rejected';
+    case 'cancelled':
+      return 'Cancelled';
+  }
+}
 
 export const initialProjectRequests: ProjectRequest[] = [
   {
@@ -221,6 +267,234 @@ export function loadProjectRequests(): ProjectRequest[] {
 }
 
 /**
+ * Write project request to persistent Firestore database.
+ * Throws an error if Firestore write fails.
+ */
+export async function createProjectRequestInFirestore(
+  request: ProjectRequest
+): Promise<ProjectRequest> {
+  const docId = request.id || `req-${Date.now()}`;
+  const internalStatus = normalizeRequestStatus(request.requestStatus || (request as any).status);
+  const displayStatus = getRequestStatusDisplayLabel(internalStatus);
+
+  const docPayload = {
+    id: docId,
+    requestId: docId,
+    requestNumber: request.requestNumber || `REQ-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+    clientId: request.clientId || '',
+    clientName: request.clientName || '',
+    companyName: request.companyName || '',
+    email: request.email || '',
+    whatsapp: request.whatsapp || '',
+    projectTitle: request.projectTitle || '',
+    services: request.services || [],
+    description: request.description || '',
+    requirements: request.customRequirements || request.requirements || '',
+    customRequirements: request.customRequirements || request.requirements || '',
+    industry: request.industry || '',
+    goals: request.goals || [],
+    targetAudience: request.targetAudience || '',
+    referenceLinks: request.referenceLinks || '',
+    timelineOption: request.timelineOption || 'standard',
+    timeline: request.timelineOption || 'standard',
+    requestedDeadline: request.requestedDeadline || '',
+    budgetRange: request.budgetRange || '',
+    budget: request.budgetRange || '',
+    attachments: request.attachments || [],
+    submittedAt: request.submittedAt || new Date().toISOString(),
+    requestStatus: internalStatus, // Stored as normalized internal value e.g. "pending_review"
+    status: internalStatus, // Dual storage for complete backward and forward compatibility
+    displayStatus: displayStatus,
+    history: request.history || [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: formatExactDateTimeString(new Date().toISOString()),
+        action: 'Client submitted project request via Start a Project portal',
+        actor: 'Client',
+      },
+    ],
+    createdAt: request.createdAt || new Date().toISOString(),
+    updatedAt: request.updatedAt || new Date().toISOString(),
+  };
+
+  // Log debug information as requested
+  console.log('[REQUEST SUBMISSION]', {
+    requestId: docPayload.requestId,
+    clientId: docPayload.clientId,
+    requestStatus: docPayload.requestStatus,
+    collection: 'projectRequests',
+  });
+
+  try {
+    const docRef = doc(db, 'projectRequests', docId);
+    await setDoc(docRef, docPayload);
+
+    // Also register files into File Storage Vault
+    if (docPayload.attachments && docPayload.attachments.length > 0) {
+      docPayload.attachments.forEach((att) => {
+        registerVaultFile('project-request', docId, {
+          id: att.id,
+          name: att.name,
+          size: att.size,
+          type: att.type,
+          category: att.category || 'Brief',
+          url: att.url,
+          uploadedAt: att.uploadedAt,
+        });
+      });
+    }
+
+    // Save to local cache as backup
+    const current = loadProjectRequests();
+    const existingIdx = current.findIndex((r) => r.id === docId);
+    const fullObj: ProjectRequest = {
+      ...request,
+      ...docPayload,
+      requestStatus: internalStatus,
+    };
+    if (existingIdx >= 0) {
+      current[existingIdx] = fullObj;
+    } else {
+      current.unshift(fullObj);
+    }
+    saveProjectRequests(current);
+
+    return fullObj;
+  } catch (err) {
+    console.error('Failed to write project request to Firestore:', err);
+    throw err;
+  }
+}
+
+/**
+ * Real-time subscription to projectRequests collection in Firestore.
+ */
+export function subscribeToProjectRequests(
+  callback: (requests: ProjectRequest[]) => void
+): () => void {
+  try {
+    const reqCollection = collection(db, 'projectRequests');
+    const q = query(reqCollection);
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        console.log('[ADMIN REQUEST QUERY]', {
+          collection: 'projectRequests',
+          filters: 'all',
+          resultsCount: snapshot.docs.length,
+        });
+
+        if (!snapshot.empty) {
+          const remoteRequests: ProjectRequest[] = snapshot.docs.map((docSnap) => {
+            const data = docSnap.data() as any;
+            const normStatus = normalizeRequestStatus(data.requestStatus || data.status);
+            return {
+              id: docSnap.id,
+              requestId: docSnap.id,
+              requestNumber: data.requestNumber || 'REQ-UNKNOWN',
+              clientId: data.clientId,
+              clientName: data.clientName || 'Unknown Client',
+              companyName: data.companyName,
+              email: data.email || '',
+              whatsapp: data.whatsapp || '',
+              services: Array.isArray(data.services) ? data.services : [],
+              projectTitle: data.projectTitle || 'Untitled Request',
+              description: data.description || '',
+              industry: data.industry,
+              goals: Array.isArray(data.goals) ? data.goals : [],
+              targetAudience: data.targetAudience,
+              referenceLinks: data.referenceLinks,
+              customRequirements: data.customRequirements || data.requirements,
+              requirements: data.requirements || data.customRequirements,
+              timelineOption: data.timelineOption || data.timeline || 'standard',
+              timeline: data.timeline || data.timelineOption,
+              requestedDeadline: data.requestedDeadline,
+              budgetRange: data.budgetRange || data.budget || '',
+              budget: data.budget || data.budgetRange,
+              attachments: Array.isArray(data.attachments) ? data.attachments : [],
+              submittedAt: data.submittedAt || data.createdAt || new Date().toISOString(),
+              requestStatus: normStatus,
+              status: normStatus,
+              reviewedAt: data.reviewedAt,
+              reviewedBy: data.reviewedBy,
+              acceptedAt: data.acceptedAt,
+              acceptedBy: data.acceptedBy,
+              rejectionReason: data.rejectionReason,
+              rejectedAt: data.rejectedAt,
+              rejectedBy: data.rejectedBy,
+              projectId: data.projectId,
+              projectCode: data.projectCode,
+              convertedProjectId: data.convertedProjectId || data.projectId,
+              convertedProjectCode: data.convertedProjectCode || data.projectCode,
+              history: Array.isArray(data.history) ? data.history : [],
+              createdAt: data.createdAt || new Date().toISOString(),
+              updatedAt: data.updatedAt || new Date().toISOString(),
+            };
+          });
+
+          // Sort descending by submittedAt so newest appears at top
+          remoteRequests.sort((a, b) => {
+            const timeA = new Date(a.submittedAt || a.createdAt || 0).getTime();
+            const timeB = new Date(b.submittedAt || b.createdAt || 0).getTime();
+            return timeB - timeA;
+          });
+
+          // Cache in local storage
+          saveProjectRequests(remoteRequests);
+          callback(remoteRequests);
+        } else {
+          // If Firestore collection is empty, load existing cached/initial requests
+          const local = loadProjectRequests();
+          local.sort((a, b) => {
+            const timeA = new Date(a.submittedAt || a.createdAt || 0).getTime();
+            const timeB = new Date(b.submittedAt || b.createdAt || 0).getTime();
+            return timeB - timeA;
+          });
+          callback(local);
+        }
+      },
+      (error) => {
+        console.error('Error in subscribeToProjectRequests onSnapshot:', error);
+        // Fallback to local storage
+        const local = loadProjectRequests();
+        callback(local);
+      }
+    );
+
+    return unsubscribe;
+  } catch (err) {
+    console.error('Failed to initialize subscribeToProjectRequests:', err);
+    return () => {};
+  }
+}
+
+/**
+ * Updates a project request in Firestore.
+ */
+export async function updateProjectRequestInFirestore(
+  requestId: string,
+  updates: Partial<ProjectRequest>
+): Promise<void> {
+  try {
+    const docRef = doc(db, 'projectRequests', requestId);
+    const cleanUpdates: Record<string, any> = {
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    if (updates.requestStatus) {
+      const norm = normalizeRequestStatus(updates.requestStatus);
+      cleanUpdates.requestStatus = norm;
+      cleanUpdates.status = norm;
+      cleanUpdates.displayStatus = getRequestStatusDisplayLabel(norm);
+    }
+    await updateDoc(docRef, cleanUpdates);
+  } catch (err) {
+    console.error(`Failed to update projectRequest ${requestId} in Firestore:`, err);
+  }
+}
+
+/**
  * Save project requests to local storage and sync attachments to vault.
  */
 export function saveProjectRequests(requests: ProjectRequest[]): void {
@@ -380,7 +654,8 @@ export function acceptProjectRequestWorkflow({
   const nowFormatted = formatExactDateTimeString(nowIso);
 
   // 1. Idempotency Check: if already accepted and project exists, return linked project
-  if (request.requestStatus === 'Accepted' && request.projectId) {
+  const isAccepted = normalizeRequestStatus(request.requestStatus || (request as any).status) === 'accepted';
+  if (isAccepted && request.projectId) {
     const existingProject = existingProjects.find((p) => p.id === request.projectId);
     if (existingProject) {
       const client =
@@ -552,7 +827,8 @@ export function acceptProjectRequestWorkflow({
   const updatedRequest: ProjectRequest = {
     ...request,
     clientId: client.id,
-    requestStatus: 'Accepted',
+    requestStatus: 'accepted',
+    status: 'accepted',
     acceptedAt: nowIso,
     acceptedBy: actor,
     reviewedAt: request.reviewedAt || nowIso,
@@ -564,6 +840,35 @@ export function acceptProjectRequestWorkflow({
     history: updatedHistory,
     updatedAt: nowIso,
   };
+
+  // Sync to Firestore asynchronously
+  try {
+    updateProjectRequestInFirestore(request.id, {
+      requestStatus: 'accepted',
+      status: 'accepted',
+      acceptedAt: nowIso,
+      acceptedBy: actor,
+      reviewedAt: updatedRequest.reviewedAt,
+      reviewedBy: updatedRequest.reviewedBy,
+      projectId: newProject.id,
+      projectCode: newProject.projectCode,
+      convertedProjectId: newProject.id,
+      convertedProjectCode: newProject.projectCode,
+      history: updatedHistory,
+    }).catch((e) => console.error('Error updating project request in Firestore:', e));
+
+    setDoc(doc(db, 'projects', newProject.id), newProject).catch((e) =>
+      console.error('Error saving accepted project to Firestore:', e)
+    );
+
+    if (isNew) {
+      setDoc(doc(db, 'clients', client.id), client).catch((e) =>
+        console.error('Error saving client to Firestore:', e)
+      );
+    }
+  } catch (syncErr) {
+    console.warn('Firestore sync failed during accept workflow:', syncErr);
+  }
 
   // 9. Create Client Notification
   const clientNotification: ClientNotification = {
@@ -628,13 +933,23 @@ export function rejectProjectRequestWorkflow({
 
   const updatedRequest: ProjectRequest = {
     ...request,
-    requestStatus: 'Rejected',
+    requestStatus: 'rejected',
+    status: 'rejected',
     rejectedAt: nowIso,
     rejectedBy: actor,
     rejectionReason: cleanReason,
     history: updatedHistory,
     updatedAt: nowIso,
   };
+
+  updateProjectRequestInFirestore(request.id, {
+    requestStatus: 'rejected',
+    status: 'rejected',
+    rejectedAt: nowIso,
+    rejectedBy: actor,
+    rejectionReason: cleanReason,
+    history: updatedHistory,
+  }).catch((err) => console.error('Error rejecting project request in Firestore:', err));
 
   const notification: ClientNotification = {
     id: `cnotif-${Date.now()}`,
@@ -682,12 +997,21 @@ export function markProjectRequestUnderReviewWorkflow(
 
   const updatedRequest: ProjectRequest = {
     ...request,
-    requestStatus: 'Under Review',
+    requestStatus: 'under_review',
+    status: 'under_review',
     reviewedAt: nowIso,
     reviewedBy: actor,
     history: updatedHistory,
     updatedAt: nowIso,
   };
+
+  updateProjectRequestInFirestore(request.id, {
+    requestStatus: 'under_review',
+    status: 'under_review',
+    reviewedAt: nowIso,
+    reviewedBy: actor,
+    history: updatedHistory,
+  }).catch((err) => console.error('Error marking project request under review in Firestore:', err));
 
   return updatedRequest;
 }

@@ -32,6 +32,10 @@ import {
 } from 'lucide-react';
 import { ProjectRequest, ProjectRequestStatus, Project, Client } from '../../../types';
 import { formatExactDateTimeString, formatDisplayDate } from '../../../utils/dateTimeUtils';
+import {
+  normalizeRequestStatus,
+  getRequestStatusDisplayLabel,
+} from '../../../services/projectRequestsService';
 
 interface ProjectRequestsViewProps {
   requests: ProjectRequest[];
@@ -88,76 +92,90 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
     }
   }, [initialSelectedRequestId, requests]);
 
-  // Status Counts
+  // Status Counts (using normalized internal statuses)
   const counts = useMemo(() => {
     return {
       all: requests.length,
-      pending: requests.filter((r) => r.requestStatus === 'Pending Review').length,
-      underReview: requests.filter((r) => r.requestStatus === 'Under Review').length,
-      accepted: requests.filter((r) => r.requestStatus === 'Accepted').length,
-      rejected: requests.filter((r) => r.requestStatus === 'Rejected').length,
+      pending: requests.filter((r) => normalizeRequestStatus(r.requestStatus || (r as any).status) === 'pending_review').length,
+      underReview: requests.filter((r) => normalizeRequestStatus(r.requestStatus || (r as any).status) === 'under_review').length,
+      accepted: requests.filter((r) => normalizeRequestStatus(r.requestStatus || (r as any).status) === 'accepted').length,
+      rejected: requests.filter((r) => normalizeRequestStatus(r.requestStatus || (r as any).status) === 'rejected').length,
     };
   }, [requests]);
 
-  // Filtered requests
+  // Filtered requests (sorted by submittedAt DESC so newest appears first)
   const filteredRequests = useMemo(() => {
-    return requests.filter((r) => {
-      const matchesTab =
-        selectedStatusTab === 'ALL' ||
-        (selectedStatusTab === 'Pending' && r.requestStatus === 'Pending Review') ||
-        (selectedStatusTab === 'Under Review' && r.requestStatus === 'Under Review') ||
-        (selectedStatusTab === 'Accepted' && r.requestStatus === 'Accepted') ||
-        (selectedStatusTab === 'Rejected' && r.requestStatus === 'Rejected');
+    return requests
+      .filter((r) => {
+        const norm = normalizeRequestStatus(r.requestStatus || (r as any).status);
+        const matchesTab =
+          selectedStatusTab === 'ALL' ||
+          (selectedStatusTab === 'Pending' && norm === 'pending_review') ||
+          (selectedStatusTab === 'Under Review' && norm === 'under_review') ||
+          (selectedStatusTab === 'Accepted' && norm === 'accepted') ||
+          (selectedStatusTab === 'Rejected' && norm === 'rejected');
 
-      const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        r.projectTitle.toLowerCase().includes(q) ||
-        r.clientName.toLowerCase().includes(q) ||
-        (r.companyName && r.companyName.toLowerCase().includes(q)) ||
-        r.requestNumber.toLowerCase().includes(q) ||
-        r.email.toLowerCase().includes(q) ||
-        r.services.some((s) => s.toLowerCase().includes(q));
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          r.projectTitle.toLowerCase().includes(q) ||
+          r.clientName.toLowerCase().includes(q) ||
+          (r.companyName && r.companyName.toLowerCase().includes(q)) ||
+          r.requestNumber.toLowerCase().includes(q) ||
+          r.email.toLowerCase().includes(q) ||
+          r.services.some((s) => s.toLowerCase().includes(q));
 
-      return matchesTab && matchesSearch;
-    });
+        return matchesTab && matchesSearch;
+      })
+      .sort((a, b) => {
+        const timeA = new Date(a.submittedAt || a.createdAt || 0).getTime();
+        const timeB = new Date(b.submittedAt || b.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
   }, [requests, selectedStatusTab, searchQuery]);
 
   // Status Badge Component
-  const renderStatusBadge = (status: ProjectRequestStatus) => {
-    switch (status) {
-      case 'Pending Review':
+  const renderStatusBadge = (rawStatus?: string) => {
+    const norm = normalizeRequestStatus(rawStatus);
+    switch (norm) {
+      case 'pending_review':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             Pending Review
           </span>
         );
-      case 'Under Review':
+      case 'under_review':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
             <Clock className="w-3 h-3 text-blue-500" />
             Under Review
           </span>
         );
-      case 'Accepted':
+      case 'accepted':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             Accepted
           </span>
         );
-      case 'Rejected':
+      case 'rejected':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
             <XCircle className="w-3 h-3 text-rose-600" />
             Rejected
           </span>
         );
+      case 'cancelled':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-100 text-zinc-700 border border-zinc-200">
+            Cancelled
+          </span>
+        );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-100 text-zinc-700 border border-zinc-200">
-            {status}
+            {rawStatus || 'Pending'}
           </span>
         );
     }
@@ -388,7 +406,8 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                           View
                         </button>
 
-                        {req.requestStatus !== 'Accepted' && req.requestStatus !== 'Rejected' && (
+                        {normalizeRequestStatus(req.requestStatus || (req as any).status) !== 'accepted' &&
+                          normalizeRequestStatus(req.requestStatus || (req as any).status) !== 'rejected' && (
                           <>
                             <button
                               onClick={() => setShowAcceptConfirmModal(req)}
@@ -412,7 +431,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                           </>
                         )}
 
-                        {req.requestStatus === 'Accepted' && req.projectId && (
+                        {normalizeRequestStatus(req.requestStatus || (req as any).status) === 'accepted' && req.projectId && (
                           <button
                             onClick={() => {
                               if (onOpenProjectWorkspace && req.projectId) {
@@ -469,7 +488,8 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
 
               <div className="flex items-center gap-2">
                 {/* Accept Button in header if pending */}
-                {selectedRequest.requestStatus !== 'Accepted' && selectedRequest.requestStatus !== 'Rejected' && (
+                {normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) !== 'accepted' &&
+                  normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) !== 'rejected' && (
                   <button
                     onClick={() => setShowAcceptConfirmModal(selectedRequest)}
                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-1.5"
@@ -479,7 +499,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                   </button>
                 )}
 
-                {selectedRequest.requestStatus === 'Accepted' && selectedRequest.projectId && (
+                {normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) === 'accepted' && selectedRequest.projectId && (
                   <button
                     onClick={() => {
                       if (onOpenProjectWorkspace && selectedRequest.projectId) {
@@ -508,7 +528,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Accepted Banner */}
-              {selectedRequest.requestStatus === 'Accepted' && (
+              {normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) === 'accepted' && (
                 <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-emerald-900">
                   <div className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
@@ -542,7 +562,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
               )}
 
               {/* Rejected Banner */}
-              {selectedRequest.requestStatus === 'Rejected' && (
+              {normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) === 'rejected' && (
                 <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-center gap-3 text-rose-900">
                   <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
                   <div>
@@ -796,7 +816,8 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                   </div>
 
                   {/* Status Progression Workflow Actions */}
-                  {selectedRequest.requestStatus !== 'Accepted' && selectedRequest.requestStatus !== 'Rejected' && (
+                  {normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) !== 'accepted' &&
+                    normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) !== 'rejected' && (
                     <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-3">
                       <span className="text-[10px] uppercase font-bold text-zinc-500 block">
                         Intake Decision
@@ -810,7 +831,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                         <span>✓ Accept Project</span>
                       </button>
 
-                      {selectedRequest.requestStatus === 'Pending Review' && (
+                      {normalizeRequestStatus(selectedRequest.requestStatus || (selectedRequest as any).status) === 'pending_review' && (
                         <button
                           onClick={() => onMarkUnderReview(selectedRequest)}
                           className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"

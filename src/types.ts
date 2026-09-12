@@ -597,12 +597,23 @@ export interface DeadlineItem {
   isCompleted?: boolean;
 }
 
-export type ProjectRequestStatus =
+export type ProjectRequestInternalStatus =
+  | 'pending_review'
+  | 'under_review'
+  | 'accepted'
+  | 'rejected'
+  | 'cancelled';
+
+export type ProjectRequestDisplayStatus =
   | 'Pending Review'
   | 'Under Review'
   | 'Accepted'
   | 'Rejected'
   | 'Cancelled';
+
+export type ProjectRequestStatus =
+  | ProjectRequestInternalStatus
+  | ProjectRequestDisplayStatus;
 
 export interface ProjectRequestActivity {
   id: string;
@@ -614,6 +625,7 @@ export interface ProjectRequestActivity {
 
 export interface ProjectRequest {
   id: string; // actual ID e.g. "req-1726130000000"
+  requestId?: string; // identical to id for Firestore compatibility
   requestNumber: string; // e.g. "REQ-2026-001"
   clientId?: string;
   clientName: string;
@@ -628,12 +640,16 @@ export interface ProjectRequest {
   targetAudience?: string;
   referenceLinks?: string;
   customRequirements?: string;
+  requirements?: string; // compatibility alias
   timelineOption: string;
+  timeline?: string; // compatibility alias
   requestedDeadline?: string;
   budgetRange: string;
+  budget?: string; // compatibility alias
   attachments: ProjectFileAttachment[];
   submittedAt: string;
   requestStatus: ProjectRequestStatus;
+  status?: string; // compatibility alias
   reviewedAt?: string;
   reviewedBy?: string;
   acceptedAt?: string;

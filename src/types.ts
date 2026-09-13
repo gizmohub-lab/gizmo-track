@@ -849,6 +849,19 @@ export interface PublicSiteService {
   isFeatured: boolean;
 }
 
+export interface PublicSiteWorkImage {
+  id: string;
+  url: string;
+  storagePath?: string;
+  filename: string;
+  fileSize?: string;
+  altText?: string;
+  caption?: string;
+  displayOrder: number;
+  active?: boolean;
+  createdAt: string;
+}
+
 export interface PublicSiteWorkItem {
   id: string;
   title: string;
@@ -857,7 +870,20 @@ export interface PublicSiteWorkItem {
   desc: string;
   tags: string[];
   year: string;
-  imageUrl?: string;
+  imageUrl?: string; // Main cover image url
+  coverImageAlt?: string;
+  coverImageStoragePath?: string;
+  coverImageFilename?: string;
+  coverImageFileSize?: string;
+  coverImageFit?: 'cover' | 'contain';
+  workImages?: PublicSiteWorkImage[];
+  archivedCoverImages?: Array<{
+    url: string;
+    storagePath?: string;
+    altText?: string;
+    filename?: string;
+    archivedAt: string;
+  }>;
   gradientFrom?: string;
   gradientTo?: string;
   linkedProjectId?: string;
@@ -866,6 +892,31 @@ export interface PublicSiteWorkItem {
   orderIndex: number;
   isVisible: boolean;
   isFeatured: boolean;
+  status?: 'published' | 'hidden' | 'draft' | 'archived';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PublicSiteTeamMember {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  avatarUrl?: string;
+  avatarStoragePath?: string;
+  avatarAlt?: string;
+  displayOrder: number;
+  isPublished: boolean;
+  isFeatured: boolean;
+  status?: 'published' | 'hidden' | 'archived';
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+  instagram?: string;
+  linkedin?: string;
+  portfolioUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PublicSiteMediaItem {

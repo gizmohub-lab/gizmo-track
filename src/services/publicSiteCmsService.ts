@@ -14,6 +14,7 @@ import {
   PublicSiteContentData,
   PublicSiteService,
   PublicSiteWorkItem,
+  PublicSiteTeamMember,
   PublicSiteOffer,
   PublicSiteMediaItem,
   PublicSiteMeta,
@@ -380,6 +381,70 @@ export const initialPublicSiteWorkItems: PublicSiteWorkItem[] = [
     orderIndex: 6,
     isVisible: true,
     isFeatured: false,
+    status: 'published',
+  },
+];
+
+// Preserved Initial Studio Team Members from AboutView
+export const initialPublicSiteTeamMembers: PublicSiteTeamMember[] = [
+  {
+    id: 'team-1',
+    name: 'Muhammed Shamveel',
+    role: 'Creative Director',
+    bio: 'Leading brand identity, typography systems, and print architecture for commercial entities across South India.',
+    avatarUrl: '',
+    displayOrder: 1,
+    isPublished: true,
+    isFeatured: true,
+    status: 'published',
+    email: 'shamveel@gizmodesign.in',
+    phone: '+91 98458 79017',
+    whatsapp: '+919845879017',
+    portfolioUrl: '',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'team-2',
+    name: 'Salih K.',
+    role: 'Motion & 3D Lead',
+    bio: 'Specialist in kinetic typography, 3D product stings, and high-impact social media campaign reels.',
+    avatarUrl: '',
+    displayOrder: 2,
+    isPublished: true,
+    isFeatured: true,
+    status: 'published',
+    whatsapp: '+919845879017',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'team-3',
+    name: 'Rashid V.',
+    role: 'Print & Production Lead',
+    bio: 'Master of large-format flex printing, CMYK color management, star flex media, and outdoor mounting durability.',
+    avatarUrl: '',
+    displayOrder: 3,
+    isPublished: true,
+    isFeatured: true,
+    status: 'published',
+    whatsapp: '+919845879017',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'team-4',
+    name: 'Fathima N.',
+    role: 'Visual Designer',
+    bio: 'Crafting logomarks, publication layouts, stationery suites, and digital presentation artboards.',
+    avatarUrl: '',
+    displayOrder: 4,
+    isPublished: true,
+    isFeatured: true,
+    status: 'published',
+    whatsapp: '+919845879017',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
   },
 ];
 
@@ -543,6 +608,19 @@ export function loadPublicSiteWork(): PublicSiteWorkItem[] {
 
 export function savePublicSiteWork(workItems: PublicSiteWorkItem[]): void {
   safeSetItem(PORTAL_STORAGE_KEYS.PUBLIC_SITE_WORK, workItems);
+  syncWorkToFirestore(workItems);
+}
+
+export function loadPublicSiteTeamMembers(): PublicSiteTeamMember[] {
+  return safeGetItem<PublicSiteTeamMember[]>(
+    PORTAL_STORAGE_KEYS.PUBLIC_SITE_TEAM,
+    initialPublicSiteTeamMembers
+  );
+}
+
+export function savePublicSiteTeamMembers(members: PublicSiteTeamMember[]): void {
+  safeSetItem(PORTAL_STORAGE_KEYS.PUBLIC_SITE_TEAM, members);
+  syncTeamToFirestore(members);
 }
 
 export function loadPublicSiteOffers(): PublicSiteOffer[] {
@@ -696,6 +774,74 @@ export async function pullContentFromFirestore(): Promise<PublicSiteContentData 
     }
   } catch (err) {
     console.warn('Firestore CMS pull note:', err);
+  }
+  return null;
+}
+
+async function syncWorkToFirestore(workItems: PublicSiteWorkItem[]) {
+  try {
+    if (!db) return;
+    const docRef = doc(db, 'publicSiteWork', 'portfolioItems');
+    await setDoc(
+      docRef,
+      {
+        items: workItems,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.warn('Firestore Work sync note:', err);
+  }
+}
+
+export async function pullWorkFromFirestore(): Promise<PublicSiteWorkItem[] | null> {
+  try {
+    if (!db) return null;
+    const docRef = doc(db, 'publicSiteWork', 'portfolioItems');
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (Array.isArray(data?.items)) {
+        return data.items as PublicSiteWorkItem[];
+      }
+    }
+  } catch (err) {
+    console.warn('Firestore Work pull note:', err);
+  }
+  return null;
+}
+
+async function syncTeamToFirestore(members: PublicSiteTeamMember[]) {
+  try {
+    if (!db) return;
+    const docRef = doc(db, 'publicSiteTeam', 'teamMembers');
+    await setDoc(
+      docRef,
+      {
+        members,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.warn('Firestore Team sync note:', err);
+  }
+}
+
+export async function pullTeamFromFirestore(): Promise<PublicSiteTeamMember[] | null> {
+  try {
+    if (!db) return null;
+    const docRef = doc(db, 'publicSiteTeam', 'teamMembers');
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (Array.isArray(data?.members)) {
+        return data.members as PublicSiteTeamMember[];
+      }
+    }
+  } catch (err) {
+    console.warn('Firestore Team pull note:', err);
   }
   return null;
 }

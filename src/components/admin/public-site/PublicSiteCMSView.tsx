@@ -13,6 +13,7 @@ import {
   Eye,
   ArrowRight,
   ShieldCheck,
+  Users,
 } from 'lucide-react';
 import {
   AppRoute,
@@ -22,6 +23,7 @@ import {
   PublicSiteFooterConfig,
   PublicSiteService,
   PublicSiteWorkItem,
+  PublicSiteTeamMember,
   PublicSiteOffer,
   PublicSiteMediaItem,
   PublicSiteMeta,
@@ -34,6 +36,8 @@ import {
   savePublicSiteServices,
   loadPublicSiteWork,
   savePublicSiteWork,
+  loadPublicSiteTeamMembers,
+  savePublicSiteTeamMembers,
   loadPublicSiteOffers,
   savePublicSiteOffers,
   loadPublicSiteMedia,
@@ -49,6 +53,7 @@ import { CMSOverviewTab } from './tabs/CMSOverviewTab';
 import { CMSContentTab } from './tabs/CMSContentTab';
 import { CMSServicesTab } from './tabs/CMSServicesTab';
 import { CMSWorkTab } from './tabs/CMSWorkTab';
+import { CMSTeamTab } from './tabs/CMSTeamTab';
 import { CMSOffersTab } from './tabs/CMSOffersTab';
 import { CMSMediaTab } from './tabs/CMSMediaTab';
 import { CMSNavigationTab } from './tabs/CMSNavigationTab';
@@ -58,6 +63,7 @@ import { CMSPreviewPublishTab } from './tabs/CMSPreviewPublishTab';
 import { OfferEditorModal } from './OfferEditorModal';
 import { ServiceEditorModal } from './ServiceEditorModal';
 import { WorkItemEditorModal } from './WorkItemEditorModal';
+import { TeamMemberEditorModal } from './TeamMemberEditorModal';
 import { MediaUploadModal } from './MediaUploadModal';
 import { PublishConfirmModal } from './PublishConfirmModal';
 
@@ -87,6 +93,9 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
   const [workItems, setWorkItems] = useState<PublicSiteWorkItem[]>(
     loadPublicSiteWork
   );
+  const [teamMembers, setTeamMembers] = useState<PublicSiteTeamMember[]>(
+    loadPublicSiteTeamMembers
+  );
   const [offers, setOffers] = useState<PublicSiteOffer[]>(loadPublicSiteOffers);
   const [media, setMedia] = useState<PublicSiteMediaItem[]>(loadPublicSiteMedia);
   const [meta, setMeta] = useState<PublicSiteMeta>(loadPublicSiteMeta);
@@ -101,6 +110,9 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
   const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
   const [editingWorkItem, setEditingWorkItem] = useState<PublicSiteWorkItem | null>(null);
 
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [editingTeamMember, setEditingTeamMember] = useState<PublicSiteTeamMember | null>(null);
+
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
@@ -110,6 +122,7 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
     setDraftContent(loadDraftContent());
     setServices(loadPublicSiteServices());
     setWorkItems(loadPublicSiteWork());
+    setTeamMembers(loadPublicSiteTeamMembers());
     setOffers(loadPublicSiteOffers());
     setMedia(loadPublicSiteMedia());
     setMeta(loadPublicSiteMeta());
@@ -377,6 +390,86 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
     });
   };
 
+  const handleBulkUpdateWork = (updated: PublicSiteWorkItem[]) => {
+    setWorkItems(updated);
+    savePublicSiteWork(updated);
+  };
+
+  /* ======================================================================= */
+  /* TEAM MEMBERS HANDLERS                                                   */
+  /* ======================================================================= */
+
+  const handleOpenAddMember = () => {
+    setEditingTeamMember(null);
+    setIsTeamModalOpen(true);
+  };
+
+  const handleOpenEditMember = (member: PublicSiteTeamMember) => {
+    setEditingTeamMember(member);
+    setIsTeamModalOpen(true);
+  };
+
+  const handleSaveMember = (saved: PublicSiteTeamMember) => {
+    setTeamMembers((prev) => {
+      const exists = prev.some((m) => m.id === saved.id);
+      const next = exists
+        ? prev.map((m) => (m.id === saved.id ? saved : m))
+        : [...prev, saved];
+      savePublicSiteTeamMembers(next);
+      return next;
+    });
+  };
+
+  const handleDeleteMember = (memberId: string) => {
+    setTeamMembers((prev) => {
+      const next = prev.filter((m) => m.id !== memberId);
+      savePublicSiteTeamMembers(next);
+      return next;
+    });
+  };
+
+  const handleDuplicateMember = (member: PublicSiteTeamMember) => {
+    const duplicated: PublicSiteTeamMember = {
+      ...member,
+      id: `team-${Date.now()}`,
+      name: `${member.name} (Copy)`,
+      displayOrder: teamMembers.length + 1,
+    };
+    handleSaveMember(duplicated);
+  };
+
+  const handleToggleMemberVisibility = (memberId: string) => {
+    setTeamMembers((prev) => {
+      const next = prev.map((m) =>
+        m.id === memberId ? { ...m, isPublished: !m.isPublished } : m
+      );
+      savePublicSiteTeamMembers(next);
+      return next;
+    });
+  };
+
+  const handleToggleMemberFeatured = (memberId: string) => {
+    setTeamMembers((prev) => {
+      const next = prev.map((m) =>
+        m.id === memberId ? { ...m, isFeatured: !m.isFeatured } : m
+      );
+      savePublicSiteTeamMembers(next);
+      return next;
+    });
+  };
+
+  const handleReorderMember = (index: number, direction: 'up' | 'down') => {
+    setTeamMembers((prev) => {
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+      const copy = [...prev];
+      const item = copy.splice(index, 1)[0];
+      copy.splice(targetIndex, 0, item);
+      savePublicSiteTeamMembers(copy);
+      return copy;
+    });
+  };
+
   /* ======================================================================= */
   /* MEDIA HANDLERS                                                          */
   /* ======================================================================= */
@@ -406,6 +499,7 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
     { id: 'content', label: 'Page Content', icon: FileText },
     { id: 'services', label: 'Services', icon: Layers },
     { id: 'work', label: 'Portfolio Work', icon: Palette },
+    { id: 'team', label: 'Studio Team', icon: Users },
     { id: 'offers', label: 'Special Offers', icon: Sparkles },
     { id: 'media', label: 'Media Vault', icon: Upload },
     { id: 'navigation', label: 'Header Nav', icon: Navigation },
@@ -504,6 +598,20 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
           onToggleVisibility={handleToggleWorkVisibility}
           onToggleFeatured={handleToggleWorkFeatured}
           onReorder={handleReorderWork}
+          onBulkUpdate={handleBulkUpdateWork}
+        />
+      )}
+
+      {activeTab === 'team' && (
+        <CMSTeamTab
+          teamMembers={teamMembers}
+          onAddMember={handleOpenAddMember}
+          onEditMember={handleOpenEditMember}
+          onDeleteMember={handleDeleteMember}
+          onDuplicateMember={handleDuplicateMember}
+          onToggleVisibility={handleToggleMemberVisibility}
+          onToggleFeatured={handleToggleMemberFeatured}
+          onReorder={handleReorderMember}
         />
       )}
 
@@ -575,6 +683,13 @@ export const PublicSiteCMSView: React.FC<PublicSiteCMSViewProps> = ({
         workItem={editingWorkItem}
         projects={projects}
         onSave={handleSaveWork}
+      />
+
+      <TeamMemberEditorModal
+        isOpen={isTeamModalOpen}
+        onClose={() => setIsTeamModalOpen(false)}
+        member={editingTeamMember}
+        onSave={handleSaveMember}
       />
 
       <MediaUploadModal

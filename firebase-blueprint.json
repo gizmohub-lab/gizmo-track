@@ -46,6 +46,37 @@
         "submittedAt": { "type": "string" }
       },
       "required": ["id", "clientName", "email", "projectTitle", "requestStatus"]
+    },
+    "PublicSiteWork": {
+      "title": "PublicSiteWork",
+      "description": "Showcase portfolio and case study items displayed on the public site",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "clientName": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "isVisible": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "orderIndex": { "type": "number" }
+      },
+      "required": ["id", "title", "category"]
+    },
+    "PublicSiteTeamMember": {
+      "title": "PublicSiteTeamMember",
+      "description": "Studio team members displayed on the public about view",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "bio": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "displayOrder": { "type": "number" },
+        "isPublished": { "type": "boolean" }
+      },
+      "required": ["id", "name", "role", "bio"]
     }
   },
   "firestore": {
@@ -60,6 +91,14 @@
     "/projectRequests/{requestId}": {
       "schema": { "$ref": "#/entities/ProjectRequest" },
       "description": "Client commission requests collection"
+    },
+    "/publicSiteWork/{workId}": {
+      "schema": { "$ref": "#/entities/PublicSiteWork" },
+      "description": "Portfolio work items collection"
+    },
+    "/publicSiteTeam/{memberId}": {
+      "schema": { "$ref": "#/entities/PublicSiteTeamMember" },
+      "description": "Studio team members collection"
     }
   }
 }

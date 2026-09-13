@@ -36,6 +36,7 @@ export const PORTAL_STORAGE_KEYS = {
   PUBLIC_SITE_MEDIA: 'gizmo_public_site_media_v1',
   PUBLIC_SITE_SERVICES: 'gizmo_public_site_services_v1',
   PUBLIC_SITE_WORK: 'gizmo_public_site_work_v1',
+  PUBLIC_SITE_TEAM: 'gizmo_public_site_team_v1',
   PUBLIC_SITE_META: 'gizmo_public_site_meta_v1',
 } as const;
 

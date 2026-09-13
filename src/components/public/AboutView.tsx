@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Sparkles,
   Printer,
@@ -12,10 +12,15 @@ import {
   Layers,
   Award,
   Zap,
+  Star,
+  Globe,
+  Instagram,
+  Linkedin,
 } from 'lucide-react';
-import { AppRoute } from '../../types';
+import { AppRoute, PublicSiteTeamMember } from '../../types';
 import { GizmoLogo } from '../common/GizmoLogo';
 import { MagneticButton } from '../common/MagneticButton';
+import { loadPublicSiteTeamMembers } from '../../services/publicSiteCmsService';
 
 interface AboutViewProps {
   onNavigate: (route: AppRoute) => void;
@@ -26,31 +31,15 @@ export const AboutView: React.FC<AboutViewProps> = ({
   onNavigate,
   onOpenStartProject,
 }) => {
-  const team = [
-    {
-      name: 'Muhammed Shamveel',
-      role: 'Creative Director',
-      bio: 'Leading brand identity, typography systems, and print architecture for commercial entities across South India.',
-    },
-    {
-      name: 'Salih K.',
-      role: 'Motion & 3D Lead',
-      bio: 'Specialist in kinetic typography, 3D product stings, and high-impact social media campaign reels.',
-    },
-    {
-      name: 'Rashid V.',
-      role: 'Print & Production Lead',
-      bio: 'Master of large-format flex printing, CMYK color management, star flex media, and outdoor mounting durability.',
-    },
-    {
-      name: 'Fathima N.',
-      role: 'Visual Designer',
-      bio: 'Crafting logomarks, publication layouts, stationery suites, and digital presentation artboards.',
-    },
-  ];
+  const teamMembers = useMemo(() => {
+    const loaded = loadPublicSiteTeamMembers();
+    return loaded
+      .filter((m) => m.isPublished !== false)
+      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }, []);
 
   return (
-    <div className="bg-slate-50 text-zinc-900 min-h-screen py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="bg-slate-50 text-zinc-900 min-h-screen py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#EE1D45] selection:text-white">
       {/* Header */}
       <div className="max-w-3xl space-y-4 mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EE1D45]/10 text-[#EE1D45] text-xs font-bold">
@@ -139,16 +128,101 @@ export const AboutView: React.FC<AboutViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {team.map((member, idx) => (
+          {teamMembers.map((member) => (
             <div
-              key={idx}
-              className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-xs space-y-3"
+              key={member.id}
+              className="bg-white rounded-2xl p-6 border border-zinc-200/90 shadow-2xs hover:shadow-md transition flex flex-col justify-between group relative"
             >
               <div>
-                <h4 className="font-bold text-base text-zinc-900">{member.name}</h4>
-                <div className="text-xs font-semibold text-[#EE1D45] mt-0.5">{member.role}</div>
+                {/* Avatar with optional leadership badge */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="relative">
+                    {member.avatarUrl ? (
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-zinc-200 group-hover:border-[#EE1D45] transition bg-zinc-900 shadow-xs">
+                        <img
+                          src={member.avatarUrl}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-2xl bg-zinc-100 text-zinc-800 flex items-center justify-center font-black text-lg border border-zinc-200 group-hover:border-[#EE1D45] transition">
+                        {member.name
+                          ? member.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')
+                              .substring(0, 2)
+                              .toUpperCase()
+                          : 'GZ'}
+                      </div>
+                    )}
+
+                    {member.isFeatured && (
+                      <div
+                        className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-amber-400 text-black shadow-xs"
+                        title="Key Leadership"
+                      >
+                        <Star className="w-3 h-3 fill-current" />
+                      </div>
+                    )}
+                  </div>
+
+                  <span className="font-mono text-[10px] text-zinc-400 font-bold">
+                    #{member.displayOrder}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-base text-zinc-900 group-hover:text-zinc-950">
+                    {member.name}
+                  </h4>
+                  <div className="text-xs font-semibold text-[#EE1D45] mt-0.5">
+                    {member.role}
+                  </div>
+                </div>
+
+                <p className="text-xs text-zinc-600 leading-relaxed font-normal mt-3 line-clamp-4">
+                  {member.bio}
+                </p>
               </div>
-              <p className="text-xs text-zinc-600 leading-relaxed font-normal">{member.bio}</p>
+
+              {/* Social / Contact Links */}
+              {(member.whatsapp || member.email || member.portfolioUrl || member.instagram) && (
+                <div className="flex items-center gap-2.5 pt-4 mt-4 border-t border-zinc-100 text-zinc-400">
+                  {member.whatsapp && (
+                    <a
+                      href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Chat with ${member.name}`}
+                      className="hover:text-emerald-600 transition"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </a>
+                  )}
+                  {member.email && (
+                    <a
+                      href={`mailto:${member.email}`}
+                      title={`Email ${member.name}`}
+                      className="hover:text-zinc-900 transition"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </a>
+                  )}
+                  {member.portfolioUrl && (
+                    <a
+                      href={member.portfolioUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Portfolio"
+                      className="hover:text-[#EE1D45] transition"
+                    >
+                      <Globe className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

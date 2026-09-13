@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -9,6 +10,7 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 // "ai-studio-gizmoportalinvoi-a16b8b70-1ab4-4b6c-87f8-083e0e0fe360"
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 export { firebaseConfig };
 
 export enum OperationType {

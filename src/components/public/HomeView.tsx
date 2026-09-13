@@ -348,17 +348,35 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between"
               >
                 <div
-                  className="aspect-[16/10] p-6 flex flex-col justify-between relative"
+                  className="aspect-[16/10] p-6 flex flex-col justify-between relative overflow-hidden"
                   style={{
-                    background: `linear-gradient(135deg, ${item.gradientFrom || '#27272a'}, ${
-                      item.gradientTo || '#09090b'
-                    })`,
+                    background: item.imageUrl
+                      ? '#09090b'
+                      : `linear-gradient(135deg, ${item.gradientFrom || '#27272a'}, ${
+                          item.gradientTo || '#09090b'
+                        })`,
                   }}
                 >
-                  <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/10 backdrop-blur-md text-zinc-300">
-                    {item.category}
-                  </span>
-                  <div>
+                  {item.imageUrl && (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.coverImageAlt || item.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+
+                  <div className="relative z-10 flex items-center justify-between">
+                    <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/20 backdrop-blur-md text-white">
+                      {item.category}
+                    </span>
+                    {item.workImages && item.workImages.length > 0 && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-black/60 text-white border border-white/10">
+                        +{item.workImages.length} photos
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative z-10">
                     <div className="text-xs text-[#EE1D45] font-bold">{item.clientName}</div>
                     <h3 className="text-xl font-bold text-white mt-1">{item.title}</h3>
                   </div>

@@ -16,11 +16,34 @@ import {
   Check,
 } from 'lucide-react';
 import { AppRoute } from '../../types';
+import {
+  loadPublicSiteServices,
+  loadPublicSiteOffers,
+  getOfferComputedStatus,
+} from '../../services/publicSiteCmsService';
+import { PublicOfferCard } from './PublicOfferCard';
 
 interface ServicesViewProps {
   onNavigate: (route: AppRoute) => void;
   onOpenStartProject: (initialService?: string) => void;
 }
+
+const getIconComponent = (iconName?: string) => {
+  switch (iconName) {
+    case 'Palette':
+      return Palette;
+    case 'Video':
+      return Video;
+    case 'Printer':
+      return Printer;
+    case 'Globe':
+      return Globe;
+    case 'Layers':
+      return Layers;
+    default:
+      return Sparkles;
+  }
+};
 
 export const ServicesView: React.FC<ServicesViewProps> = ({
   onNavigate,
@@ -28,77 +51,94 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
 }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  // 4 Core Reference Services (Two-column layout)
-  const coreServices = [
-    {
-      id: 'brand-identity',
-      title: 'Brand & Visual Identity',
-      category: 'Brand Systems',
-      icon: Palette,
-      turnaround: '3–5 Days Average',
-      desc: 'Complete identity systems, vector logomarks, typography rules, color formulas, and stationery suites designed for lasting distinction.',
-      deliverables: [
-        'Vector Master Formats (AI, EPS, SVG, PDF)',
-        'Comprehensive Brand Guidelines Manual',
-        'Color Hierarchy (Pantone, CMYK, RGB, HEX)',
-        'Corporate Stationery Suite & Business Cards',
-        'Social Media Profile & Cover Templates',
-      ],
-      bestFor: 'Startups, corporate rebrands, institutional identities & retail product lines.',
-      serviceKey: 'Brand Identity',
-    },
-    {
-      id: 'motion-video',
-      title: 'Motion & Video Graphics',
-      category: 'Motion & 3D',
-      icon: Video,
-      turnaround: '48–72 Hours Average',
-      desc: 'High-octane 3D animated logo stings, 60 FPS kinetic typography reels, product launch teasers, and broadcast-quality social campaigns.',
-      deliverables: [
-        '60 FPS Ultra-HD 4K & 1080p Master Files',
-        '9:16 Vertical Instagram Reels & TikTok Formats',
-        'Synchronized Sound Effects & Audio Mastering',
-        'Alpha Channel Transparent Overlay Assets',
-        'Storyboard & Visual Narrative Progression',
-      ],
-      bestFor: 'Product launches, event promotions, Instagram viral reels & brand announcements.',
-      serviceKey: 'Motion Graphics',
-    },
-    {
-      id: 'flex-print',
-      title: 'Flex & Large-Format Production',
-      category: 'In-House Print Facility',
-      icon: Printer,
-      turnaround: 'Same Day / 24h Rush Available',
-      desc: 'Large format outdoor hoardings, backlit signboards, exhibition roll-ups, and commercial event prints manufactured on our in-house solvent presses.',
-      deliverables: [
-        'Direct Output from In-House Mimaki Presses',
-        'Star Flex & Heavy GSM Backlit Media',
-        'UV Protective Weather-Shield Coating',
-        'Reinforced Grommets & Mounting Margins',
-        'Expedited Kerala-wide Logistics & Delivery',
-      ],
-      bestFor: 'Highway hoardings, retail shopfronts, political/cultural conventions & outdoor ads.',
-      serviceKey: 'Large Format Flex Print',
-    },
-    {
-      id: 'digital-ui',
-      title: 'Digital & Product UI',
-      category: 'Digital Architecture',
-      icon: Globe,
-      turnaround: '1–2 Weeks Average',
-      desc: 'Modern conversion-optimized landing interfaces, interactive client dashboards, and responsive web systems with clean aesthetics.',
-      deliverables: [
-        'Responsive Figma Design System & Tokens',
-        'Clickable Interactive Prototypes',
-        'Production-Ready Component Specs',
-        'Mobile-First Touch Optimized Viewports',
-        'High-Resolution SVG Web Graphics',
-      ],
-      bestFor: 'SaaS platforms, web agencies, modern portfolio sites & digital startups.',
-      serviceKey: 'Website & Digital',
-    },
-  ];
+  // Load CMS data
+  const allServices = loadPublicSiteServices().filter((s) => s.isVisible);
+  const allOffers = loadPublicSiteOffers();
+  const servicesOffers = allOffers.filter(
+    (o) =>
+      o.isActive &&
+      getOfferComputedStatus(o) === 'Active' &&
+      (o.displayLocations.includes('Services') || o.displayLocations.includes('Banner'))
+  );
+
+  // Default fallback if services list empty
+  const servicesToRender =
+    allServices.length > 0
+      ? allServices
+      : [
+          {
+            id: 'brand-identity',
+            title: 'Brand & Visual Identity',
+            category: 'Brand Systems',
+            iconName: 'Palette',
+            turnaround: '3–5 Days Average',
+            desc: 'Complete identity systems, vector logomarks, typography rules, color formulas, and stationery suites designed for lasting distinction.',
+            deliverables: [
+              'Vector Master Formats (AI, EPS, SVG, PDF)',
+              'Comprehensive Brand Guidelines Manual',
+              'Color Hierarchy (Pantone, CMYK, RGB, HEX)',
+              'Corporate Stationery Suite & Business Cards',
+              'Social Media Profile & Cover Templates',
+            ],
+            bestFor:
+              'Startups, corporate rebrands, institutional identities & retail product lines.',
+            serviceKey: 'Brand Identity',
+          },
+          {
+            id: 'motion-video',
+            title: 'Motion & Video Graphics',
+            category: 'Motion & 3D',
+            iconName: 'Video',
+            turnaround: '48–72 Hours Average',
+            desc: 'High-octane 3D animated logo stings, 60 FPS kinetic typography reels, product launch teasers, and broadcast-quality social campaigns.',
+            deliverables: [
+              '60 FPS Ultra-HD 4K & 1080p Master Files',
+              '9:16 Vertical Instagram Reels & TikTok Formats',
+              'Synchronized Sound Effects & Audio Mastering',
+              'Alpha Channel Transparent Overlay Assets',
+              'Storyboard & Visual Narrative Progression',
+            ],
+            bestFor:
+              'Product launches, event promotions, Instagram viral reels & brand announcements.',
+            serviceKey: 'Motion Graphics',
+          },
+          {
+            id: 'flex-print',
+            title: 'Flex & Large-Format Production',
+            category: 'In-House Print Facility',
+            iconName: 'Printer',
+            turnaround: 'Same Day / 24h Rush Available',
+            desc: 'Large format outdoor hoardings, backlit signboards, exhibition roll-ups, and commercial event prints manufactured on our in-house solvent presses.',
+            deliverables: [
+              'Direct Output from In-House Mimaki Presses',
+              'Star Flex & Heavy GSM Backlit Media',
+              'UV Protective Weather-Shield Coating',
+              'Reinforced Grommets & Mounting Margins',
+              'Expedited Kerala-wide Logistics & Delivery',
+            ],
+            bestFor:
+              'Highway hoardings, retail shopfronts, political/cultural conventions & outdoor ads.',
+            serviceKey: 'Large Format Flex Print',
+          },
+          {
+            id: 'digital-ui',
+            title: 'Digital & Product UI',
+            category: 'Digital Architecture',
+            iconName: 'Globe',
+            turnaround: '1–2 Weeks Average',
+            desc: 'Modern conversion-optimized landing interfaces, interactive client dashboards, and responsive web systems with clean aesthetics.',
+            deliverables: [
+              'Responsive Figma Design System & Tokens',
+              'Clickable Interactive Prototypes',
+              'Production-Ready Component Specs',
+              'Mobile-First Touch Optimized Viewports',
+              'High-Resolution SVG Web Graphics',
+            ],
+            bestFor:
+              'SaaS platforms, web agencies, modern portfolio sites & digital startups.',
+            serviceKey: 'Website & Digital',
+          },
+        ];
 
   // 4-Stage Rapid Delivery Process
   const workflowStages = [
@@ -165,13 +205,40 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
+      {/* SPECIAL OFFERS FOR SERVICES (if active)                                   */}
+      {/* ========================================================================= */}
+      {servicesOffers.length > 0 && (
+        <section className="py-8 bg-zinc-50 border-b border-zinc-200/80">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#EE1D45] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                Featured Promotional Rates
+              </span>
+              <span className="text-xs text-zinc-500">Apply instantly upon booking</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {servicesOffers.map((offer) => (
+                <PublicOfferCard
+                  key={offer.id}
+                  offer={offer}
+                  variant="compact"
+                  onClaimOffer={() => onOpenStartProject(offer.category || offer.title)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================================= */}
       {/* 2. CORE SERVICES GRID (2-Column Reference Layout)                         */}
       {/* ========================================================================= */}
       <section className="py-16 sm:py-20 bg-zinc-50/60 border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {coreServices.map((srv) => {
-              const Icon = srv.icon;
+            {servicesToRender.map((srv) => {
+              const Icon = getIconComponent(srv.iconName);
               return (
                 <div
                   key={srv.id}
@@ -183,10 +250,12 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                       <div className="w-14 h-14 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-950 group-hover:bg-[#EE1D45] group-hover:text-white transition-colors">
                         <Icon className="w-7 h-7" />
                       </div>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-zinc-100 text-zinc-700 border border-zinc-200/80">
-                        <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                        <span>{srv.turnaround}</span>
-                      </span>
+                      {srv.turnaround && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-zinc-100 text-zinc-700 border border-zinc-200/80">
+                          <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                          <span>{srv.turnaround}</span>
+                        </span>
+                      )}
                     </div>
 
                     {/* Title & Description */}
@@ -200,40 +269,47 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                     </div>
 
                     {/* Included Deliverables */}
-                    <div className="space-y-3 pt-2">
-                      <div className="text-xs font-extrabold text-zinc-400 uppercase tracking-wider">
-                        INCLUDED DELIVERABLES
+                    {srv.deliverables && srv.deliverables.length > 0 && (
+                      <div className="space-y-3 pt-2">
+                        <div className="text-xs font-extrabold text-zinc-400 uppercase tracking-wider">
+                          INCLUDED DELIVERABLES
+                        </div>
+                        <ul className="space-y-2">
+                          {srv.deliverables.map((item, idx) => (
+                            <li
+                              key={idx}
+                              className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-700 font-medium"
+                            >
+                              <Check className="w-4 h-4 text-[#EE1D45] shrink-0 mt-0.5" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="space-y-2">
-                        {srv.deliverables.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-700 font-medium">
-                            <Check className="w-4 h-4 text-[#EE1D45] shrink-0 mt-0.5" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    )}
 
                     {/* Best For Tag */}
-                    <div className="pt-3 border-t border-zinc-100 text-xs text-zinc-500">
-                      <span className="font-bold text-zinc-700">Best for: </span>
-                      <span>{srv.bestFor}</span>
-                    </div>
+                    {srv.bestFor && (
+                      <div className="pt-3 border-t border-zinc-100 text-xs text-zinc-500">
+                        <span className="font-bold text-zinc-700">Best for: </span>
+                        <span>{srv.bestFor}</span>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Bottom Action */}
+                  {/* Footer Actions: [ Request This Scope → ] */}
                   <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-400">
-                      {srv.category}
-                    </span>
-
                     <button
-                      onClick={() => onOpenStartProject(srv.serviceKey)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs font-bold transition-all shadow-xs hover:shadow-md cursor-pointer"
+                      onClick={() => onOpenStartProject(srv.serviceKey || srv.title)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] text-white text-xs sm:text-sm font-bold shadow-xs hover:-translate-y-0.5 transition-all cursor-pointer"
                     >
-                      <span>Book Brief</span>
+                      <span>Request This Scope</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
+
+                    <span className="text-xs font-semibold text-zinc-400">
+                      Direct Production
+                    </span>
                   </div>
                 </div>
               );
@@ -243,36 +319,33 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. STUDIO WORKFLOW (Dark 4-Stage Section)                                  */}
+      {/* 3. FOUR-STAGE PRODUCTION WORKFLOW                                         */}
       {/* ========================================================================= */}
-      <section className="py-20 sm:py-24 bg-zinc-950 text-white border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EE1D45]/20 text-[#EE1D45] text-xs font-bold uppercase tracking-wider">
-              <span>STUDIO WORKFLOW</span>
+      <section className="py-16 sm:py-24 bg-white border-b border-zinc-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EE1D45]/10 text-[#EE1D45] text-xs font-bold uppercase tracking-wider">
+              <span>HOW WE WORK</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              4-Stage Rapid Delivery Process
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-950 tracking-tight">
+              Rapid, Transparent 4-Stage Execution
             </h2>
-            <p className="text-sm sm:text-base text-zinc-400">
-              Clear timelines, direct designer communication, and rapid turnaround cycles.
+            <p className="text-sm sm:text-base text-zinc-600">
+              Clear milestones, direct senior communication, and live production tracking.
             </p>
           </div>
 
-          {/* 4 Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {workflowStages.map((stage) => (
               <div
                 key={stage.step}
-                className="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3 hover:border-zinc-700 transition-colors"
+                className="bg-zinc-50 rounded-2xl p-6 border border-zinc-200/80 space-y-3"
               >
-                <div className="text-3xl font-black text-[#EE1D45] tracking-tight">
+                <div className="w-10 h-10 rounded-xl bg-zinc-950 text-white font-mono font-bold text-sm flex items-center justify-center">
                   {stage.step}
                 </div>
-                <h3 className="text-lg font-bold text-white">
-                  {stage.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                <h3 className="text-lg font-bold text-zinc-950">{stage.title}</h3>
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
                   {stage.desc}
                 </p>
               </div>
@@ -282,39 +355,42 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. FAQS SECTION                                                           */}
+      {/* 4. FAQ ACCORDION                                                          */}
       {/* ========================================================================= */}
-      <section className="py-16 sm:py-20 bg-white border-b border-zinc-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="space-y-2">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#EE1D45]">
-              Common Inquiries
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-950">
+      <section className="py-16 sm:py-24 bg-zinc-50/50 border-b border-zinc-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-extrabold text-zinc-950 tracking-tight">
               Frequently Asked Questions
             </h2>
+            <p className="text-sm text-zinc-600">
+              Clear answers on turnaround, source files, and our production process.
+            </p>
           </div>
 
-          <div className="divide-y divide-zinc-200 bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-2xs">
+          <div className="space-y-3">
             {faqs.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div key={idx} className="p-5">
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl border border-zinc-200/90 overflow-hidden shadow-2xs"
+                >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between text-left gap-4 font-bold text-zinc-900 hover:text-[#EE1D45] transition-colors text-sm sm:text-base cursor-pointer"
+                    className="w-full px-6 py-4.5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-zinc-950 hover:text-[#EE1D45] transition-colors cursor-pointer"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`w-5 h-5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-[#EE1D45]' : ''
+                      className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180 text-[#EE1D45]' : 'text-zinc-400'
                       }`}
                     />
                   </button>
                   {isOpen && (
-                    <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed mt-3 pr-6">
+                    <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-zinc-600 leading-relaxed border-t border-zinc-100">
                       {faq.a}
-                    </p>
+                    </div>
                   )}
                 </div>
               );
@@ -324,39 +400,36 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. BOTTOM CTA CARD                                                        */}
+      {/* 5. START A PROJECT CTA                                                    */}
       {/* ========================================================================= */}
-      <section className="py-16 sm:py-20 bg-zinc-50/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-8 sm:p-12 rounded-3xl bg-zinc-950 text-white text-center space-y-4 max-w-4xl mx-auto border border-zinc-800">
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Ready to Commission a Project?
-            </h2>
-            <p className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto">
-              Start in 2 minutes. We will review your brief and supply a comprehensive timeline and quote.
-            </p>
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-              <button
-                onClick={() => onOpenStartProject()}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] text-white text-sm font-bold shadow-lg shadow-[#EE1D45]/30 hover:shadow-xl transition-all cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Start a Project</span>
-              </button>
-              <a
-                href="https://wa.me/919845879017"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white border border-emerald-500 text-emerald-600 font-bold text-sm hover:bg-emerald-50 transition-all cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4 fill-emerald-500/20" />
-                <span>WhatsApp Consultation</span>
-              </a>
-            </div>
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-black text-zinc-950 tracking-tight">
+            Have a project in mind? Let's build it together.
+          </h2>
+          <p className="text-sm sm:text-base text-zinc-600 max-w-xl mx-auto">
+            Direct pricing, no agency fluff, and high-precision production output.
+          </p>
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <button
+              onClick={() => onOpenStartProject()}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] text-white text-sm font-bold shadow-lg shadow-[#EE1D45]/20 hover:-translate-y-0.5 transition-all cursor-pointer"
+            >
+              <span>Start a Project</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <a
+              href="https://wa.me/919845879017"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white border border-zinc-300 hover:border-zinc-400 text-zinc-800 text-sm font-bold hover:-translate-y-0.5 transition-all cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4 text-emerald-600" />
+              <span>WhatsApp Us</span>
+            </a>
           </div>
         </div>
       </section>
     </div>
   );
 };
-

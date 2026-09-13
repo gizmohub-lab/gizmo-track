@@ -29,6 +29,7 @@ import { NotificationPermissionBanner } from './components/notifications/Notific
 import { NotificationSettingsSection } from './components/notifications/NotificationSettingsSection';
 import { NotesView } from './components/portal/notes/NotesView';
 import { QuickNoteModal } from './components/portal/notes/QuickNoteModal';
+import { PublicSiteCMSView } from './components/admin/public-site/PublicSiteCMSView';
 import {
   loadProjectRequests,
   saveProjectRequests,
@@ -169,6 +170,13 @@ function pathToRoute(path: string): AppRoute {
   }
   if (cleanPath.includes('/admin/invoices') || cleanPath.includes('/admin/invoice')) return 'admin-invoices';
   if (cleanPath.includes('/admin/settings')) return 'admin-settings';
+  if (
+    cleanPath.includes('/admin/public-site') ||
+    cleanPath.includes('/admin/public') ||
+    cleanPath.includes('/admin/cms')
+  ) {
+    return 'admin-public-site';
+  }
   if (cleanPath.includes('/admin')) return 'admin-dashboard';
   if (cleanPath.includes('/services')) return 'services';
   if (cleanPath.includes('/work')) return 'work';
@@ -223,6 +231,9 @@ function routeToPath(route: AppRoute): string {
       break;
     case 'admin-settings':
       subPath = '/admin/settings';
+      break;
+    case 'admin-public-site':
+      subPath = '/admin/public-site';
       break;
     default:
       subPath = '/';
@@ -1925,6 +1936,17 @@ export default function App() {
                 onSaveSettings={setNotificationSettings}
               />
             </div>
+          )}
+
+          {/* TAB 7: PUBLIC SITE CMS */}
+          {currentRoute === 'admin-public-site' && (
+            <PublicSiteCMSView
+              onNavigate={navigate}
+              projects={projects}
+              onOpenPreviewMode={() => {
+                navigate('home');
+              }}
+            />
           )}
         </AdminLayout>
       ) : (

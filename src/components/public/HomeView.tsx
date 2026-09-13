@@ -20,8 +20,16 @@ import {
   Globe,
   Award,
 } from 'lucide-react';
-import { AppRoute, Project, Client, LocalWork } from '../../types';
+import { AppRoute, Project, Client, LocalWork, PublicSiteContentData, PublicSiteOffer, PublicSiteService, PublicSiteWorkItem } from '../../types';
 import { GizmoLogo } from '../common/GizmoLogo';
+import {
+  loadPublishedContent,
+  loadPublicSiteOffers,
+  loadPublicSiteServices,
+  loadPublicSiteWork,
+  getOfferComputedStatus,
+} from '../../services/publicSiteCmsService';
+import { PublicOfferCard } from './PublicOfferCard';
 
 interface HomeViewProps {
   onNavigate: (route: AppRoute) => void;
@@ -30,7 +38,28 @@ interface HomeViewProps {
   projects?: Project[];
   clients?: Client[];
   localWorks?: LocalWork[];
+  cmsContent?: PublicSiteContentData;
+  cmsOffers?: PublicSiteOffer[];
+  cmsServices?: PublicSiteService[];
+  cmsWorkItems?: PublicSiteWorkItem[];
 }
+
+const getIconComponent = (iconName?: string) => {
+  switch (iconName) {
+    case 'Palette':
+      return Palette;
+    case 'Video':
+      return Video;
+    case 'Printer':
+      return Printer;
+    case 'Globe':
+      return Globe;
+    case 'Layers':
+      return Layers;
+    default:
+      return Sparkles;
+  }
+};
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onNavigate,
@@ -39,49 +68,41 @@ export const HomeView: React.FC<HomeViewProps> = ({
   projects = [],
   clients = [],
   localWorks = [],
+  cmsContent: propContent,
+  cmsOffers: propOffers,
+  cmsServices: propServices,
+  cmsWorkItems: propWorkItems,
 }) => {
-  // 4 Core Disciplines from Reference
-  const disciplines = [
-    {
-      id: 'brand',
-      title: 'Brand & Visual Identity',
-      category: 'Brand Systems',
-      icon: Palette,
-      desc: 'Vector logomarks, typography manuals, brand guidelines, stationery & complete institutional brand architecture.',
-      deliverables: ['Vector AI/SVG', 'Typography Specs', 'Brand Guidelines PDF'],
-      serviceKey: 'Brand Identity',
-    },
-    {
-      id: 'motion',
-      title: 'Motion & Video Graphics',
-      category: 'Motion & 3D',
-      icon: Video,
-      desc: 'Kinetic social reels, 3D launch teasers, logo stings, promotional video edits & high-energy event trailers.',
-      deliverables: ['60 FPS 4K/1080p', '9:16 Vertical Reels', 'Sound Design Synced'],
-      serviceKey: 'Motion Graphics',
-    },
-    {
-      id: 'flex',
-      title: 'Flex & Print Production',
-      category: 'In-House Print',
-      icon: Printer,
-      desc: '50ft highway flex hoardings, star backlit signboards, event roll-ups, vinyl stickers & solvent UV press output.',
-      deliverables: ['In-House Mimaki Presses', 'UV Weather Shield', 'Installation Ready'],
-      serviceKey: 'Large Format Flex Print',
-    },
-    {
-      id: 'digital',
-      title: 'Digital & Web Portals',
-      category: 'Digital & UI',
-      icon: Globe,
-      desc: 'High-conversion landing interfaces, client workspaces, custom web applications & digital visual assets.',
-      deliverables: ['Responsive Web UI', 'Interactive Portals', 'Optimized Assets'],
-      serviceKey: 'Website & Digital',
-    },
-  ];
+  // Load CMS Data safely
+  const cmsContent = propContent || loadPublishedContent();
+  const allOffers = propOffers || loadPublicSiteOffers();
+  const allServices = propServices || loadPublicSiteServices();
+  const allWork = propWorkItems || loadPublicSiteWork();
+
+  // Active home offers
+  const activeOffers = allOffers.filter((offer) => {
+    if (!offer.isActive) return false;
+    const computed = getOfferComputedStatus(offer);
+    const inHome =
+      offer.displayLocations.includes('home') ||
+      offer.displayLocations.includes('banner') ||
+      offer.displayLocations.length === 0;
+    return computed === 'Active' && inHome;
+  });
+
+  // Services visible on public site
+  const visibleServices = allServices.filter((s) => s.isVisible);
+  const featuredServices = visibleServices.filter((s) => s.isFeatured);
+  const displayServices = featuredServices.length > 0 ? featuredServices : visibleServices;
+
+  // Curated work items
+  const visibleWork = allWork.filter((w) => w.isVisible && w.isFeatured);
 
   // Dynamic calculations based on existing live database records
-  const totalDelivered = Math.max(450, projects.filter((p) => p.status === 'Completed').length + localWorks.length + 450);
+  const totalDelivered = Math.max(
+    450,
+    projects.filter((p) => p.status === 'Completed').length + localWorks.length + 450
+  );
 
   return (
     <div className="bg-white text-zinc-900 min-h-screen selection:bg-[#EE1D45] selection:text-white">
@@ -100,28 +121,30 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {/* Hero Pill Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-100 border border-zinc-200/90 text-zinc-800 text-xs font-semibold tracking-wide shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-[#EE1D45] animate-pulse" />
-              <span>Gizmo Design Creative Studio &amp; Production Facility</span>
+              <span>{cmsContent.hero.badgeText || 'Gizmo Design Creative Studio & Production Facility'}</span>
             </div>
 
             {/* Hero Heading with Pink/Red Emphasis */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-zinc-950 leading-[1.08]">
-              Precision Design,{' '}
-              <span className="text-[#EE1D45] block sm:inline">Motion Graphics &amp; Flex Production.</span>
+              {cmsContent.hero.headlineLine1}{' '}
+              <span className="text-[#EE1D45] block sm:inline">
+                {cmsContent.hero.headlineHighlight}
+              </span>
             </h1>
 
             {/* Hero Description */}
             <p className="text-base sm:text-lg lg:text-xl text-zinc-600 font-normal leading-relaxed max-w-2xl mx-auto">
-              We craft striking brand identities, kinetic social motion campaigns, and print-ready large format flex production for forward-thinking businesses.
+              {cmsContent.hero.description}
             </p>
 
-            {/* Hero Buttons: [ Start a Project → ] [ Explore Selected Work → ] [ Client Portal ] */}
+            {/* Hero Buttons */}
             <div className="pt-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <button
                 id="hero-start-project-btn"
                 onClick={() => onOpenStartProject()}
                 className="group inline-flex items-center gap-2.5 px-7 py-3.5 sm:py-4 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] active:bg-[#B80D30] text-white text-sm sm:text-base font-bold shadow-lg shadow-[#EE1D45]/20 hover:shadow-xl hover:shadow-[#EE1D45]/30 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
               >
-                <span>Start a Project</span>
+                <span>{cmsContent.hero.primaryCtaText || 'Start a Project'}</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
               </button>
 
@@ -129,7 +152,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => onNavigate('work')}
                 className="group inline-flex items-center gap-2 px-6 py-3.5 sm:py-4 rounded-full bg-zinc-100 hover:bg-zinc-200/90 text-zinc-800 text-sm sm:text-base font-semibold border border-zinc-200 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
               >
-                <span>Explore Selected Work</span>
+                <span>{cmsContent.hero.secondaryCtaText || 'Explore Selected Work'}</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
               </button>
 
@@ -137,7 +160,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => onNavigate('my-projects')}
                 className="inline-flex items-center gap-2 px-5 py-3.5 sm:py-4 rounded-full bg-white hover:bg-zinc-50 text-zinc-800 text-sm sm:text-base font-semibold border border-zinc-300 hover:border-zinc-400 hover:-translate-y-0.5 transition-all duration-150 shadow-2xs cursor-pointer"
               >
-                <span>Client Portal</span>
+                <span>{cmsContent.hero.tertiaryCtaText || 'Client Portal'}</span>
                 {activeProjectsCount > 0 && (
                   <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-[#EE1D45]/10 text-[#EE1D45]">
                     {activeProjectsCount}
@@ -150,56 +173,74 @@ export const HomeView: React.FC<HomeViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. HOME STATISTICS (4 Cards from Reference)                                */}
+      {/* 2. PROMOTIONAL OFFERS & HIGHLIGHTS SECTION                                 */}
+      {/* ========================================================================= */}
+      {activeOffers.length > 0 && (
+        <section className="py-12 bg-zinc-50/80 border-b border-zinc-200/80">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#EE1D45] text-xs font-bold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>SPECIAL PROMOTIONS &amp; PRODUCTION OFFERS</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 mt-1">
+                  Active Promotional Highlights
+                </h2>
+              </div>
+              <span className="text-xs text-zinc-500 font-medium">
+                Verified turnarounds and limited discounted slots
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {activeOffers.map((offer) => (
+                <PublicOfferCard
+                  key={offer.id}
+                  offer={offer}
+                  onClaimOffer={() => onOpenStartProject(offer.category || offer.title)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 3. HOME STATISTICS (Managed via CMS with DB Sync)                         */}
       {/* ========================================================================= */}
       <section className="py-12 sm:py-16 bg-white border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {/* Stat 1 */}
-            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
-                {totalDelivered}+
-              </div>
-              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
-                Creative Works Delivered
-              </div>
-            </div>
+            {cmsContent.stats.map((stat, idx) => {
+              // If it's the first stat representing works delivered, ensure it reflects live records
+              const displayVal =
+                idx === 0 && stat.value.includes('+') ? `${totalDelivered}+` : stat.value;
 
-            {/* Stat 2 */}
-            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#EE1D45] tracking-tight">
-                24–48h
-              </div>
-              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
-                Turnaround on Posters
-              </div>
-            </div>
-
-            {/* Stat 3 */}
-            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
-                100%
-              </div>
-              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
-                In-House Flex Facility
-              </div>
-            </div>
-
-            {/* Stat 4 */}
-            <div className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
-                99.4%
-              </div>
-              <div className="text-xs sm:text-sm font-semibold text-zinc-600">
-                On-Time Client Satisfaction
-              </div>
-            </div>
+              return (
+                <div
+                  key={stat.id}
+                  className="p-6 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 space-y-1"
+                >
+                  <div
+                    className={`text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight ${
+                      stat.isHighlighted ? 'text-[#EE1D45]' : 'text-zinc-950'
+                    }`}
+                  >
+                    {displayVal}
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-zinc-600">
+                    {stat.label}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. DISCIPLINES & CRAFT (4 Core Reference Cards)                           */}
+      {/* 4. DISCIPLINES & CRAFT (Dynamic from CMS)                                 */}
       {/* ========================================================================= */}
       <section className="py-20 sm:py-24 bg-white border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,10 +256,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
           </div>
 
-          {/* 4 Disciplines Grid */}
+          {/* Services Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {disciplines.map((item) => {
-              const Icon = item.icon;
+            {displayServices.slice(0, 4).map((item) => {
+              const Icon = getIconComponent(item.iconName);
               return (
                 <div
                   key={item.id}
@@ -237,16 +278,34 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         {item.desc}
                       </p>
                     </div>
+
+                    {item.deliverables && item.deliverables.length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {item.deliverables.slice(0, 3).map((d, dIdx) => (
+                          <span
+                            key={dIdx}
+                            className="px-2 py-0.5 rounded bg-zinc-100 text-[10px] font-medium text-zinc-600"
+                          >
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center justify-between">
                     <button
-                      onClick={() => onOpenStartProject(item.serviceKey)}
+                      onClick={() => onOpenStartProject(item.serviceKey || item.title)}
                       className="text-xs font-bold text-[#EE1D45] hover:text-[#D8143C] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform cursor-pointer"
                     >
                       <span>Request Scope</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </button>
+                    {item.turnaround && (
+                      <span className="text-[10px] font-mono text-zinc-400">
+                        {item.turnaround}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -256,7 +315,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. CURATED WORK (Dark Section from Reference)                             */}
+      {/* 5. CURATED WORK (Dynamic from CMS)                                        */}
       {/* ========================================================================= */}
       <section className="py-20 sm:py-24 bg-zinc-950 text-white border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,92 +342,94 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Highlight 1: Darul Hasaniyyah */}
-            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between">
-              <div className="aspect-[16/10] bg-gradient-to-br from-zinc-800 to-zinc-950 p-6 flex flex-col justify-between relative">
-                <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/10 backdrop-blur-md text-zinc-300">
-                  Brand &amp; Identity
-                </span>
-                <div>
-                  <div className="text-xs text-[#EE1D45] font-bold">Darul Hasaniyyah Academy</div>
-                  <h3 className="text-xl font-bold text-white mt-1">Institutional Visual Identity</h3>
+            {visibleWork.slice(0, 3).map((item) => (
+              <div
+                key={item.id}
+                className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between"
+              >
+                <div
+                  className="aspect-[16/10] p-6 flex flex-col justify-between relative"
+                  style={{
+                    background: `linear-gradient(135deg, ${item.gradientFrom || '#27272a'}, ${
+                      item.gradientTo || '#09090b'
+                    })`,
+                  }}
+                >
+                  <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/10 backdrop-blur-md text-zinc-300">
+                    {item.category}
+                  </span>
+                  <div>
+                    <div className="text-xs text-[#EE1D45] font-bold">{item.clientName}</div>
+                    <h3 className="text-xl font-bold text-white mt-1">{item.title}</h3>
+                  </div>
+                </div>
+                <div className="p-6 space-y-4">
+                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                    {item.desc}
+                  </p>
+                  <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
+                    <span className="text-zinc-500 font-medium">
+                      {item.badgeText || 'Gizmo Production'} · {item.year || '2026'}
+                    </span>
+                    <button
+                      onClick={() => onOpenStartProject(item.category)}
+                      className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
+                    >
+                      Request Similar →
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                  Comprehensive bilingual identity system, publication grids, ceremonial stationery, and campus signage.
-                </p>
-                <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
-                  <span className="text-zinc-500 font-medium">Gizmo Production · 2026</span>
-                  <button
-                    onClick={() => onOpenStartProject('Brand Identity')}
-                    className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
-                  >
-                    Request Similar →
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Highlight 2: Apex Realty Launch */}
-            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between">
-              <div className="aspect-[16/10] bg-gradient-to-br from-zinc-800 to-zinc-950 p-6 flex flex-col justify-between relative">
-                <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-[#EE1D45]/80 backdrop-blur-md text-white">
-                  Large Format Flex
-                </span>
-                <div>
-                  <div className="text-xs text-[#EE1D45] font-bold">Apex Realty Launch</div>
-                  <h3 className="text-xl font-bold text-white mt-1">Highway Grand Hoarding</h3>
-                </div>
-              </div>
-              <div className="p-6 space-y-4">
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                  50ft roadside front-lit flex hoarding with UV weather-shielding produced in-house on solvent presses.
-                </p>
-                <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
-                  <span className="text-zinc-500 font-medium">In-House Flex · 2026</span>
-                  <button
-                    onClick={() => onOpenStartProject('Large Format Flex Print')}
-                    className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
-                  >
-                    Request Similar →
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Highlight 3: 3D Kinetic Launch Teaser */}
-            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group hover:border-zinc-700 transition-all duration-200 flex flex-col justify-between">
-              <div className="aspect-[16/10] bg-gradient-to-br from-zinc-800 to-zinc-950 p-6 flex flex-col justify-between relative">
-                <span className="self-start px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/10 backdrop-blur-md text-zinc-300">
-                  Motion &amp; Video
-                </span>
-                <div>
-                  <div className="text-xs text-[#EE1D45] font-bold">TechNova Global</div>
-                  <h3 className="text-xl font-bold text-white mt-1">3D Kinetic Launch Teaser</h3>
-                </div>
-              </div>
-              <div className="p-6 space-y-4">
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                  60 FPS 3D animated logo reveal, dynamic typography, and high-energy social campaign video reel.
-                </p>
-                <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
-                  <span className="text-zinc-500 font-medium">Motion Studio · 2026</span>
-                  <button
-                    onClick={() => onOpenStartProject('Motion Graphics')}
-                    className="font-bold text-[#EE1D45] hover:underline cursor-pointer"
-                  >
-                    Request Similar →
-                  </button>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. CTA SECTION (Reference CTA Card)                                       */}
+      {/* 6. WORKFLOW SECTION (Dynamic 01-04 from CMS)                              */}
+      {/* ========================================================================= */}
+      <section className="py-20 sm:py-24 bg-white border-b border-zinc-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EE1D45]/10 text-[#EE1D45] text-xs font-bold uppercase tracking-wider">
+              <span>TRANSPARENT PROCESS</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-950 tracking-tight">
+              From Inquiry to Final Press Output
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-600">
+              Clear milestones, direct senior communication, and live production tracking.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {cmsContent.workflow.map((step) => (
+              <div
+                key={step.id}
+                className="p-6 rounded-2xl bg-zinc-50/70 border border-zinc-200/90 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="w-9 h-9 rounded-xl bg-zinc-950 text-white font-mono font-bold text-sm flex items-center justify-center">
+                    {step.stepNumber}
+                  </span>
+                  {step.badge && (
+                    <span className="text-[10px] font-bold text-[#EE1D45] bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
+                      {step.badge}
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-base font-bold text-zinc-950 pt-1">{step.title}</h3>
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 7. CTA SECTION (Reference CTA Card with CMS Settings)                     */}
       {/* ========================================================================= */}
       <section className="py-20 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -380,11 +441,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <GizmoLogo size="lg" className="mx-auto" />
 
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-                Ready to create something remarkable with Gizmo Design?
+                {cmsContent.cta.headline || 'Ready to create something remarkable with Gizmo Design?'}
               </h2>
 
               <p className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto leading-relaxed">
-                Direct communication with senior designers. Rapid delivery times. Transparent billing.
+                {cmsContent.cta.description ||
+                  'Direct communication with senior designers. Rapid delivery times. Transparent billing.'}
               </p>
 
               <div className="pt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
@@ -392,18 +454,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   onClick={() => onOpenStartProject()}
                   className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#EE1D45] hover:bg-[#D8143C] active:bg-[#B80D30] text-white text-sm sm:text-base font-bold shadow-lg shadow-[#EE1D45]/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-150 cursor-pointer"
                 >
-                  <span>Start a Project</span>
+                  <span>{cmsContent.cta.primaryCtaText || 'Start a Project'}</span>
                   <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
                 </button>
 
                 <a
-                  href="https://wa.me/919845879017"
+                  href={`https://wa.me/${(cmsContent.general.whatsappNumber || '919845879017').replace(
+                    /\D/g,
+                    ''
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white border border-emerald-500 hover:border-emerald-600 text-emerald-600 hover:text-emerald-700 font-bold text-sm sm:text-base hover:-translate-y-0.5 transition-all duration-150 shadow-xs cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4 fill-emerald-500/20 text-emerald-600" />
-                  <span>WhatsApp Consultation</span>
+                  <span>{cmsContent.cta.whatsappCtaText || 'WhatsApp Consultation'}</span>
                 </a>
               </div>
             </div>

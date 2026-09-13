@@ -5,9 +5,15 @@ import {
   X,
   Shield,
   MessageCircle,
+  Sparkles,
 } from 'lucide-react';
 import { AppRoute } from '../../types';
 import { GizmoLogo } from '../common/GizmoLogo';
+import {
+  loadPublishedContent,
+  loadPublicSiteOffers,
+  getOfferComputedStatus,
+} from '../../services/publicSiteCmsService';
 
 interface NavbarProps {
   currentRoute: AppRoute;
@@ -29,11 +35,28 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks: { label: string; route: AppRoute }[] = [
-    { label: 'Services', route: 'services' },
-    { label: 'Work', route: 'work' },
-    { label: 'About', route: 'about' },
-  ];
+  // Load published CMS content and offers safely
+  const cmsContent = loadPublishedContent();
+  const allOffers = loadPublicSiteOffers();
+  const headerOffer = allOffers.find(
+    (o) =>
+      o.isActive &&
+      getOfferComputedStatus(o) === 'Active' &&
+      (o.displayLocations.includes('Header') ||
+        o.displayLocations.includes('Banner') ||
+        o.displayLocations.includes('Home Hero'))
+  );
+
+  const navLinks: { label: string; route: AppRoute }[] = (
+    cmsContent.header?.navLinks || [
+      { label: 'Services', route: 'services' },
+      { label: 'Work', route: 'work' },
+      { label: 'About', route: 'about' },
+    ]
+  ).map((nl) => ({
+    label: nl.label,
+    route: (nl.route as AppRoute) || 'home',
+  }));
 
   const handleDirectorCrmClick = () => {
     setMobileMenuOpen(false);
@@ -46,6 +69,32 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-zinc-200/80 transition-all">
+      {/* Top Promotional Offer Ticker Banner */}
+      {headerOffer && (
+        <div className="bg-zinc-950 text-white text-xs px-4 py-2 border-b border-zinc-800 flex items-center justify-between sm:justify-center gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#EE1D45] animate-pulse shrink-0" />
+            <span className="font-bold text-[#EE1D45] uppercase tracking-wider text-[10px] shrink-0">
+              {headerOffer.shortLabel || 'OFFER'}:
+            </span>
+            <span className="text-zinc-200 font-medium truncate">
+              {headerOffer.title}
+            </span>
+            {headerOffer.discount && (
+              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#EE1D45] text-white shrink-0">
+                {headerOffer.discount}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={onOpenStartProject}
+            className="text-xs font-bold text-white underline hover:text-[#EE1D45] transition-colors shrink-0 cursor-pointer"
+          >
+            Claim Offer →
+          </button>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Brand Logo & Name */}

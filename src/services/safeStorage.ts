@@ -30,6 +30,13 @@ export const PORTAL_STORAGE_KEYS = {
   NOTIFICATIONS: 'gizmo_portal_notifications_v1',
   NOTIFICATION_SETTINGS: 'gizmo_portal_notification_settings_v1',
   BACKUP_METADATA: 'gizmo_portal_backup_meta_v1',
+  PUBLIC_SITE_CONTENT: 'gizmo_public_site_content_v1',
+  PUBLIC_SITE_DRAFT: 'gizmo_public_site_draft_v1',
+  PUBLIC_SITE_OFFERS: 'gizmo_public_site_offers_v1',
+  PUBLIC_SITE_MEDIA: 'gizmo_public_site_media_v1',
+  PUBLIC_SITE_SERVICES: 'gizmo_public_site_services_v1',
+  PUBLIC_SITE_WORK: 'gizmo_public_site_work_v1',
+  PUBLIC_SITE_META: 'gizmo_public_site_meta_v1',
 } as const;
 
 // Fallback legacy keys for seamless backward migration

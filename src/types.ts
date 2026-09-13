@@ -515,7 +515,8 @@ export type AppRoute =
   | 'admin-notes'
   | 'admin-invoices'
   | 'admin-invoices-create'
-  | 'admin-settings';
+  | 'admin-settings'
+  | 'admin-public-site';
 
 export type NoteColor = 'default' | 'warm' | 'soft' | 'accent';
 
@@ -681,3 +682,211 @@ export interface ClientNotification {
   createdAt: string;
   isRead: boolean;
 }
+
+/* ========================================================================= */
+/* PUBLIC SITE CMS & OFFERS MANAGEMENT TYPES                                 */
+/* ========================================================================= */
+
+export type PublicSiteOfferDisplayLocation =
+  | 'Header'
+  | 'Banner'
+  | 'Home Hero'
+  | 'Home Highlights'
+  | 'Services'
+  | 'Work'
+  | 'CTA'
+  | 'Footer'
+  | 'Dedicated section';
+
+export type PublicSiteOfferStatus = 'Active' | 'Scheduled' | 'Expired' | 'Draft' | 'Archived';
+
+export interface PublicSiteOffer {
+  id: string;
+  title: string;
+  shortLabel: string; // e.g. 'LIMITED TIME OFFER', 'EXCLUSIVE PACK', 'SEASONAL LAUNCH'
+  description: string;
+  offerPrice: number; // e.g. 499
+  originalPrice: number; // e.g. 800
+  discount?: string; // e.g. '38% OFF'
+  currency: string; // e.g. '₹'
+  category: string; // 'Poster Design', 'Brand Identity', 'Flex Print', etc.
+  imageUrl?: string;
+  ctaText: string; // e.g. 'Start a Project' / 'Claim Offer' / 'Book Now'
+  ctaAction: 'start_project' | 'whatsapp' | 'custom_url';
+  ctaUrl?: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  priority: number; // ordering index
+  displayLocations: PublicSiteOfferDisplayLocation[];
+  isActive: boolean;
+  isArchived?: boolean;
+  promoCode?: string;
+  terms?: string;
+  limitedSlotsBadge?: string; // e.g. 'Only 3 Slots Left Today'
+  isFeatured?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PublicSiteHeaderConfig {
+  brandName: string;
+  brandSubtitle: string;
+  studioSubtitle: string;
+  logoUrl?: string;
+  showNotificationsBadge: boolean;
+  whatsappNumber: string;
+  whatsappText: string;
+  directorCrmText: string;
+  startProjectText: string;
+  navLinks?: Array<{
+    label: string;
+    route: string;
+    isVisible?: boolean;
+  }>;
+  customLinks: Array<{
+    id: string;
+    label: string;
+    route: string;
+    isExternal?: boolean;
+    isVisible: boolean;
+  }>;
+}
+
+export interface PublicSiteHeroConfig {
+  badgeText: string;
+  headlineLine1: string;
+  headlineHighlight: string;
+  description: string;
+  primaryCtaText: string;
+  primaryCtaAction: 'start_project' | 'whatsapp' | 'work';
+  secondaryCtaText: string;
+  secondaryCtaAction: 'work' | 'services' | 'start_project';
+  tertiaryCtaText: string;
+  showClientPortalButton: boolean;
+}
+
+export interface PublicSiteStatItem {
+  id: string;
+  value: string; // e.g. '450+', '24–48h', '100%', '99.4%'
+  label: string;
+  isHighlighted?: boolean; // styled with red/pink accent
+  orderIndex: number;
+  isVisible: boolean;
+}
+
+export interface PublicSiteWorkflowItem {
+  id: string;
+  stepNumber: string; // '01', '02', '03', '04'
+  title: string;
+  description: string;
+  badge?: string;
+  orderIndex: number;
+  isVisible: boolean;
+}
+
+export interface PublicSiteAboutConfig {
+  badgeText: string;
+  headline: string;
+  storyP1: string;
+  storyP2: string;
+  missionStatement: string;
+  locationText: string;
+  experienceYears: string;
+}
+
+export interface PublicSiteCtaConfig {
+  headline: string;
+  description: string;
+  primaryCtaText: string;
+  whatsappCtaText: string;
+  whatsappNumber: string;
+}
+
+export interface PublicSiteFooterConfig {
+  companyName: string;
+  tagline: string;
+  description: string;
+  phone: string;
+  email: string;
+  address: string;
+  gstin: string;
+  copyrightText: string;
+  capabilities: string[];
+}
+
+export interface PublicSiteGeneralConfig {
+  primaryColor: string; // '#EE1D45'
+  contactEmail: string;
+  contactPhone: string;
+  whatsappNumber: string;
+  businessAddress: string;
+}
+
+export interface PublicSiteContentData {
+  header: PublicSiteHeaderConfig;
+  hero: PublicSiteHeroConfig;
+  stats: PublicSiteStatItem[];
+  workflow: PublicSiteWorkflowItem[];
+  about: PublicSiteAboutConfig;
+  cta: PublicSiteCtaConfig;
+  footer: PublicSiteFooterConfig;
+  general: PublicSiteGeneralConfig;
+}
+
+export interface PublicSiteService {
+  id: string;
+  title: string;
+  category: string;
+  iconName: string; // 'Palette' | 'Video' | 'Printer' | 'Globe' | 'Sparkles' | 'Layers' etc.
+  turnaround: string;
+  desc: string;
+  deliverables: string[];
+  bestFor: string;
+  serviceKey: string;
+  startingPrice?: number;
+  orderIndex: number;
+  isVisible: boolean;
+  isFeatured: boolean;
+}
+
+export interface PublicSiteWorkItem {
+  id: string;
+  title: string;
+  clientName: string;
+  category: string;
+  desc: string;
+  tags: string[];
+  year: string;
+  imageUrl?: string;
+  gradientFrom?: string;
+  gradientTo?: string;
+  linkedProjectId?: string;
+  serviceKey?: string;
+  badgeText?: string;
+  orderIndex: number;
+  isVisible: boolean;
+  isFeatured: boolean;
+}
+
+export interface PublicSiteMediaItem {
+  id: string;
+  title: string;
+  altText: string;
+  url: string;
+  storagePath?: string;
+  fileSize?: string;
+  category: string; // 'Logos' | 'Banners' | 'Works' | 'Team' | 'General'
+  usageLocation?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PublicSiteMeta {
+  lastPublishedAt?: string;
+  lastPublishedBy?: string;
+  lastUpdatedAt?: string;
+  lastUpdatedBy?: string;
+  hasUnpublishedChanges: boolean;
+  publishedVersion: number;
+}
+

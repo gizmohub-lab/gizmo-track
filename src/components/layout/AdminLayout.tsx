@@ -27,6 +27,7 @@ import {
   ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
+  Globe,
 } from 'lucide-react';
 import { AppRoute, AdminNotification } from '../../types';
 import { PWAInstallButton } from '../common/PWAInstallButton';
@@ -213,6 +214,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         return 'Invoices';
       case 'admin-invoices-create':
         return 'Create Invoice';
+      case 'admin-public-site':
+        return 'Public Site';
       case 'admin-settings':
         return 'Settings';
       default:
@@ -267,6 +270,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       icon: Receipt,
       badge: pendingInvoicesCount > 0 ? pendingInvoicesCount : undefined,
       matchRoutes: ['admin-invoices', 'admin-invoices-create'],
+    },
+    {
+      id: 'admin-public-site' as AppRoute,
+      label: 'Public Site',
+      icon: Globe,
+      matchRoutes: ['admin-public-site'],
     },
   ];
 

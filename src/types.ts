@@ -304,6 +304,7 @@ export interface LocalWorkHistoryItem {
 }
 
 export type DesignerType = 'Portal Staff' | 'External Designer';
+export type DesignerStatus = 'active' | 'inactive' | 'archived';
 
 export interface CustomDesigner {
   id: string;
@@ -315,6 +316,7 @@ export interface CustomDesigner {
   roleSpecialization?: string;
   notes?: string;
   isActive: boolean;
+  status?: DesignerStatus;
   createdAt?: string;
 }
 

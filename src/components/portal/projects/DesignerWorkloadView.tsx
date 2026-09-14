@@ -21,6 +21,8 @@ import {
   MoreVertical,
   ExternalLink,
   Percent,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { Project, CustomDesigner } from '../../../types';
 import { formatINR } from '../../../utils/formatters';
@@ -35,6 +37,9 @@ interface DesignerWorkloadViewProps {
   onOpenDesignerWorkspace: (item: DesignerWorkloadItem) => void;
   onOpenPayModal: (designerId: string) => void;
   onOpenDesignerModal?: () => void;
+  onUpdateDesigner?: (designer: CustomDesigner) => void;
+  onDeleteDesigner?: (designerId: string) => void;
+  onUpdateDesigners?: (designers: CustomDesigner[]) => void;
 }
 
 export const DesignerWorkloadView: React.FC<DesignerWorkloadViewProps> = ({
@@ -46,12 +51,42 @@ export const DesignerWorkloadView: React.FC<DesignerWorkloadViewProps> = ({
   onOpenDesignerWorkspace,
   onOpenPayModal,
   onOpenDesignerModal,
+  onUpdateDesigner,
+  onDeleteDesigner,
+  onUpdateDesigners,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'Portal Staff' | 'External Designer'>('all');
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'Paid' | 'Partially Paid' | 'Not Paid'>('all');
+  const [deletingDesigner, setDeletingDesigner] = useState<CustomDesigner | null>(null);
+  const [successToast, setSuccessToast] = useState<string | null>(null);
 
-  // Compute Overall KPI metrics
+  const handleArchiveDesigner = (designer: CustomDesigner) => {
+    const updated: CustomDesigner = {
+      ...designer,
+      isActive: false,
+      status: 'archived',
+    };
+    if (onUpdateDesigner) {
+      onUpdateDesigner(updated);
+    } else if (onUpdateDesigners) {
+      onUpdateDesigners(allDesigners.map((d) => (d.id === designer.id ? updated : d)));
+    }
+    setDeletingDesigner(null);
+    setSuccessToast(`Designer "${designer.name}" archived successfully.`);
+    setTimeout(() => setSuccessToast(null), 4000);
+  };
+
+  const handlePermanentDeleteDesigner = (designer: CustomDesigner) => {
+    if (onDeleteDesigner) {
+      onDeleteDesigner(designer.id);
+    } else if (onUpdateDesigners) {
+      onUpdateDesigners(allDesigners.filter((d) => d.id !== designer.id));
+    }
+    setDeletingDesigner(null);
+    setSuccessToast(`Designer "${designer.name}" deleted permanently.`);
+    setTimeout(() => setSuccessToast(null), 4000);
+  };
   const totals = useMemo(() => {
     let totalEarnings = 0;
     let amountPaid = 0;
@@ -412,6 +447,27 @@ export const DesignerWorkloadView: React.FC<DesignerWorkloadViewProps> = ({
                               <span>Pay</span>
                             </button>
                           )}
+
+                          <button
+                            type="button"
+                            title="Delete / Archive Designer"
+                            onClick={() => {
+                              const match = allDesigners.find((d) => d.id === item.designerId || d.name === item.designerName);
+                              if (match) {
+                                setDeletingDesigner(match);
+                              } else {
+                                setDeletingDesigner({
+                                  id: item.designerId,
+                                  name: item.designerName,
+                                  type: item.type === 'Portal Staff' ? 'Portal Staff' : 'External Designer',
+                                  isActive: true,
+                                });
+                              }
+                            }}
+                            className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -422,6 +478,87 @@ export const DesignerWorkloadView: React.FC<DesignerWorkloadViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Success Toast Banner */}
+      {successToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-zinc-900 text-white px-4 py-3 rounded-xl shadow-2xl text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-3">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{successToast}</span>
+        </div>
+      )}
+
+      {/* Delete / Archive Confirmation Modal */}
+      {deletingDesigner && (() => {
+        const workloadItem = designerItems.find((di) => di.designerId === deletingDesigner.id || di.designerName === deletingDesigner.name);
+        const hasDependencies = (workloadItem ? (workloadItem.projectsCount + workloadItem.localWorksCount) : 0) > 0;
+        const workCount = workloadItem ? (workloadItem.projectsCount + workloadItem.localWorksCount) : 0;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+            <div className="w-full max-w-md bg-white rounded-2xl border border-zinc-200 shadow-2xl p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-zinc-950">Delete Designer?</h3>
+                  <p className="text-xs text-zinc-500">Are you sure you want to delete &quot;{deletingDesigner.name}&quot;?</p>
+                </div>
+              </div>
+
+              <div className="text-xs text-zinc-600 bg-zinc-50 p-3.5 rounded-xl border border-zinc-200 space-y-2">
+                <p>
+                  This action will remove the designer from the active designer list. Existing projects, deliverables, payments and work history must be preserved.
+                </p>
+                {hasDependencies ? (
+                  <p className="text-amber-700 font-semibold bg-amber-50 p-2 rounded-lg border border-amber-200">
+                    ⚠️ This designer has {workCount} existing works/deliverables. The designer will be safely <strong>archived</strong> instead of permanently deleted to preserve historical data.
+                  </p>
+                ) : (
+                  <p className="text-zinc-500">
+                    This designer has no active deliverables. You can archive or permanently delete them.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100">
+                <button
+                  type="button"
+                  onClick={() => setDeletingDesigner(null)}
+                  className="px-4 py-2 text-xs font-bold text-zinc-600 hover:bg-zinc-100 rounded-xl transition"
+                >
+                  Cancel
+                </button>
+                {hasDependencies ? (
+                  <button
+                    type="button"
+                    onClick={() => handleArchiveDesigner(deletingDesigner)}
+                    className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+                  >
+                    <span>Archive Designer</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleArchiveDesigner(deletingDesigner)}
+                      className="px-3 py-2 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold rounded-xl transition"
+                    >
+                      Archive
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePermanentDeleteDesigner(deletingDesigner)}
+                      className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+                    >
+                      <span>Delete Permanently</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

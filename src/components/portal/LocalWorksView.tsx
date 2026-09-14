@@ -168,6 +168,16 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
     }
   };
 
+  const handleUpdateDesigner = (updated: CustomDesigner) => {
+    const newDes = activeDesigners.map((d) => (d.id === updated.id ? updated : d));
+    handleUpdateDesigners(newDes);
+  };
+
+  const handleDeleteDesigner = (designerId: string) => {
+    const newDes = activeDesigners.filter((d) => d.id !== designerId);
+    handleUpdateDesigners(newDes);
+  };
+
   const handleUpdateWorkTypes = (newWts: WorkTypeItem[]) => {
     if (onUpdateWorkTypes) {
       onUpdateWorkTypes(newWts);
@@ -848,6 +858,8 @@ export const LocalWorksView: React.FC<LocalWorksViewProps> = ({
           localWorks={localWorks}
           works={localWorks}
           onUpdateDesigners={handleUpdateDesigners}
+          onUpdateDesigner={handleUpdateDesigner}
+          onDeleteDesigner={handleDeleteDesigner}
           onSelectDesignerForFilter={(desName) => {
             setAssignedFilter(desName);
             setActiveTab('works');

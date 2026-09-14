@@ -428,6 +428,17 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
             onOpenDesignerWorkspace={(item) => setSelectedDesignerForWorkspace(item)}
             onOpenPayModal={(dId) => handleOpenPayDesigner(dId)}
             onOpenDesignerModal={onOpenDesignerModal}
+            onUpdateDesigner={(updated) => {
+              if (onUpdateDesigners) {
+                onUpdateDesigners(designers.map((d) => (d.id === updated.id ? updated : d)));
+              }
+            }}
+            onDeleteDesigner={(designerId) => {
+              if (onUpdateDesigners) {
+                onUpdateDesigners(designers.filter((d) => d.id !== designerId));
+              }
+            }}
+            onUpdateDesigners={onUpdateDesigners}
           />
         </div>
       ) : subView === 'clients' ? (

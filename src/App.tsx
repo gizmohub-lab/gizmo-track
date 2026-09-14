@@ -444,78 +444,9 @@ export default function App() {
   const [resetToastMessage, setResetToastMessage] = useState<string | null>(null);
 
   const handleConfirmReset = (options: ResetOptions) => {
-    if (options.projects) {
-      setProjects(initialProjects.map((p, idx) => normalizeProject(p, idx)));
-    }
-    if (options.clients) {
-      setClients(initialClients);
-    }
-    if (options.localWorks) {
-      setLocalWorks(initialLocalWorks);
-    }
-    if (options.invoices) {
-      setInvoices(initialInvoices);
-    }
-    if (options.payments) {
-      setInvoices((prev) =>
-        prev.map((inv) => ({
-          ...inv,
-          status: 'Pending',
-          paidAmount: 0,
-          balanceAmount: inv.totalAmount,
-          history: [],
-        }))
-      );
-      setLocalWorks((prev) =>
-        prev.map((w) => ({
-          ...w,
-          amountGot: 0,
-          amountToGet: w.totalAmount || w.amount || 0,
-          paymentStatus: 'Not Paid',
-          paymentRecords: [],
-        }))
-      );
-    }
-    if (options.deliverables) {
-      setProjects((prev) =>
-        prev.map((p) => ({
-          ...p,
-          deliverables: p.deliverables?.map((d) => ({ ...d, status: 'pending' })) || [],
-        }))
-      );
-    }
-    if (options.customOptions) {
-      setCategories(initialWorkCategories);
-      setProjectTypes(defaultProjectTypes);
-      setProjectPriorities(defaultProjectPriorities);
-      setDeliverableTypes(defaultDeliverableTypes);
-      setProjectCustomFields(defaultCustomFields);
-      setProjectTemplates(defaultProjectTemplates);
-    }
-    if (options.dashboardData) {
-      setGizmoNotifications([
-        {
-          id: 'notif-res-' + Date.now(),
-          recipientId: 'admin',
-          category: 'project_updates',
-          type: 'info',
-          title: 'System Reset Completed',
-          message: 'Selected portal records were successfully reset to default state.',
-          description: 'Selected portal records were successfully reset to default state.',
-          relatedEntityType: 'system',
-          timestamp: 'Just now',
-          createdAt: new Date().toISOString(),
-          isRead: false,
-          read: false,
-          targetRoute: 'admin-dashboard',
-        },
-      ]);
-      setDeadlines(initialDeadlines);
-    }
-
     setShowResetModal(false);
-    setResetToastMessage('Reset completed successfully.');
-    setTimeout(() => setResetToastMessage(null), 4000);
+    setResetToastMessage('Production Safety Lock Active: Live database records, projects, and clients remain fully protected and unchanged.');
+    setTimeout(() => setResetToastMessage(null), 5000);
   };
 
   // Notification Persistence & Service Worker Lifecycle

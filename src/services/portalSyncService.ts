@@ -266,7 +266,7 @@ export async function deleteInvoiceFromFirestore(invoiceId: string): Promise<voi
   * Reset all portal data in Firestore across collections.
   */
 export async function resetAllFirestoreData(): Promise<void> {
-  const collectionsToClear = ['projects', 'clients', 'invoices', 'localWorks', 'deadlines', 'notes', 'designers', 'categories'];
+  const collectionsToClear = ['projects', 'clients', 'invoices', 'projectRequests', 'localWorks', 'deadlines', 'notes', 'designers', 'categories'];
   for (const colName of collectionsToClear) {
     try {
       const snap = await getDocs(collection(db, colName));

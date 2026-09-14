@@ -35,6 +35,8 @@ import { formatExactDateTimeString, formatDisplayDate } from '../../../utils/dat
 import {
   normalizeRequestStatus,
   getRequestStatusDisplayLabel,
+  normalizeWhatsAppNumber,
+  generateWhatsAppAcceptanceMessage,
 } from '../../../services/projectRequestsService';
 
 interface ProjectRequestsViewProps {
@@ -73,6 +75,13 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
   const [showAcceptConfirmModal, setShowAcceptConfirmModal] = useState<ProjectRequest | null>(null);
   const [showRejectModal, setShowRejectModal] = useState<ProjectRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [whatsappPreviewModal, setWhatsappPreviewModal] = useState<{
+    request: ProjectRequest;
+    normalizedPhone: string;
+    message: string;
+  } | null>(null);
+  const [whatsappErrorNotice, setWhatsappErrorNotice] = useState<string | null>(null);
+  const [successToast, setSuccessToast] = useState<string | null>(null);
 
   // Keep selectedRequest updated when requests prop changes
   React.useEffect(() => {
@@ -183,8 +192,48 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
 
   const handleConfirmAccept = () => {
     if (!showAcceptConfirmModal) return;
-    onAcceptRequest(showAcceptConfirmModal);
+    const req = showAcceptConfirmModal;
+    const isAlreadyAccepted = normalizeRequestStatus(req.requestStatus || (req as any).status) === 'accepted';
+
+    if (isAlreadyAccepted) {
+      setShowAcceptConfirmModal(null);
+      setWhatsappErrorNotice('Project request already accepted.');
+      setTimeout(() => setWhatsappErrorNotice(null), 4000);
+      return;
+    }
+
+    onAcceptRequest(req);
     setShowAcceptConfirmModal(null);
+
+    const matchedProject = projects.find((p) => p.id === req.projectId || p.title === req.projectTitle);
+    const clientPhone = req.whatsapp || matchedProject?.clientPhone || '';
+    const { normalized, isValid } = normalizeWhatsAppNumber(clientPhone);
+
+    if (!isValid || !normalized) {
+      setWhatsappErrorNotice(
+        `Client WhatsApp number ("${req.whatsapp || 'Missing'}") is missing or invalid. Please update client contact details.`
+      );
+      setTimeout(() => setWhatsappErrorNotice(null), 6000);
+      return;
+    }
+
+    const message = generateWhatsAppAcceptanceMessage(req, matchedProject);
+    setWhatsappPreviewModal({
+      request: req,
+      normalizedPhone: normalized,
+      message,
+    });
+  };
+
+  const handleOpenWhatsAppPreview = () => {
+    if (!whatsappPreviewModal) return;
+    const { normalizedPhone, message, request } = whatsappPreviewModal;
+    const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+
+    setWhatsappPreviewModal(null);
+    setSuccessToast(`WhatsApp acceptance message opened in WhatsApp for ${request.clientName}.`);
+    setTimeout(() => setSuccessToast(null), 4000);
   };
 
   const handleConfirmReject = () => {
@@ -950,10 +999,82 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                 className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition shadow-xs flex items-center justify-center gap-1.5"
               >
                 <Check className="w-4 h-4" />
-                <span>Accept Project</span>
+                <span>Accept &amp; Notify Client</span>
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* WHATSAPP CLIENT NOTIFICATION PREVIEW MODAL */}
+      {whatsappPreviewModal && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-zinc-950">WhatsApp Client Notification</h3>
+                  <p className="text-[11px] text-zinc-500">Ready to notify client via WhatsApp acceptance message</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setWhatsappPreviewModal(null)}
+                className="p-1 text-zinc-400 hover:text-zinc-900 rounded-lg transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 flex items-center justify-between">
+                <span className="text-zinc-500 font-semibold">Recipient WhatsApp:</span>
+                <span className="font-mono font-bold text-emerald-700">+{whatsappPreviewModal.normalizedPhone}</span>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Prepared Message Preview:
+                </label>
+                <div className="p-3.5 bg-zinc-900 text-zinc-100 rounded-xl font-mono text-[11px] leading-relaxed max-h-60 overflow-y-auto whitespace-pre-wrap select-all">
+                  {whatsappPreviewModal.message}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-zinc-100">
+              <button
+                onClick={() => setWhatsappPreviewModal(null)}
+                className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-bold transition"
+              >
+                Cancel / Skip
+              </button>
+              <button
+                onClick={handleOpenWhatsAppPreview}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold transition shadow-xs flex items-center gap-1.5"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Open WhatsApp</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast / Error Banners */}
+      {successToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-zinc-900 text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-3 border border-zinc-800">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{successToast}</span>
+        </div>
+      )}
+
+      {whatsappErrorNotice && (
+        <div className="fixed bottom-6 right-6 z-50 bg-amber-500 text-zinc-950 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-3 border border-amber-600">
+          <AlertCircle className="w-4 h-4 text-zinc-950" />
+          <span>{whatsappErrorNotice}</span>
         </div>
       )}
 

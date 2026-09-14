@@ -12,7 +12,7 @@ import {
 } from '../types';
 import { safeLoadItem, safeSaveItem, PORTAL_STORAGE_KEYS } from './safeStorage';
 import { registerVaultFile, getEntityVaultFiles } from './fileStorageVault';
-import { formatExactDateTimeString } from '../utils/dateTimeUtils';
+import { formatExactDateTimeString, formatDisplayDate } from '../utils/dateTimeUtils';
 import {
   collection,
   doc,
@@ -1029,3 +1029,111 @@ export function markProjectRequestUnderReviewWorkflow(
 
   return updatedRequest;
 }
+
+/**
+ * Normalizes a client phone number for WhatsApp URL generation.
+ */
+export function normalizeWhatsAppNumber(phone: string): { normalized: string; isValid: boolean } {
+  if (!phone || typeof phone !== 'string') return { normalized: '', isValid: false };
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 10) return { normalized: digits, isValid: false };
+  if (digits.length === 10) {
+    return { normalized: `91${digits}`, isValid: true };
+  }
+  return { normalized: digits, isValid: digits.length >= 10 };
+}
+
+/**
+ * Generates the professional WhatsApp acceptance message, omitting missing/undefined/N/A fields.
+ */
+export function generateWhatsAppAcceptanceMessage(req: ProjectRequest, createdProject?: Project): string {
+  const lines: string[] = [];
+  lines.push(`Hello ${req.clientName || 'Client'} 👋`);
+  lines.push(``);
+  lines.push(`Good news! Your project request has been accepted by Gizmo Design.`);
+  lines.push(``);
+  lines.push(`📋 PROJECT DETAILS`);
+  lines.push(``);
+
+  if (req.projectTitle) {
+    lines.push(`Project:`);
+    lines.push(req.projectTitle);
+    lines.push(``);
+  }
+
+  const code = createdProject?.projectCode || req.projectCode;
+  if (code) {
+    lines.push(`Project Code:`);
+    lines.push(code);
+    lines.push(``);
+  }
+
+  const brand = req.companyName || (req as any).brandName;
+  if (brand && brand !== 'N/A' && brand !== 'Unknown' && brand !== 'undefined') {
+    lines.push(`Client / Brand:`);
+    lines.push(brand);
+    lines.push(``);
+  }
+
+  if (req.services && req.services.length > 0) {
+    lines.push(`Service:`);
+    lines.push(req.services.join(', '));
+    lines.push(``);
+  }
+
+  if (req.description && req.description !== 'N/A' && req.description !== 'Unknown' && req.description !== 'undefined') {
+    lines.push(`Description:`);
+    lines.push(req.description);
+    lines.push(``);
+  }
+
+  if (req.industry && req.industry !== 'N/A' && req.industry !== 'Unknown' && req.industry !== 'Not specified' && req.industry !== 'undefined') {
+    lines.push(`Industry:`);
+    lines.push(req.industry);
+    lines.push(``);
+  }
+
+  if (req.goals && req.goals.length > 0) {
+    lines.push(`Project Goal:`);
+    lines.push(req.goals.join('; '));
+    lines.push(``);
+  }
+
+  if (req.timelineOption && req.timelineOption !== 'N/A' && req.timelineOption !== 'undefined') {
+    lines.push(`Timeline:`);
+    lines.push(req.timelineOption);
+    lines.push(``);
+  }
+
+  const deadline = createdProject?.deadlineDate || createdProject?.dueDate || req.requestedDeadline;
+  if (deadline) {
+    lines.push(`Target Delivery:`);
+    lines.push(formatDisplayDate(deadline));
+    lines.push(``);
+  }
+
+  if (req.budgetRange && req.budgetRange !== 'N/A' && req.budgetRange !== 'Unknown' && req.budgetRange !== 'undefined') {
+    lines.push(`Budget:`);
+    lines.push(req.budgetRange);
+    lines.push(``);
+  }
+
+  if (req.requestNumber) {
+    lines.push(`Reference:`);
+    lines.push(req.requestNumber);
+    lines.push(``);
+  }
+
+  lines.push(`Your project is now being processed by our team.`);
+  lines.push(``);
+  lines.push(`You can track your project through the Gizmo Client Portal.`);
+  lines.push(``);
+  lines.push(`For any questions or updates, you can contact Gizmo Design through WhatsApp.`);
+  lines.push(``);
+  lines.push(`Thank you,`);
+  lines.push(`GIZMO DESIGN`);
+  lines.push(`Design & Production Studio`);
+
+  return lines.join('\n');
+}
+

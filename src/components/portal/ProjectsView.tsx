@@ -35,6 +35,8 @@ import {
   ChevronDown,
   ArrowRight,
   Info,
+  MoreVertical,
+  RotateCcw,
 } from 'lucide-react';
 import {
   Project,
@@ -199,6 +201,72 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Project completion & reopen states
+  const [projectToComplete, setProjectToComplete] = useState<Project | null>(null);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showDeliverableIncompleteModal, setShowDeliverableIncompleteModal] = useState(false);
+  const [projectToReopen, setProjectToReopen] = useState<Project | null>(null);
+  const [showReopenModal, setShowReopenModal] = useState(false);
+  const [activeDropdownProjectId, setActiveDropdownProjectId] = useState<string | null>(null);
+
+  const handleExecuteMarkComplete = (project: Project, forceAnyway: boolean = false) => {
+    const progress = getProjectProgress(project);
+    const hasIncomplete = progress.totalCompleted < progress.totalDeliverables;
+
+    if (hasIncomplete && !forceAnyway) {
+      setProjectToComplete(project);
+      setShowDeliverableIncompleteModal(true);
+      return;
+    }
+
+    const nowIso = formatSystemTimestamp();
+    const updated: Project = {
+      ...project,
+      status: 'Completed',
+      completedAt: nowIso,
+      completedBy: 'Admin',
+      history: [
+        {
+          id: `hist-${Date.now()}`,
+          timestamp: nowIso,
+          action: 'Project Completed by Admin',
+          note: `Marked completed. Deliverables: ${progress.totalCompleted}/${progress.totalDeliverables}`,
+        },
+        ...(project.history || []),
+      ],
+    };
+    onUpdateProject(updated);
+    setToastMessage(`Project "${project.title}" marked as completed.`);
+    setTimeout(() => setToastMessage(null), 4000);
+    setProjectToComplete(null);
+    setShowCompleteModal(false);
+    setShowDeliverableIncompleteModal(false);
+  };
+
+  const handleExecuteReopenProject = (project: Project) => {
+    const nowIso = formatSystemTimestamp();
+    const updated: Project = {
+      ...project,
+      status: 'In Progress',
+      reopenedAt: nowIso,
+      reopenedBy: 'Admin',
+      history: [
+        {
+          id: `hist-${Date.now()}`,
+          timestamp: nowIso,
+          action: 'Project Reopened by Admin',
+          note: 'Status restored to In Progress',
+        },
+        ...(project.history || []),
+      ],
+    };
+    onUpdateProject(updated);
+    setToastMessage(`Project "${project.title}" reopened.`);
+    setTimeout(() => setToastMessage(null), 4000);
+    setProjectToReopen(null);
+    setShowReopenModal(false);
+  };
 
   // Pay Designer Modal & Details Modal
   const [showPayDesignerModal, setShowPayDesignerModal] = useState(false);
@@ -1175,47 +1243,122 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                             </td>
 
                             {/* Actions */}
-                            <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center justify-end gap-1">
+                            <td className="py-3 px-3 text-right relative" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   type="button"
                                   onClick={() => setActiveWorkspaceProject(project)}
-                                  className="rounded-lg bg-zinc-900 hover:bg-black text-white px-2 py-1 text-[11px] font-bold shadow-2xs transition-colors"
+                                  className="rounded-lg bg-zinc-900 hover:bg-black text-white px-2.5 py-1 text-[11px] font-bold shadow-2xs transition-colors"
                                 >
-                                  Workspace
+                                  Open
                                 </button>
-                                <button
-                                  type="button"
-                                  onClick={() => onCreateInvoiceForProject(project)}
-                                  title="Create Invoice from Project"
-                                  className="rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 p-1 text-[11px] transition-colors"
-                                >
-                                  <Receipt className="h-3.5 w-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setPrefilledClientForProject(null);
-                                    setProjectToEdit(project);
-                                    setShowCreateModal(true);
-                                  }}
-                                  title="Edit Project"
-                                  className="rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 p-1 text-[11px] transition-colors"
-                                >
-                                  <Edit2 className="h-3.5 w-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (window.confirm(`Delete project "${project.title}"?`)) {
-                                      onDeleteProject(project.id);
-                                    }
-                                  }}
-                                  title="Delete Project"
-                                  className="rounded-lg border border-zinc-200 bg-white hover:bg-rose-50 hover:text-rose-600 text-zinc-400 p-1 text-[11px] transition-colors"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
+
+                                {/* Actions Dropdown (⋮) */}
+                                <div className="relative">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setActiveDropdownProjectId(activeDropdownProjectId === project.id ? null : project.id);
+                                    }}
+                                    title="Actions"
+                                    className="rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 p-1.5 text-[11px] transition-colors flex items-center justify-center"
+                                  >
+                                    <MoreVertical className="h-3.5 w-3.5" />
+                                  </button>
+
+                                  {activeDropdownProjectId === project.id && (
+                                    <div className="absolute right-0 mt-1 w-48 rounded-2xl bg-white border border-zinc-200 shadow-xl z-50 py-1.5 text-left text-xs font-medium text-zinc-700 animate-in fade-in duration-100">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActiveDropdownProjectId(null);
+                                          setActiveWorkspaceProject(project);
+                                        }}
+                                        className="w-full px-3.5 py-2 hover:bg-zinc-50 flex items-center gap-2 text-zinc-800 font-semibold"
+                                      >
+                                        <FolderKanban className="w-3.5 h-3.5 text-zinc-400" />
+                                        <span>Open Project</span>
+                                      </button>
+
+                                      {project.status === 'Completed' ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setActiveDropdownProjectId(null);
+                                            setProjectToReopen(project);
+                                            setShowReopenModal(true);
+                                          }}
+                                          className="w-full px-3.5 py-2 hover:bg-blue-50 text-blue-700 flex items-center gap-2 font-bold"
+                                        >
+                                          <RotateCcw className="w-3.5 h-3.5 text-blue-600" />
+                                          <span>Reopen Project</span>
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setActiveDropdownProjectId(null);
+                                            const progress = getProjectProgress(project);
+                                            if (progress.totalCompleted < progress.totalDeliverables) {
+                                              setProjectToComplete(project);
+                                              setShowDeliverableIncompleteModal(true);
+                                            } else {
+                                              setProjectToComplete(project);
+                                              setShowCompleteModal(true);
+                                            }
+                                          }}
+                                          className="w-full px-3.5 py-2 hover:bg-emerald-50 text-emerald-700 flex items-center gap-2 font-bold"
+                                        >
+                                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                          <span>Mark Complete ✓</span>
+                                        </button>
+                                      )}
+
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActiveDropdownProjectId(null);
+                                          onCreateInvoiceForProject(project);
+                                        }}
+                                        className="w-full px-3.5 py-2 hover:bg-zinc-50 flex items-center gap-2"
+                                      >
+                                        <Receipt className="w-3.5 h-3.5 text-zinc-400" />
+                                        <span>Create Invoice</span>
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActiveDropdownProjectId(null);
+                                          setPrefilledClientForProject(null);
+                                          setProjectToEdit(project);
+                                          setShowCreateModal(true);
+                                        }}
+                                        className="w-full px-3.5 py-2 hover:bg-zinc-50 flex items-center gap-2"
+                                      >
+                                        <Edit2 className="w-3.5 h-3.5 text-zinc-400" />
+                                        <span>Edit Project</span>
+                                      </button>
+
+                                      <div className="my-1 border-t border-zinc-100" />
+
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActiveDropdownProjectId(null);
+                                          if (window.confirm(`Delete project "${project.title}"?`)) {
+                                            onDeleteProject(project.id);
+                                          }
+                                        }}
+                                        className="w-full px-3.5 py-2 hover:bg-rose-50 text-rose-600 flex items-center gap-2 font-semibold"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                                        <span>Delete / Archive</span>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </td>
                           </tr>
@@ -1499,6 +1642,160 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
             setTimeout(() => setToastMessage(null), 4000);
           }}
         />
+      )}
+
+      {/* MARK COMPLETE MODAL */}
+      {showCompleteModal && projectToComplete && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-zinc-200">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-zinc-950">Mark Project as Completed?</h3>
+              <p className="text-xs text-zinc-500">
+                This will mark the project as completed. Existing deliverables, payments and files will remain unchanged.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100 text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Project:</span>
+                <span className="font-bold text-zinc-900">{projectToComplete.title}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Client:</span>
+                <span className="font-semibold text-zinc-900">{projectToComplete.clientName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Project Code:</span>
+                <span className="font-mono font-bold text-zinc-900">{projectToComplete.projectCode || 'PROJ'}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => {
+                  setShowCompleteModal(false);
+                  setProjectToComplete(null);
+                }}
+                className="flex-1 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-xs font-bold hover:bg-zinc-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleExecuteMarkComplete(projectToComplete, true)}
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition shadow-xs flex items-center justify-center gap-1.5"
+              >
+                <Check className="w-4 h-4" />
+                <span>Mark Completed</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELIVERABLE INCOMPLETE MODAL */}
+      {showDeliverableIncompleteModal && projectToComplete && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-zinc-200">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-zinc-950">Some required deliverables are still incomplete.</h3>
+              <p className="text-xs text-zinc-500 font-medium">
+                Completed: {getProjectProgress(projectToComplete).totalCompleted} / {getProjectProgress(projectToComplete).totalDeliverables} deliverables
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100 text-xs text-center text-zinc-600">
+              You can review the deliverables in the workspace or proceed to mark the project completed anyway.
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2">
+              <button
+                onClick={() => {
+                  const p = projectToComplete;
+                  setShowDeliverableIncompleteModal(false);
+                  setProjectToComplete(null);
+                  setActiveWorkspaceProject(p);
+                }}
+                className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-bold transition shadow-xs"
+              >
+                Review Deliverables
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeliverableIncompleteModal(false);
+                  setShowCompleteModal(true);
+                }}
+                className="w-full py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition"
+              >
+                Mark Project Completed Anyway
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeliverableIncompleteModal(false);
+                  setProjectToComplete(null);
+                }}
+                className="w-full py-2 rounded-xl text-zinc-500 hover:text-zinc-800 text-xs font-semibold transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* REOPEN PROJECT MODAL */}
+      {showReopenModal && projectToReopen && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-zinc-200">
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center mx-auto">
+              <RotateCcw className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-zinc-950">Reopen this project?</h3>
+              <p className="text-xs text-zinc-500">
+                This will restore the project status to In Progress. Activity history and timestamps will be preserved.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100 text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Project:</span>
+                <span className="font-bold text-zinc-900">{projectToReopen.title}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Client:</span>
+                <span className="font-semibold text-zinc-900">{projectToReopen.clientName}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => {
+                  setShowReopenModal(false);
+                  setProjectToReopen(null);
+                }}
+                className="flex-1 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-xs font-bold hover:bg-zinc-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleExecuteReopenProject(projectToReopen)}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition shadow-xs flex items-center justify-center gap-1.5"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Reopen Project</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* TOAST BANNER */}

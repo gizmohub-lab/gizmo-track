@@ -244,6 +244,10 @@ export interface Project {
 
   createdAt: string;
   updatedAt?: string;
+  completedAt?: string;
+  completedBy?: string;
+  reopenedAt?: string;
+  reopenedBy?: string;
 }
 
 export type LocalWorkStatus =

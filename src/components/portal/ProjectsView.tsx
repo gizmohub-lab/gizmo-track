@@ -952,6 +952,43 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                     Track client deliverables, invoice payments and production milestones.
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!window.confirm("Permanently delete test records (Test Project Title, Brand Design Brief, 234567890p[wser, Test Client, dfghjm,.)? Real production data will be preserved.")) return;
+                    
+                    const testProjects = projects.filter(p => 
+                      p.title?.toLowerCase().includes('test') || 
+                      p.title?.includes('234567890p') ||
+                      p.title?.toLowerCase().includes('brand design brief') ||
+                      p.clientName?.toLowerCase().includes('test client') ||
+                      p.clientName?.includes('dfghjm')
+                    );
+
+                    for (const tp of testProjects) {
+                      if (onDeleteProject) {
+                        await onDeleteProject(tp.id);
+                      }
+                    }
+
+                    const testClients = clients.filter(c =>
+                      c.name?.toLowerCase().includes('test client') ||
+                      c.name?.includes('dfghjm')
+                    );
+
+                    for (const tc of testClients) {
+                      if (onDeleteClient) {
+                        await onDeleteClient(tc.id);
+                      }
+                    }
+
+                    alert(`Purged ${testProjects.length} test project(s) and ${testClients.length} test client(s) successfully.`);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1.5 shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Purge Test Data</span>
+                </button>
               </div>
 
               {/* Filter Bar */}

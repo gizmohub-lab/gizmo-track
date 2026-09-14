@@ -46,6 +46,9 @@ import {
   syncProjectToFirestore,
   syncClientToFirestore,
   syncInvoiceToFirestore,
+  deleteProjectFromFirestore,
+  deleteClientFromFirestore,
+  deleteInvoiceFromFirestore,
 } from './services/portalSyncService';
 import {
   sumReceivedPayments,
@@ -308,7 +311,16 @@ export default function App() {
       setProjectRequests(remoteRequests);
     });
     const unsubProjects = subscribeToProjects((remoteProjects) => {
-      setProjects(remoteProjects);
+      setProjects((prevProjects) => {
+        if (prevProjects.length !== remoteProjects.length) {
+          return remoteProjects;
+        }
+        const hasChanged = remoteProjects.some((rp, idx) => {
+          const pp = prevProjects[idx];
+          return !pp || pp.id !== rp.id || pp.status !== rp.status || pp.updatedAt !== rp.updatedAt || (pp.amountGot ?? 0) !== (rp.amountGot ?? 0);
+        });
+        return hasChanged ? remoteProjects : prevProjects;
+      });
     });
     const unsubClients = subscribeToClients((remoteClients) => {
       setClients(remoteClients);
@@ -575,17 +587,14 @@ export default function App() {
 
   useEffect(() => {
     saveClients(clients);
-    clients.forEach((c) => syncClientToFirestore(c));
   }, [clients]);
 
   useEffect(() => {
     saveProjects(projects);
-    projects.forEach((p) => syncProjectToFirestore(p));
   }, [projects]);
 
   useEffect(() => {
     saveInvoices(invoices);
-    invoices.forEach((i) => syncInvoiceToFirestore(i));
   }, [invoices]);
 
   useEffect(() => {
@@ -711,59 +720,99 @@ export default function App() {
   }, [localWorks, projects]);
 
   // Project CRUD Handlers
-  const handleAddProject = (newProj: Project) => {
-    setProjects((prev) => [newProj, ...prev]);
-    dispatchGizmoNotification(
-      {
-        recipientId: 'admin',
-        recipientRole: 'admin',
-        category: 'new_projects',
-        type: 'project',
-        title: 'New Project Added',
-        message: `Project "${newProj.title}" created for ${newProj.clientName}.`,
-        description: `Project "${newProj.title}" created for ${newProj.clientName}.`,
-        relatedEntityType: 'project',
-        relatedEntityId: newProj.id,
-        targetRoute: 'admin-projects',
-      },
-      notificationSettings,
-      gizmoNotifications,
-      setGizmoNotifications
-    );
+  const handleAddProject = async (newProj: Project) => {
+    try {
+      await syncProjectToFirestore(newProj);
+      setProjects((prev) => [newProj, ...prev]);
+      dispatchGizmoNotification(
+        {
+          recipientId: 'admin',
+          recipientRole: 'admin',
+          category: 'new_projects',
+          type: 'project',
+          title: 'New Project Added',
+          message: `Project "${newProj.title}" created for ${newProj.clientName}.`,
+          description: `Project "${newProj.title}" created for ${newProj.clientName}.`,
+          relatedEntityType: 'project',
+          relatedEntityId: newProj.id,
+          targetRoute: 'admin-projects',
+        },
+        notificationSettings,
+        gizmoNotifications,
+        setGizmoNotifications
+      );
+    } catch (err) {
+      console.error('Failed to save project:', err);
+      alert('Unable to save changes. Please try again.');
+    }
   };
 
-  const handleUpdateProject = (updatedProj: Project) => {
-    setProjects((prev) => prev.map((p) => (p.id === updatedProj.id ? updatedProj : p)));
-    dispatchGizmoNotification(
-      {
-        recipientId: 'admin',
-        recipientRole: 'admin',
-        category: 'project_updates',
-        type: 'project',
-        title: 'Project Updated',
-        message: `Project "${updatedProj.title}" updated (Status: ${updatedProj.status}).`,
-        description: `Project "${updatedProj.title}" updated (Status: ${updatedProj.status}).`,
-        relatedEntityType: 'project',
-        relatedEntityId: updatedProj.id,
-        targetRoute: 'admin-projects',
-      },
-      notificationSettings,
-      gizmoNotifications,
-      setGizmoNotifications
-    );
+  const handleUpdateProject = async (updatedProj: Project) => {
+    try {
+      await syncProjectToFirestore(updatedProj);
+      setProjects((prev) => prev.map((p) => (p.id === updatedProj.id ? updatedProj : p)));
+      dispatchGizmoNotification(
+        {
+          recipientId: 'admin',
+          recipientRole: 'admin',
+          category: 'project_updates',
+          type: 'project',
+          title: 'Project Updated',
+          message: `Project "${updatedProj.title}" updated (Status: ${updatedProj.status}).`,
+          description: `Project "${updatedProj.title}" updated (Status: ${updatedProj.status}).`,
+          relatedEntityType: 'project',
+          relatedEntityId: updatedProj.id,
+          targetRoute: 'admin-projects',
+        },
+        notificationSettings,
+        gizmoNotifications,
+        setGizmoNotifications
+      );
+    } catch (err) {
+      console.error('Failed to update project:', err);
+      alert('Unable to save changes. Please try again.');
+    }
   };
 
-  const handleDeleteProject = (id: string) => {
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-    setDeadlines((prev) => prev.filter((d) => d.referenceId !== id && d.id !== `dl-proj-${id}`));
+  const handleDeleteProject = async (id: string) => {
+    try {
+      await deleteProjectFromFirestore(id);
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+      setDeadlines((prev) => prev.filter((d) => d.referenceId !== id && d.id !== `dl-proj-${id}`));
+    } catch (err) {
+      console.error('Failed to delete project:', err);
+      alert('Unable to delete project. Please try again.');
+    }
   };
 
-  const handleDeleteClient = (clientId: string) => {
-    setClients((prev) => prev.filter((c) => c.id !== clientId));
+  const handleAddClient = async (newClient: Client) => {
+    try {
+      await syncClientToFirestore(newClient);
+      setClients((prev) => [newClient, ...prev]);
+    } catch (err) {
+      console.error('Failed to save client:', err);
+      alert('Unable to save changes. Please try again.');
+    }
   };
 
-  const handleUpdateClient = (updatedClient: Client) => {
-    setClients((prev) => prev.map((c) => (c.id === updatedClient.id ? updatedClient : c)));
+  const handleDeleteClient = async (clientId: string) => {
+    try {
+      await deleteClientFromFirestore(clientId);
+      setClients((prev) => prev.filter((c) => c.id !== clientId));
+    } catch (err) {
+      console.error('Failed to delete client:', err);
+      alert('Unable to delete client. Please try again.');
+    }
+  };
+
+  const handleUpdateClient = async (updatedClient: Client) => {
+    try {
+      await syncClientToFirestore(updatedClient);
+      setClients((prev) => prev.map((c) => (c.id === updatedClient.id ? updatedClient : c)));
+    } catch (err) {
+      console.error('Failed to update client:', err);
+      alert('Unable to save changes. Please try again.');
+    }
   };
 
   // Project Requests Workflow Handlers
@@ -1076,6 +1125,7 @@ export default function App() {
       // Create new
       setInvoices((prev) => [invoicePayload, ...prev]);
     }
+    syncInvoiceToFirestore(invoicePayload);
     setIsCreatingInvoice(false);
     setEditingInvoice(null);
     navigate('admin-invoices');
@@ -1089,6 +1139,7 @@ export default function App() {
       if (previewInvoice?.id === invoiceId) {
         setPreviewInvoice(null);
       }
+      deleteInvoiceFromFirestore(invoiceId);
     }
   };
 

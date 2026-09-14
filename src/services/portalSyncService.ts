@@ -64,14 +64,12 @@ export function subscribeToProjects(
           saveProjects(remoteProjects);
           callback(remoteProjects);
         } else {
-          // If Firestore collection is empty, fallback to local (or initial)
-          const local = loadProjects();
-          callback(local);
+          callback([]);
         }
       },
       (error) => {
         console.error('Error in subscribeToProjects onSnapshot:', error);
-        callback(loadProjects());
+        callback([]);
       }
     );
 
@@ -109,12 +107,12 @@ export function subscribeToClients(
           saveClients(remoteClients);
           callback(remoteClients);
         } else {
-          callback(loadClients());
+          callback([]);
         }
       },
       (error) => {
         console.error('Error in subscribeToClients onSnapshot:', error);
-        callback(loadClients());
+        callback([]);
       }
     );
 
@@ -172,12 +170,12 @@ export function subscribeToInvoices(
           saveInvoices(remoteInvoices);
           callback(remoteInvoices);
         } else {
-          callback(loadInvoices());
+          callback([]);
         }
       },
       (error) => {
         console.error('Error in subscribeToInvoices onSnapshot:', error);
-        callback(loadInvoices());
+        callback([]);
       }
     );
 

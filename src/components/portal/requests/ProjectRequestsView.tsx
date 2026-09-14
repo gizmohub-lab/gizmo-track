@@ -46,6 +46,7 @@ interface ProjectRequestsViewProps {
   onAcceptRequest: (request: ProjectRequest) => void;
   onRejectRequest: (request: ProjectRequest, reason?: string) => void;
   onMarkUnderReview: (request: ProjectRequest) => void;
+  onDeleteRequest?: (request: ProjectRequest) => void;
   onOpenProjectWorkspace?: (projectId: string) => void;
   initialSelectedRequestId?: string | null;
   onClearSelectedRequest?: () => void;
@@ -58,6 +59,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
   onAcceptRequest,
   onRejectRequest,
   onMarkUnderReview,
+  onDeleteRequest,
   onOpenProjectWorkspace,
   initialSelectedRequestId,
   onClearSelectedRequest,
@@ -74,6 +76,7 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
   // Modal confirmation states
   const [showAcceptConfirmModal, setShowAcceptConfirmModal] = useState<ProjectRequest | null>(null);
   const [showRejectModal, setShowRejectModal] = useState<ProjectRequest | null>(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState<ProjectRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [whatsappPreviewModal, setWhatsappPreviewModal] = useState<{
     request: ProjectRequest;
@@ -477,7 +480,29 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
+
+                            <button
+                              onClick={() => setShowDeleteConfirmModal(req)}
+                              className="p-1 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                              title="Delete Request"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2.002 2.002 0 0116.138 21H7.862a2.002 2.002 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
                           </>
+                        )}
+
+                        {normalizeRequestStatus(req.requestStatus || (req as any).status) === 'accepted' && (
+                          <button
+                            onClick={() => setShowDeleteConfirmModal(req)}
+                            className="p-1 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                            title="Delete Request"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2.002 2.002 0 0116.138 21H7.862a2.002 2.002 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         )}
 
                         {normalizeRequestStatus(req.requestStatus || (req as any).status) === 'accepted' && req.projectId && (
@@ -1137,6 +1162,67 @@ export const ProjectRequestsView: React.FC<ProjectRequestsViewProps> = ({
                 className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold transition shadow-xs"
               >
                 Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE REQUEST CONFIRMATION MODAL */}
+      {showDeleteConfirmModal && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-zinc-200">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center font-extrabold text-lg shrink-0">
+                🗑️
+              </div>
+              <div>
+                <h3 className="text-base font-extrabold text-zinc-950">Delete Project Request?</h3>
+                <p className="text-xs text-zinc-500 font-mono">ID: {showDeleteConfirmModal.id}</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2 text-xs">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-zinc-400 block">Project Title</span>
+                <span className="font-bold text-zinc-950">{showDeleteConfirmModal.projectTitle}</span>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-zinc-400 block">Client Name</span>
+                <span className="font-semibold text-zinc-800">{showDeleteConfirmModal.clientName}</span>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-zinc-400 block">Reference #</span>
+                <span className="font-mono text-zinc-700">{showDeleteConfirmModal.requestNumber}</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-zinc-600 leading-relaxed">
+              This will permanently remove this project request. It will not delete the client, project, invoice, payment, or other related production records.
+            </p>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => setShowDeleteConfirmModal(null)}
+                className="flex-1 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-xs font-bold hover:bg-zinc-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const reqToDelete = showDeleteConfirmModal;
+                  setShowDeleteConfirmModal(null);
+                  if (selectedRequest?.id === reqToDelete.id) {
+                    setSelectedRequest(null);
+                    if (onClearSelectedRequest) onClearSelectedRequest();
+                  }
+                  if (onDeleteRequest) {
+                    onDeleteRequest(reqToDelete);
+                  }
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold transition shadow-xs"
+              >
+                Delete Request
               </button>
             </div>
           </div>

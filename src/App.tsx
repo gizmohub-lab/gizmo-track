@@ -38,6 +38,7 @@ import {
   acceptProjectRequestWorkflow,
   rejectProjectRequestWorkflow,
   markProjectRequestUnderReviewWorkflow,
+  deleteProjectRequestFromFirestore,
 } from './services/projectRequestsService';
 import {
   subscribeToProjects,
@@ -859,6 +860,18 @@ export default function App() {
     setProjectRequests((prev) =>
       prev.map((r) => (r.id === requestId ? updated : r))
     );
+  };
+
+  const handleDeleteProjectRequest = async (request: ProjectRequest) => {
+    try {
+      await deleteProjectRequestFromFirestore(request.id);
+      setProjectRequests((prev) => prev.filter((r) => r.id !== request.id));
+      setResetToastMessage('Project request permanently removed.');
+      setTimeout(() => setResetToastMessage(null), 4000);
+    } catch (err) {
+      console.error('Failed to delete project request:', err);
+      alert('Unable to delete project request. No data was changed.');
+    }
   };
 
   // Local Works CRUD Handlers
@@ -1739,6 +1752,7 @@ export default function App() {
               onAcceptRequest={(req) => handleAcceptProjectRequest(req.id, {})}
               onRejectRequest={(req, reason) => handleRejectProjectRequest(req.id, reason)}
               onMarkUnderReview={(req) => handleMarkProjectRequestUnderReview(req.id)}
+              onDeleteRequest={handleDeleteProjectRequest}
               onOpenProjectWorkspace={(projId) => {
                 setActiveProjectIdForWorkspace(projId);
                 navigate('admin-projects');

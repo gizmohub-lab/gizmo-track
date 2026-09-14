@@ -18,6 +18,7 @@ import {
   doc,
   setDoc,
   updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
 } from 'firebase/firestore';
@@ -1135,5 +1136,14 @@ export function generateWhatsAppAcceptanceMessage(req: ProjectRequest, createdPr
   lines.push(`Design & Production Studio`);
 
   return lines.join('\n');
+}
+
+export async function deleteProjectRequestFromFirestore(id: string): Promise<void> {
+  try {
+    await deleteDoc(doc(db, 'projectRequests', id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `projectRequests/${id}`);
+    throw error;
+  }
 }
 

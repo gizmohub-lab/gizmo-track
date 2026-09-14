@@ -40,6 +40,14 @@ import {
   markProjectRequestUnderReviewWorkflow,
 } from './services/projectRequestsService';
 import {
+  subscribeToProjects,
+  subscribeToClients,
+  subscribeToInvoices,
+  syncProjectToFirestore,
+  syncClientToFirestore,
+  syncInvoiceToFirestore,
+} from './services/portalSyncService';
+import {
   sumReceivedPayments,
   calculateAmountToGet,
   calculatePaymentStatus,
@@ -299,8 +307,20 @@ export default function App() {
     const unsubscribe = subscribeToProjectRequests((remoteRequests) => {
       setProjectRequests(remoteRequests);
     });
+    const unsubProjects = subscribeToProjects((remoteProjects) => {
+      setProjects(remoteProjects);
+    });
+    const unsubClients = subscribeToClients((remoteClients) => {
+      setClients(remoteClients);
+    });
+    const unsubInvoices = subscribeToInvoices((remoteInvoices) => {
+      setInvoices(remoteInvoices);
+    });
     return () => {
       unsubscribe();
+      unsubProjects();
+      unsubClients();
+      unsubInvoices();
     };
   }, []);
 
@@ -555,11 +575,18 @@ export default function App() {
 
   useEffect(() => {
     saveClients(clients);
+    clients.forEach((c) => syncClientToFirestore(c));
   }, [clients]);
 
   useEffect(() => {
     saveProjects(projects);
+    projects.forEach((p) => syncProjectToFirestore(p));
   }, [projects]);
+
+  useEffect(() => {
+    saveInvoices(invoices);
+    invoices.forEach((i) => syncInvoiceToFirestore(i));
+  }, [invoices]);
 
   useEffect(() => {
     saveLocalWorks(localWorks);

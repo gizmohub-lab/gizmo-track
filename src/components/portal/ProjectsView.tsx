@@ -201,6 +201,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
 
   // Project completion & reopen states
   const [projectToComplete, setProjectToComplete] = useState<Project | null>(null);
@@ -1117,10 +1118,61 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                   </button>
                 </div>
               ) : viewMode === 'table' ? (
-                <div className="overflow-x-auto rounded-xl border border-zinc-200/80">
+                <div className="space-y-3">
+                  {selectedProjectIds.length > 0 && (
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-orange-50 border border-orange-200 text-orange-900 text-xs font-bold animate-in fade-in">
+                      <span>{selectedProjectIds.length} project(s) selected</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProjectIds([])}
+                          className="px-3 py-1.5 rounded-lg bg-white border border-orange-300 hover:bg-orange-100 text-orange-800 transition text-xs font-bold"
+                        >
+                          Deselect All
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!window.confirm(`⚠️ Permanently delete ${selectedProjectIds.length} selected project(s)? This cannot be undone.`)) return;
+                            let count = 0;
+                            for (const id of selectedProjectIds) {
+                              try {
+                                await onDeleteProject(id);
+                                count++;
+                              } catch (err) {
+                                console.error('Failed to delete project:', id, err);
+                              }
+                            }
+                            setSelectedProjectIds([]);
+                            alert(`Successfully deleted ${count} project(s).`);
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white transition flex items-center gap-1.5 shadow-xs text-xs font-black tracking-wide"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete Selected ({selectedProjectIds.length})</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <div className="overflow-x-auto rounded-xl border border-zinc-200/80">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="bg-zinc-50 text-zinc-500 font-semibold uppercase text-[10px] tracking-wider border-b border-zinc-200">
+                        <th className="py-3 px-3.5 w-10 text-center">
+                          <input
+                            type="checkbox"
+                            aria-label="Select all projects"
+                            checked={filteredProjects.length > 0 && selectedProjectIds.length === filteredProjects.length}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedProjectIds(filteredProjects.map(p => p.id));
+                              } else {
+                                setSelectedProjectIds([]);
+                              }
+                            }}
+                            className="rounded border-zinc-300 text-orange-600 focus:ring-orange-500 w-4 h-4 cursor-pointer"
+                          />
+                        </th>
                         <th className="py-3 px-3.5">Project</th>
                         <th className="py-3 px-3">Client</th>
                         <th className="py-3 px-3">Designer</th>
@@ -1146,9 +1198,24 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                         return (
                           <tr
                             key={project.id}
-                            className="hover:bg-zinc-50/70 transition-colors cursor-pointer group"
+                            className={`hover:bg-zinc-50/70 transition-colors cursor-pointer group ${selectedProjectIds.includes(project.id) ? 'bg-orange-50/40' : ''}`}
                             onClick={() => setActiveWorkspaceProject(project)}
                           >
+                            <td className="py-3 px-3.5 w-10 text-center" onClick={(e) => e.stopPropagation()}>
+                              <input
+                                type="checkbox"
+                                aria-label={`Select project ${project.title}`}
+                                checked={selectedProjectIds.includes(project.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedProjectIds(prev => [...prev, project.id]);
+                                  } else {
+                                    setSelectedProjectIds(prev => prev.filter(id => id !== project.id));
+                                  }
+                                }}
+                                className="rounded border-zinc-300 text-orange-600 focus:ring-orange-500 w-4 h-4 cursor-pointer"
+                              />
+                            </td>
                             {/* Project Name & Code */}
                             <td className="py-3 px-3.5">
                               <div className="flex items-center gap-2">
@@ -1397,6 +1464,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                     </tbody>
                   </table>
                 </div>
+              </div>
               ) : (
                 /* Grid View Mode */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

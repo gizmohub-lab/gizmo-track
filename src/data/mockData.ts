@@ -1576,7 +1576,7 @@ export function saveCategories(categories: string[]): void {
 }
 
 export function loadInvoices(): Invoice[] {
-  return safeLoadItem<Invoice[]>(STORAGE_KEYS.INVOICES, initialInvoices);
+  return safeLoadItem<Invoice[]>(STORAGE_KEYS.INVOICES, []);
 }
 
 export function saveInvoices(invoices: Invoice[]): void {
@@ -1596,7 +1596,7 @@ export function saveSettings(settings: InvoiceSettings): void {
 }
 
 export function loadClients(): Client[] {
-  return safeLoadItem<Client[]>(STORAGE_KEYS.CLIENTS, initialClients);
+  return safeLoadItem<Client[]>(STORAGE_KEYS.CLIENTS, []);
 }
 
 export function saveClients(clients: Client[]): void {
@@ -1606,7 +1606,7 @@ export function saveClients(clients: Client[]): void {
 export function loadProjects(): Project[] {
   const loaded = safeLoadItem<Project[]>(
     STORAGE_KEYS.PROJECTS,
-    initialProjects.map((p, idx) => normalizeProject(p, idx))
+    []
   );
 
   return loaded.map((p, idx) => {
@@ -1660,7 +1660,7 @@ export function saveProjects(projects: Project[]): void {
 }
 
 export function loadLocalWorks(): LocalWork[] {
-  const loaded = safeLoadItem<LocalWork[]>(STORAGE_KEYS.LOCAL_WORKS, initialLocalWorks);
+  const loaded = safeLoadItem<LocalWork[]>(STORAGE_KEYS.LOCAL_WORKS, []);
 
   return loaded.map((w) => {
     const total = Number(w.totalAmount ?? w.amount ?? 0);
@@ -1736,7 +1736,7 @@ export function saveLocalWorks(works: LocalWork[]): void {
 }
 
 export function loadDeadlines(): DeadlineItem[] {
-  return safeLoadItem<DeadlineItem[]>(STORAGE_KEYS.DEADLINES, initialDeadlines);
+  return safeLoadItem<DeadlineItem[]>(STORAGE_KEYS.DEADLINES, []);
 }
 
 export function saveDeadlines(deadlines: DeadlineItem[]): void {

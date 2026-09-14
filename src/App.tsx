@@ -49,6 +49,7 @@ import {
   deleteProjectFromFirestore,
   deleteClientFromFirestore,
   deleteInvoiceFromFirestore,
+  resetAllFirestoreData,
 } from './services/portalSyncService';
 import {
   sumReceivedPayments,
@@ -334,6 +335,21 @@ export default function App() {
       unsubClients();
       unsubInvoices();
     };
+  }, []);
+
+  // One-time clean production initialization: wipe test/demo records so app starts empty (0 projects, 0 clients, etc.)
+  useEffect(() => {
+    const cleanDone = localStorage.getItem('gizmo_production_clean_done_v1');
+    if (!cleanDone) {
+      localStorage.removeItem('gizmo_portal_projects_v1');
+      localStorage.removeItem('gizmo_portal_clients_v1');
+      localStorage.removeItem('gizmo_portal_invoices_v1');
+      localStorage.removeItem('gizmo_portal_local_works_v3');
+      localStorage.removeItem('gizmo_portal_deadlines_v1');
+      localStorage.removeItem('gizmo_portal_project_requests_v1');
+      localStorage.setItem('gizmo_production_clean_done_v1', 'true');
+      resetAllFirestoreData().catch(() => {});
+    }
   }, []);
 
   // Guarantee official Gizmo logo favicon is applied to browser tab

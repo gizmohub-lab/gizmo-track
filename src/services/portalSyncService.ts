@@ -61,22 +61,28 @@ export function subscribeToProjects(
             };
           });
 
-          // Firestore is canonical source of truth. Save to local cache and use remote data directly.
-          saveProjects(remoteProjects);
-          callback(remoteProjects);
+          // Merge with any local projects not yet in Firestore
+          const remoteIds = new Set(remoteProjects.map((p) => p.id));
+          const localOnly = loadProjects().filter((p) => !remoteIds.has(p.id));
+          const combined = [...remoteProjects, ...localOnly];
+
+          saveProjects(combined);
+          callback(combined);
         } else {
-          callback([]);
+          const local = loadProjects();
+          callback(local);
         }
       },
       (error) => {
         console.error('Error in subscribeToProjects onSnapshot:', error);
-        callback([]);
+        callback(loadProjects());
       }
     );
 
     return unsubscribe;
   } catch (err) {
     console.error('Failed to initialize subscribeToProjects:', err);
+    callback(loadProjects());
     return () => {};
   }
 }
@@ -105,21 +111,26 @@ export function subscribeToClients(
             };
           });
 
-          saveClients(remoteClients);
-          callback(remoteClients);
+          const remoteIds = new Set(remoteClients.map((c) => c.id));
+          const localOnly = loadClients().filter((c) => !remoteIds.has(c.id));
+          const combined = [...remoteClients, ...localOnly];
+
+          saveClients(combined);
+          callback(combined);
         } else {
-          callback([]);
+          callback(loadClients());
         }
       },
       (error) => {
         console.error('Error in subscribeToClients onSnapshot:', error);
-        callback([]);
+        callback(loadClients());
       }
     );
 
     return unsubscribe;
   } catch (err) {
     console.error('Failed to initialize subscribeToClients:', err);
+    callback(loadClients());
     return () => {};
   }
 }
@@ -168,21 +179,26 @@ export function subscribeToInvoices(
             };
           });
 
-          saveInvoices(remoteInvoices);
-          callback(remoteInvoices);
+          const remoteIds = new Set(remoteInvoices.map((i) => i.id));
+          const localOnly = loadInvoices().filter((i) => !remoteIds.has(i.id));
+          const combined = [...remoteInvoices, ...localOnly];
+
+          saveInvoices(combined);
+          callback(combined);
         } else {
-          callback([]);
+          callback(loadInvoices());
         }
       },
       (error) => {
         console.error('Error in subscribeToInvoices onSnapshot:', error);
-        callback([]);
+        callback(loadInvoices());
       }
     );
 
     return unsubscribe;
   } catch (err) {
     console.error('Failed to initialize subscribeToInvoices:', err);
+    callback(loadInvoices());
     return () => {};
   }
 }

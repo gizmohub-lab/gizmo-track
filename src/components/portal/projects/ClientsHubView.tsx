@@ -39,6 +39,7 @@ interface ClientsHubViewProps {
   onCreateProjectForClient: (client: Client) => void;
   onCreateInvoiceForClient: (client: Client) => void;
   onOpenAddClientModal?: () => void;
+  onAddClient?: (client: Client) => void;
   onEditClient?: (client: Client) => void;
   onDeleteClient?: (clientId: string) => void;
 }
@@ -52,6 +53,7 @@ export const ClientsHubView: React.FC<ClientsHubViewProps> = ({
   onCreateProjectForClient,
   onCreateInvoiceForClient,
   onOpenAddClientModal,
+  onAddClient,
   onEditClient,
   onDeleteClient,
 }) => {
@@ -61,6 +63,94 @@ export const ClientsHubView: React.FC<ClientsHubViewProps> = ({
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Add Client Modal states
+  const [showAddClientModal, setShowAddClientModal] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newCompany, setNewCompany] = useState('');
+  const [newWhatsapp, setNewWhatsapp] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newCity, setNewCity] = useState('');
+  const [newAddress, setNewAddress] = useState('');
+  const [newWebsite, setNewWebsite] = useState('');
+  const [newNotes, setNewNotes] = useState('');
+  const [newStatus, setNewStatus] = useState('Active');
+  const [newClientType, setNewClientType] = useState('');
+  const [newReference, setNewReference] = useState('');
+
+  // Duplicate warning states
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateMatch, setDuplicateMatch] = useState<Client | null>(null);
+  const [pendingNewClient, setPendingNewClient] = useState<Client | null>(null);
+
+  const handleSaveNewClient = (e: React.FormEvent, bypassDuplicate: boolean = false) => {
+    e.preventDefault();
+    if (!newName.trim()) return;
+
+    const qName = newName.trim().toLowerCase();
+    const qEmail = newEmail.trim().toLowerCase();
+    const qPhone = newPhone.trim().replace(/\s+/g, '');
+    const qWhatsapp = newWhatsapp.trim().replace(/\s+/g, '');
+
+    const existingMatch = !bypassDuplicate ? clients.find((c) => {
+      if (qEmail && c.email && c.email.toLowerCase() === qEmail) return true;
+      if (qPhone && c.phone && c.phone.replace(/\s+/g, '') === qPhone) return true;
+      if (qWhatsapp && c.whatsapp && c.whatsapp.replace(/\s+/g, '') === qWhatsapp) return true;
+      if (qName && c.name.toLowerCase() === qName) return true;
+      if (newCompany.trim() && c.company && c.company.toLowerCase() === newCompany.trim().toLowerCase()) return true;
+      return false;
+    }) : null;
+
+    const clientObj: Client = {
+      id: `client-${Date.now()}`,
+      name: newName.trim(),
+      company: newCompany.trim() || undefined,
+      whatsapp: newWhatsapp.trim() || undefined,
+      phone: newPhone.trim() || undefined,
+      email: newEmail.trim() || undefined,
+      city: newCity.trim() || undefined,
+      address: newAddress.trim() || undefined,
+      website: newWebsite.trim() || undefined,
+      notes: newNotes.trim() || undefined,
+      status: newStatus,
+      clientType: newClientType.trim() || undefined,
+      reference: newReference.trim() || undefined,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (existingMatch && !bypassDuplicate) {
+      setDuplicateMatch(existingMatch);
+      setPendingNewClient(clientObj);
+      setShowDuplicateModal(true);
+      return;
+    }
+
+    if (onAddClient) {
+      onAddClient(clientObj);
+    }
+    setShowAddClientModal(false);
+    setShowDuplicateModal(false);
+    setDuplicateMatch(null);
+    setPendingNewClient(null);
+
+    // Reset form
+    setNewName('');
+    setNewCompany('');
+    setNewWhatsapp('');
+    setNewPhone('');
+    setNewEmail('');
+    setNewCity('');
+    setNewAddress('');
+    setNewWebsite('');
+    setNewNotes('');
+    setNewStatus('Active');
+    setNewClientType('');
+    setNewReference('');
+
+    setToastMessage('Client created successfully.');
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -119,16 +209,20 @@ export const ClientsHubView: React.FC<ClientsHubViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5">
-          {onOpenAddClientModal && (
-            <button
-              type="button"
-              onClick={onOpenAddClientModal}
-              className="rounded-xl border border-zinc-300 bg-white hover:bg-zinc-50 px-3.5 py-2 text-xs font-bold text-zinc-800 shadow-2xs transition-colors flex items-center gap-1.5"
-            >
-              <Plus className="h-4 w-4 text-zinc-500" />
-              <span>Add Client</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenAddClientModal) {
+                onOpenAddClientModal();
+              } else {
+                setShowAddClientModal(true);
+              }
+            }}
+            className="rounded-full bg-[#EE1D45] hover:bg-[#d4193e] text-white px-4 py-2 text-xs font-extrabold shadow-sm transition-all duration-150 transform hover:scale-[1.02] flex items-center gap-1.5"
+          >
+            <Plus className="h-4 w-4 text-white" />
+            <span>+ Add Client</span>
+          </button>
 
           <button
             type="button"
@@ -479,6 +573,261 @@ export const ClientsHubView: React.FC<ClientsHubViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* ADD CLIENT MODAL */}
+      {showAddClientModal && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl border border-zinc-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+              <div>
+                <h3 className="text-lg font-black text-zinc-950">Add New Client</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">Register a new client account for projects and invoicing.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddClientModal(false)}
+                className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center font-bold text-xs transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={(e) => handleSaveNewClient(e, false)} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="e.g. Sarah Jenkins"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Company / Brand</label>
+                  <input
+                    type="text"
+                    value={newCompany}
+                    onChange={(e) => setNewCompany(e.target.value)}
+                    placeholder="e.g. Apex Studio"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">WhatsApp Phone Number</label>
+                  <input
+                    type="text"
+                    value={newWhatsapp}
+                    onChange={(e) => setNewWhatsapp(e.target.value)}
+                    placeholder="e.g. +91 9876543210"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                  <span className="text-[10px] text-zinc-400 mt-0.5 block">Stored separately from Gizmo official line.</span>
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    placeholder="e.g. +91 9876543210"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="client@example.com"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">City / Location</label>
+                  <input
+                    type="text"
+                    value={newCity}
+                    onChange={(e) => setNewCity(e.target.value)}
+                    placeholder="e.g. Mumbai, India"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block font-bold text-zinc-700 mb-1">Billing / Physical Address</label>
+                  <input
+                    type="text"
+                    value={newAddress}
+                    onChange={(e) => setNewAddress(e.target.value)}
+                    placeholder="Street address, building, suite"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Website / Social Handle</label>
+                  <input
+                    type="text"
+                    value={newWebsite}
+                    onChange={(e) => setNewWebsite(e.target.value)}
+                    placeholder="https://clientbrand.com or @handle"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Account Status</label>
+                  <select
+                    value={newStatus}
+                    onChange={(e) => setNewStatus(e.target.value)}
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden font-semibold"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Lead">Lead / Prospect</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Client Type (Optional)</label>
+                  <input
+                    type="text"
+                    value={newClientType}
+                    onChange={(e) => setNewClientType(e.target.value)}
+                    placeholder="e.g. Direct Brand, Agency Partner"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Reference / Source (Optional)</label>
+                  <input
+                    type="text"
+                    value={newReference}
+                    onChange={(e) => setNewReference(e.target.value)}
+                    placeholder="e.g. Referral, Google Search, Instagram"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block font-bold text-zinc-700 mb-1">Internal Notes</label>
+                  <textarea
+                    rows={3}
+                    value={newNotes}
+                    onChange={(e) => setNewNotes(e.target.value)}
+                    placeholder="Add project scope preferences, billing terms or notes..."
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2 text-zinc-900 focus:bg-white focus:border-zinc-900 focus:outline-hidden resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddClientModal(false)}
+                  className="px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 font-bold hover:bg-zinc-100 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-[#EE1D45] hover:bg-[#d4193e] text-white font-extrabold shadow-sm transition flex items-center gap-1.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Client</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DUPLICATE WARNING MODAL */}
+      {showDuplicateModal && duplicateMatch && pendingNewClient && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-zinc-200">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-zinc-950">Possible existing client found.</h3>
+              <p className="text-xs text-zinc-500 font-medium">
+                A client with similar contact details or name already exists in the system.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-zinc-500 font-semibold">Existing Client:</span>
+                <span className="font-extrabold text-zinc-900">{duplicateMatch.name}</span>
+              </div>
+              {duplicateMatch.company && (
+                <div className="flex justify-between">
+                  <span className="text-zinc-500 font-semibold">Company:</span>
+                  <span className="font-semibold text-zinc-900">{duplicateMatch.company}</span>
+                </div>
+              )}
+              {duplicateMatch.phone && (
+                <div className="flex justify-between">
+                  <span className="text-zinc-500 font-semibold">Phone / WhatsApp:</span>
+                  <span className="font-mono text-zinc-900">{duplicateMatch.phone || duplicateMatch.whatsapp}</span>
+                </div>
+              )}
+              {duplicateMatch.email && (
+                <div className="flex justify-between">
+                  <span className="text-zinc-500 font-semibold">Email:</span>
+                  <span className="text-zinc-900">{duplicateMatch.email}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDuplicateModal(false);
+                  setShowAddClientModal(false);
+                  onOpenClientWorkspace(duplicateMatch);
+                }}
+                className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>View Existing Client</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  setShowDuplicateModal(false);
+                  if (pendingNewClient) {
+                    if (onAddClient) {
+                      onAddClient(pendingNewClient);
+                    }
+                    setShowAddClientModal(false);
+                    setDuplicateMatch(null);
+                    setPendingNewClient(null);
+                    setToastMessage('Client created successfully.');
+                    setTimeout(() => setToastMessage(null), 4000);
+                  }
+                }}
+                className="w-full py-2.5 rounded-xl border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-800 text-xs font-bold transition"
+              >
+                Continue Creating
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDuplicateModal(false);
+                  setDuplicateMatch(null);
+                  setPendingNewClient(null);
+                }}
+                className="w-full py-2 text-zinc-500 hover:text-zinc-800 text-xs font-semibold transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* DELETE CLIENT MODAL */}
       <DeleteClientModal

@@ -520,6 +520,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
             onCreateProjectForClient={handleCreateProjectForClient}
             onCreateInvoiceForClient={handleCreateInvoiceForClient}
             onOpenAddClientModal={onOpenAddClientModal}
+            onAddClient={onAddClient}
             onEditClient={onEditClient}
             onDeleteClient={onDeleteClient}
           />

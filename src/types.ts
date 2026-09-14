@@ -26,6 +26,10 @@ export interface Client {
   avatar?: string;
   notes?: string;
   createdAt: string;
+  website?: string;
+  clientType?: string;
+  reference?: string;
+  status?: string;
 }
 
 export interface ProjectDeliverableRevision {

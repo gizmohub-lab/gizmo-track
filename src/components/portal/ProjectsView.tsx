@@ -1346,12 +1346,11 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
 
                                       <button
                                         type="button"
-                                        onClick={() => {
-                                          setActiveDropdownProjectId(null);
-                                          if (window.confirm(`Delete project "${project.title}"?`)) {
-                                            onDeleteProject(project.id);
-                                          }
-                                        }}
+                                         onClick={() => {
+                                           setActiveDropdownProjectId(null);
+                                           setProjectToDelete(project);
+                                           setShowDeleteModal(true);
+                                         }}
                                         className="w-full px-3.5 py-2 hover:bg-rose-50 text-rose-600 flex items-center gap-2 font-semibold"
                                       >
                                         <Trash2 className="w-3.5 h-3.5 text-rose-500" />

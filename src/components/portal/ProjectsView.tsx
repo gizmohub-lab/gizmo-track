@@ -54,6 +54,8 @@ import {
   Note,
   AppRoute,
 } from '../../types';
+import { resetAllFirestoreData } from '../../services/portalSyncService';
+import { PORTAL_STORAGE_KEYS } from '../../services/safeStorage';
 import { formatINR, formatDate } from '../../utils/formatters';
 import {
   getProjectProgress,
@@ -953,36 +955,65 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                     Track client deliverables, invoice payments and production milestones.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const targetProjects = filteredProjects.length > 0 ? filteredProjects : projects;
-                    if (targetProjects.length === 0) {
-                      alert('No projects found to delete.');
-                      return;
-                    }
-                    if (!window.confirm(`⚠️ WARNING: Permanently delete ALL ${targetProjects.length} project(s)? This action cannot be undone.`)) return;
-                    
-                    let deletedCount = 0;
-                    for (const p of targetProjects) {
-                      const pid = p.id || p.projectId;
-                      if (pid) {
-                        try {
-                          await onDeleteProject(pid);
-                          deletedCount++;
-                        } catch (err) {
-                          console.error('Failed to delete project:', pid, err);
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!window.confirm('⚠️ EMERGENCY RESET: This will permanently wipe ALL saved and unsaved data (projects, clients, invoices, local works, cache) across Firestore and local storage. This action cannot be undone. Proceed?')) return;
+                      
+                      try {
+                        await resetAllFirestoreData();
+                      } catch (e) {
+                        console.warn('Firestore reset error:', e);
+                      }
+
+                      try {
+                        Object.values(PORTAL_STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+                        localStorage.clear();
+                      } catch (e) {
+                        console.warn('LocalStorage clear error:', e);
+                      }
+
+                      alert('All saved and unsaved data has been successfully reset. The application will now reload.');
+                      window.location.reload();
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-black tracking-wide transition flex items-center gap-2 shadow-sm"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Reset All Data (Saved & Unsaved)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const targetProjects = filteredProjects.length > 0 ? filteredProjects : projects;
+                      if (targetProjects.length === 0) {
+                        alert('No projects found to delete.');
+                        return;
+                      }
+                      if (!window.confirm(`⚠️ WARNING: Permanently delete ALL ${targetProjects.length} project(s)? This action cannot be undone.`)) return;
+                      
+                      let deletedCount = 0;
+                      for (const p of targetProjects) {
+                        const pid = p.id || p.projectId;
+                        if (pid) {
+                          try {
+                            await onDeleteProject(pid);
+                            deletedCount++;
+                          } catch (err) {
+                            console.error('Failed to delete project:', pid, err);
+                          }
                         }
                       }
-                    }
 
-                    alert(`Successfully deleted ${deletedCount} project(s).`);
-                  }}
-                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black tracking-wide transition flex items-center gap-2 shadow-sm shrink-0"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Delete All Projects</span>
-                </button>
+                      alert(`Successfully deleted ${deletedCount} project(s).`);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black tracking-wide transition flex items-center gap-2 shadow-sm"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete All Projects</span>
+                  </button>
+                </div>
               </div>
 
               {/* Filter Bar */}

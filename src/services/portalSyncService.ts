@@ -18,6 +18,7 @@ import {
   deleteDoc,
   onSnapshot,
   query,
+  getDocs,
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -258,5 +259,22 @@ export async function deleteInvoiceFromFirestore(invoiceId: string): Promise<voi
   } catch (err) {
     console.error('Failed to delete invoice from Firestore:', err);
     throw err;
+  }
+}
+
+/**
+  * Reset all portal data in Firestore across collections.
+  */
+export async function resetAllFirestoreData(): Promise<void> {
+  const collectionsToClear = ['projects', 'clients', 'invoices', 'localWorks', 'deadlines', 'notes', 'designers', 'categories'];
+  for (const colName of collectionsToClear) {
+    try {
+      const snap = await getDocs(collection(db, colName));
+      for (const d of snap.docs) {
+        await deleteDoc(doc(db, colName, d.id));
+      }
+    } catch (err) {
+      console.warn(`Failed to clear collection ${colName}:`, err);
+    }
   }
 }

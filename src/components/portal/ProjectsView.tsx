@@ -955,39 +955,32 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!window.confirm("Permanently delete test records (Test Project Title, Brand Design Brief, 234567890p[wser, Test Client, dfghjm,.)? Real production data will be preserved.")) return;
+                    const targetProjects = filteredProjects.length > 0 ? filteredProjects : projects;
+                    if (targetProjects.length === 0) {
+                      alert('No projects found to delete.');
+                      return;
+                    }
+                    if (!window.confirm(`⚠️ WARNING: Permanently delete ALL ${targetProjects.length} project(s)? This action cannot be undone.`)) return;
                     
-                    const testProjects = projects.filter(p => 
-                      p.title?.toLowerCase().includes('test') || 
-                      p.title?.includes('234567890p') ||
-                      p.title?.toLowerCase().includes('brand design brief') ||
-                      p.clientName?.toLowerCase().includes('test client') ||
-                      p.clientName?.includes('dfghjm')
-                    );
-
-                    for (const tp of testProjects) {
-                      if (onDeleteProject) {
-                        await onDeleteProject(tp.id);
+                    let deletedCount = 0;
+                    for (const p of targetProjects) {
+                      const pid = p.id || p.projectId;
+                      if (pid) {
+                        try {
+                          await onDeleteProject(pid);
+                          deletedCount++;
+                        } catch (err) {
+                          console.error('Failed to delete project:', pid, err);
+                        }
                       }
                     }
 
-                    const testClients = clients.filter(c =>
-                      c.name?.toLowerCase().includes('test client') ||
-                      c.name?.includes('dfghjm')
-                    );
-
-                    for (const tc of testClients) {
-                      if (onDeleteClient) {
-                        await onDeleteClient(tc.id);
-                      }
-                    }
-
-                    alert(`Purged ${testProjects.length} test project(s) and ${testClients.length} test client(s) successfully.`);
+                    alert(`Successfully deleted ${deletedCount} project(s).`);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1.5 shrink-0"
+                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black tracking-wide transition flex items-center gap-2 shadow-sm shrink-0"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Purge Test Data</span>
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete All Projects</span>
                 </button>
               </div>
 

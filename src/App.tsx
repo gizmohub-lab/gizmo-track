@@ -710,9 +710,9 @@ export default function App() {
       await deleteProjectFromFirestore(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       setDeadlines((prev) => prev.filter((d) => d.referenceId !== id && d.id !== `dl-proj-${id}`));
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to delete project:', err);
-      alert('Unable to delete project. Please try again.');
+      alert(`Unable to delete project: ${err?.message || err}`);
     }
   };
 

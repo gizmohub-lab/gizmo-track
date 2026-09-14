@@ -230,7 +230,8 @@ export async function deleteProjectFromFirestore(projectId: string): Promise<voi
   try {
     await deleteDoc(doc(db, 'projects', projectId));
   } catch (err) {
-    console.warn('Failed to delete project from Firestore:', err);
+    console.error('Failed to delete project from Firestore:', err);
+    throw err;
   }
 }
 
@@ -242,7 +243,8 @@ export async function deleteClientFromFirestore(clientId: string): Promise<void>
   try {
     await deleteDoc(doc(db, 'clients', clientId));
   } catch (err) {
-    console.warn('Failed to delete client from Firestore:', err);
+    console.error('Failed to delete client from Firestore:', err);
+    throw err;
   }
 }
 
@@ -254,6 +256,7 @@ export async function deleteInvoiceFromFirestore(invoiceId: string): Promise<voi
   try {
     await deleteDoc(doc(db, 'invoices', invoiceId));
   } catch (err) {
-    console.warn('Failed to delete invoice from Firestore:', err);
+    console.error('Failed to delete invoice from Firestore:', err);
+    throw err;
   }
 }

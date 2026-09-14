@@ -96,11 +96,10 @@ export const EditWorkItemModal: React.FC<EditWorkItemModalProps> = ({
   const handleDesignerSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     if (val === 'unassigned') {
-      setDesignerId('');
+      setDesignerId('unassigned');
       setDesignerName('Unassigned');
-    } else if (val === 'custom') {
-      setDesignerId('custom');
-      // Keep existing name or let user edit
+    } else if (val === 'custom' || val === 'other_custom') {
+      setDesignerId('other_custom');
     } else {
       const match = designers.find((d) => d.id === val || d.name === val);
       if (match) {
@@ -116,13 +115,27 @@ export const EditWorkItemModal: React.FC<EditWorkItemModalProps> = ({
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
 
+    let finalDesignerId: string | undefined = designerId;
+    let finalDesignerName = designerName;
+    if (designerId === 'unassigned') {
+      finalDesignerId = undefined;
+      finalDesignerName = 'Unassigned';
+    } else if (designerId === 'other_custom') {
+      finalDesignerId = 'other_custom';
+      finalDesignerName = customDisplayName.trim() || designerName || 'Custom Designer';
+    } else {
+      const match = designers.find((d) => d.id === designerId);
+      finalDesignerId = designerId;
+      finalDesignerName = match?.name || designerName || 'Designer';
+    }
+
     // Generate descriptive activity logs
     const changes: string[] = [];
     if (status !== initialStatus) {
       changes.push(`Status changed from ${initialStatus} → ${status}`);
     }
-    if (designerName !== initialDesignerName) {
-      changes.push(`Designer changed from ${initialDesignerName || 'Unassigned'} → ${designerName}`);
+    if (finalDesignerName !== initialDesignerName) {
+      changes.push(`Designer changed from ${initialDesignerName || 'Unassigned'} → ${finalDesignerName}`);
     }
     if (customDisplayName !== initialCustomDisplayName) {
       changes.push(`Display name updated to "${customDisplayName}"`);
@@ -139,8 +152,8 @@ export const EditWorkItemModal: React.FC<EditWorkItemModalProps> = ({
     onSave({
       workId,
       workType,
-      assignedDesignerId: designerId,
-      assignedDesignerName: designerName,
+      assignedDesignerId: finalDesignerId,
+      assignedDesignerName: finalDesignerName,
       customDisplayName: customDisplayName.trim() || undefined,
       status,
       priority,
@@ -226,7 +239,7 @@ export const EditWorkItemModal: React.FC<EditWorkItemModalProps> = ({
                 Assigned Designer
               </label>
               <select
-                value={designerId || (designerName ? 'custom' : 'unassigned')}
+                value={designerId || (designerName ? 'other_custom' : 'unassigned')}
                 onChange={handleDesignerSelect}
                 className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-xs font-semibold text-zinc-800 outline-none focus:border-orange-500"
               >
@@ -236,15 +249,15 @@ export const EditWorkItemModal: React.FC<EditWorkItemModalProps> = ({
                     {d.name} ({d.type})
                   </option>
                 ))}
-                <option value="custom">Custom / External Designer...</option>
+                <option value="other_custom">Other / Custom</option>
               </select>
-              {designerId === 'custom' && (
+              {designerId === 'other_custom' && (
                 <input
                   type="text"
-                  placeholder="Enter designer full name"
+                  placeholder="Enter custom designer name"
                   value={designerName}
                   onChange={(e) => setDesignerName(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs outline-none focus:border-orange-500"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs outline-none focus:border-orange-500 font-bold"
                 />
               )}
             </div>

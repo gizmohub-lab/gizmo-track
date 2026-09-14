@@ -1804,6 +1804,7 @@ const AssignDeliverableDesignerModal: React.FC<AssignDeliverableDesignerModalPro
                   const match = designers.find((d) => d.id === e.target.value);
                   if (match) setDesignerName(match.name);
                   if (e.target.value === 'unassigned') setDesignerName('Unassigned');
+                  if (e.target.value === 'other_custom') setDesignerName('Custom Designer');
                 }}
                 className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 outline-none focus:border-violet-600 cursor-pointer"
               >
@@ -1813,6 +1814,7 @@ const AssignDeliverableDesignerModal: React.FC<AssignDeliverableDesignerModalPro
                     {d.name} {d.role ? `(${d.role})` : ''}
                   </option>
                 ))}
+                <option value="other_custom">Other / Custom</option>
               </select>
             </div>
             {onUpdateDesigners && (

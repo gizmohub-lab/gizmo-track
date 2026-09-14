@@ -165,7 +165,25 @@ export const ProjectCreateEditModal: React.FC<ProjectCreateEditModalProps> = ({
       setIsCustomClient(false);
       setTitle(projectToEdit.title || '');
       setProjectType(projectToEdit.projectType || projectToEdit.category || 'Branding');
-      setAssignedDesignerId(projectToEdit.assignedDesignerId || 'des-ahmed');
+      
+      const existingId = projectToEdit.assignedDesignerId;
+      const existingCustomName = projectToEdit.customDisplayName || projectToEdit.assignedDesignerName || '';
+      const isKnownDesigner = designers.some((d) => d.id === existingId);
+
+      if (existingId === 'unassigned') {
+        setAssignedDesignerId('unassigned');
+        setCustomDisplayName('');
+      } else if (existingId === 'other_custom' || (!isKnownDesigner && existingId && existingId !== 'unassigned') || (existingCustomName && !isKnownDesigner)) {
+        setAssignedDesignerId('other_custom');
+        setCustomDisplayName(existingCustomName);
+      } else if (isKnownDesigner) {
+        setAssignedDesignerId(existingId);
+        setCustomDisplayName(projectToEdit.customDisplayName || '');
+      } else {
+        setAssignedDesignerId('unassigned');
+        setCustomDisplayName('');
+      }
+
       setCustomDisplayName(projectToEdit.customDisplayName || '');
       setPriority(projectToEdit.priority || 'Normal');
       setStartDate(projectToEdit.startDate || projectToEdit.createdAt.split('T')[0]);
@@ -298,12 +316,25 @@ export const ProjectCreateEditModal: React.FC<ProjectCreateEditModalProps> = ({
       }
     }
 
-    // Find assigned designer name
-    const des = designers.find((d) => d.id === assignedDesignerId);
-    const assignedDesignerName =
-      assignedDesignerId === 'unassigned'
-        ? 'Unassigned'
-        : des?.name || 'Ahmed';
+    // Find assigned designer name & custom name resolution
+    let finalAssignedDesignerId: string | undefined = assignedDesignerId;
+    let assignedDesignerName = 'Unassigned';
+    let finalCustomDisplayName: string | undefined = customDisplayName.trim() || undefined;
+
+    if (assignedDesignerId === 'unassigned') {
+      finalAssignedDesignerId = undefined;
+      assignedDesignerName = 'Unassigned';
+      finalCustomDisplayName = undefined;
+    } else if (assignedDesignerId === 'other_custom') {
+      finalAssignedDesignerId = 'other_custom';
+      assignedDesignerName = customDisplayName.trim() || 'Custom Designer';
+      finalCustomDisplayName = customDisplayName.trim() || undefined;
+    } else {
+      const des = designers.find((d) => d.id === assignedDesignerId);
+      finalAssignedDesignerId = assignedDesignerId;
+      assignedDesignerName = des?.name || 'Designer';
+      finalCustomDisplayName = customDisplayName.trim() || undefined;
+    }
 
     const projectDeliverables: ProjectDeliverable[] = deliverables.map((d, idx) => {
       // Preserve completion status if editing
@@ -338,9 +369,9 @@ export const ProjectCreateEditModal: React.FC<ProjectCreateEditModalProps> = ({
       clientPhone: selectedClientPhone,
       projectType,
       category: projectType, // backward compat
-      assignedDesignerId,
+      assignedDesignerId: finalAssignedDesignerId,
       assignedDesignerName,
-      customDisplayName: customDisplayName.trim() || undefined,
+      customDisplayName: finalCustomDisplayName,
       priority,
       startDate,
       hasDeadline,
@@ -669,7 +700,14 @@ export const ProjectCreateEditModal: React.FC<ProjectCreateEditModalProps> = ({
                 <label className="block font-bold text-slate-800 mb-1">ASSIGNED DESIGNER</label>
                 <select
                   value={assignedDesignerId}
-                  onChange={(e) => setAssignedDesignerId(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '__add_designer__') {
+                      setAssignedDesignerId('other_custom');
+                    } else {
+                      setAssignedDesignerId(val);
+                    }
+                  }}
                   className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl outline-none font-bold text-slate-900"
                 >
                   <optgroup label="Portal Staff">
@@ -691,19 +729,21 @@ export const ProjectCreateEditModal: React.FC<ProjectCreateEditModalProps> = ({
                       ))}
                   </optgroup>
                   <option value="unassigned">Unassigned</option>
+                  <option value="other_custom">Other / Custom</option>
+                  <option value="__add_designer__">+ Add Designer...</option>
                 </select>
               </div>
 
               {/* Custom Display Name */}
               <div>
                 <label className="block font-bold text-slate-800 mb-1">
-                  CUSTOM DISPLAY NAME (This Project Only)
+                  {assignedDesignerId === 'other_custom' ? 'CUSTOM DESIGNER NAME' : 'CUSTOM DISPLAY NAME (Optional)'}
                 </label>
                 <input
                   type="text"
                   value={customDisplayName}
                   onChange={(e) => setCustomDisplayName(e.target.value)}
-                  placeholder="e.g. Ahmed Designs"
+                  placeholder={assignedDesignerId === 'other_custom' ? 'Enter designer name' : 'e.g. Ahmed Designs'}
                   className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-violet-500 font-bold text-slate-900"
                 />
               </div>
